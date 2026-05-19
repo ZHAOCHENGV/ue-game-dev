@@ -4,6 +4,13 @@
 
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
+## [0.3.1] - 2026-05-19
+
+### 变更
+- `ue-cpp-gameplay` 要求新增或修改 Blueprint 暴露 C++ API 后，必须给出蓝图实现/调用步骤、节点搜索名、pin 连接和验证方式。
+- `ue-cpp-gameplay/references/blueprint-api.md` 增加 Blueprint Implementation Steps 模板和不同 API 暴露类型的蓝图说明规则。
+- `ue-blueprint-workflow` 补充 C++ API 节点级接线说明要求。
+
 ## [0.3.0] - 2026-05-19
 
 ### 新增

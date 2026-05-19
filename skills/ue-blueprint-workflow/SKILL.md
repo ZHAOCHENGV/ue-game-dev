@@ -20,6 +20,7 @@ Use this skill for Blueprint-first development. Treat Blueprints as a first-clas
 - For keyboard features, create or reuse the dedicated input/key event path before guessing generic node classes.
 - Build the smallest clear graph: event node, validation guards, branch/sequence as needed, function calls, data assignments, and output feedback.
 - Connect execution pins and data pins explicitly. If pin names may vary by node variant, inspect pins before wiring.
+- When using a C++ API exposed to Blueprint, name the exact C++ function/event/delegate/property, the node display name to search for, the target object pin source, each input pin source, and the output/return handling.
 - Keep pure functions side-effect free and put state mutation behind explicit exec flow.
 - Validate compile status, missing variables, broken pins, latent action context, and runtime ownership assumptions.
 
@@ -28,6 +29,7 @@ Use this skill for Blueprint-first development. Treat Blueprints as a first-clas
 - Keep this skill focused on graph behavior and validation.
 - Use `references/blueprint-cpp-boundary.md` only when the requested graph change may need a C++ API, custom node, reusable component, or authority-sensitive implementation.
 - Use `$ue-cpp-gameplay` after the decision is made to implement the C++ side.
+- If `$ue-cpp-gameplay` added a Blueprint-facing function, event, interface, property, or delegate, continue with node-level implementation steps instead of stopping at the C++ signature.
 
 ## References
 

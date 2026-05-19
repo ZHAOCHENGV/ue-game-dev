@@ -21,6 +21,7 @@ Use this skill for concrete Unreal C++ gameplay work. Favor project-local patter
 - Use `TObjectPtr`, `TWeakObjectPtr`, `TSoftObjectPtr`, `TSubclassOf`, or `TSoftClassPtr` according to ownership and loading needs.
 - Mark reflected fields with narrow metadata: `VisibleAnywhere`, `EditDefaultsOnly`, `BlueprintReadOnly`, `BlueprintCallable`, categories, and `meta` only when useful.
 - Define the Blueprint-facing API intentionally: callable functions, pure queries, implementable/native events, assignable delegates, and protected extension points.
+- When adding or changing any Blueprint-exposed C++ function, event, property, interface, or delegate, include a Blueprint implementation/call section that tells the user exactly where to add nodes, what to search for, how to connect exec and data pins, and how to compile and validate the graph.
 - Prefer components and subsystems when behavior is reusable or lifetime-bound to an actor/world/game instance.
 - Avoid binding delegates repeatedly; unbind when the listener can outlive the source.
 - Use timers or events instead of Tick unless per-frame behavior is genuinely required.
@@ -33,6 +34,7 @@ Use this skill for concrete Unreal C++ gameplay work. Favor project-local patter
 - Data-driven gameplay: prefer `UPrimaryDataAsset` or project data tables when designers need iteration; keep runtime mutable state out of static asset data.
 - Input: use Enhanced Input if the project already does; bind in pawn/controller setup and keep action handlers small.
 - Blueprint API: expose minimal stable calls and data; avoid `BlueprintReadWrite` for authoritative state unless designers truly need mutation.
+- Blueprint handoff: after C++ changes, state the target Blueprint class/asset, parent C++ class, node/event/function name, expected input values, output handling, and the PIE/editor validation step.
 
 ## References
 

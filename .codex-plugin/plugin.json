@@ -1,6 +1,6 @@
 {
   "name": "ue-game-dev",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Unreal Engine game and client development workflows for existing project onboarding, Blueprint, C++, plugins, modules, editor tooling, Slate, naming conventions, GAS, networking, AI, animation, rendering, materials, Niagara, gameplay, UI, testing, debugging, and packaging.\n\nAliases: @ue-game-dev, /ue-game-dev, UE Game Dev, Unreal Engine assistant.\n\nUse UE Game Dev when the user asks to understand an old or existing UE project before secondary development, or for Unreal Engine C++, Blueprint, plugin/module, editor tooling, GAS, networking, rendering, materials, Niagara, UI, AI, animation, testing, debugging, performance, or packaging help.",
   "author": {
     "name": "zhaocw",
