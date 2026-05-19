@@ -1,6 +1,6 @@
 # UE Game Dev - Codex Plugin
 
-面向 Unreal Engine 游戏与客户端开发的 Codex 技能插件。它不是 Unreal Editor 的 `.uplugin` 插件，不需要放进 UE 项目的 `Plugins/` 目录；它是给 Codex App 使用的工作流插件，用来辅助 UE C++、蓝图、GAS、网络同步、渲染、材质、Niagara、UI、调试、测试和打包等开发任务。
+面向 Unreal Engine 游戏与客户端开发的 Codex 技能插件。它不是 Unreal Editor 的 `.uplugin` 插件，不需要放进 UE 项目的 `Plugins/` 目录；它是给 Codex App 使用的工作流插件，用来辅助旧项目接手、二开前分析、UE C++、蓝图、GAS、网络同步、渲染、材质、Niagara、UI、调试、测试和打包等开发任务。
 
 ## 安装方法
 
@@ -75,9 +75,9 @@ New-Item -ItemType Junction -Path "$env:USERPROFILE\plugins\ue-game-dev" -Target
 安装并启用后，推荐用最短入口调用：
 
 ```text
+@ue-game-dev 先熟悉这个旧 UE 项目，后面我要基于它二开
 @ue-game-dev 帮我设计一个 UE 编辑器插件
 @ue-game-dev 检查这个 GAS 网络同步流程
-@ue-game-dev 给这个 UE 功能补自动化测试
 ```
 
 如果你的 Codex App 版本支持 `/` 插件入口，也可以这样使用：
@@ -99,11 +99,12 @@ Use UE Game Dev to add tests for this UE feature.
 
 ## 功能概览
 
-本插件包含 **1 个路由技能 + 15 个领域技能**，覆盖 UE 开发全链路：
+本插件包含 **1 个路由技能 + 16 个领域技能**，覆盖 UE 开发全链路：
 
 | 技能 | 领域 |
 |------|------|
 | `ue-game-dev-router` | 请求路由与分发 |
+| `ue-project-onboarding` | 旧项目接手、项目熟悉、二开前分析 |
 | `ue-cpp-gameplay` | C++ 游戏逻辑（Actor、Component、Subsystem） |
 | `ue-blueprint-workflow` | 蓝图工作流（事件图、函数图、Widget） |
 | `ue-plugin-module-dev` | 插件与模块开发（.uplugin、Build.cs、命名规范） |
@@ -147,6 +148,10 @@ ue-game-dev/
 │   ├── ue-game-dev-router/
 │   │   ├── SKILL.md
 │   │   └── agents/openai.yaml
+│   ├── ue-project-onboarding/
+│   │   ├── SKILL.md
+│   │   ├── agents/openai.yaml
+│   │   └── references/
 │   ├── ue-cpp-gameplay/
 │   │   ├── SKILL.md
 │   │   ├── agents/openai.yaml

@@ -1,7 +1,7 @@
 {
   "name": "ue-game-dev",
-  "version": "0.2.1",
-  "description": "Unreal Engine game and client development workflows for Blueprint, C++, plugins, modules, editor tooling, Slate, naming conventions, GAS, networking, AI, animation, rendering, materials, Niagara, gameplay, UI, testing, debugging, and packaging.\n\nAliases: @ue-game-dev, /ue-game-dev, UE Game Dev, Unreal Engine assistant.\n\nUse UE Game Dev when the user asks for Unreal Engine C++, Blueprint, plugin/module, editor tooling, GAS, networking, rendering, materials, Niagara, UI, AI, animation, testing, debugging, performance, or packaging help.",
+  "version": "0.3.0",
+  "description": "Unreal Engine game and client development workflows for existing project onboarding, Blueprint, C++, plugins, modules, editor tooling, Slate, naming conventions, GAS, networking, AI, animation, rendering, materials, Niagara, gameplay, UI, testing, debugging, and packaging.\n\nAliases: @ue-game-dev, /ue-game-dev, UE Game Dev, Unreal Engine assistant.\n\nUse UE Game Dev when the user asks to understand an old or existing UE project before secondary development, or for Unreal Engine C++, Blueprint, plugin/module, editor tooling, GAS, networking, rendering, materials, Niagara, UI, AI, animation, testing, debugging, performance, or packaging help.",
   "author": {
     "name": "zhaocw",
     "email": "zcw1419@qq.com",
@@ -12,6 +12,9 @@
   "license": "MIT",
   "keywords": [
     "unreal-engine",
+    "project-onboarding",
+    "legacy-project",
+    "secondary-development",
     "plugins",
     "blueprint",
     "ue-cpp",
@@ -43,8 +46,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "UE Game Dev",
-    "shortDescription": "Unreal Engine workflows for Blueprint, C++, plugins, modules, editor tools, GAS, AI, animation, rendering, UI, and tests",
-    "longDescription": "Use UE Game Dev for Unreal Engine client and gameplay work across Blueprint graphs, C++, plugins, modules, editor tooling, Slate, naming conventions, Gameplay Ability System, multiplayer replication, save/load, AI/navigation, animation, rendering, materials, Niagara VFX, UMG, testing automation, debugging, performance, and packaging validation.",
+    "shortDescription": "Unreal Engine workflows for project onboarding, Blueprint, C++, plugins, GAS, AI, UI, rendering, and tests",
+    "longDescription": "Use UE Game Dev for Unreal Engine client and gameplay work across existing project onboarding, Blueprint graphs, C++, plugins, modules, editor tooling, Slate, naming conventions, Gameplay Ability System, multiplayer replication, save/load, AI/navigation, animation, rendering, materials, Niagara VFX, UMG, testing automation, debugging, performance, and packaging validation.",
     "developerName": "zhaocw",
     "category": "Coding",
     "capabilities": [
@@ -56,9 +59,9 @@
     "privacyPolicyURL": "https://www.unrealengine.com/privacypolicy",
     "termsOfServiceURL": "https://www.unrealengine.com/tos",
     "defaultPrompt": [
+      "@ue-game-dev 先熟悉这个旧 UE 项目，准备二开",
       "@ue-game-dev 设计一个 UE 插件、模块或编辑器工具",
-      "@ue-game-dev 检查 GAS 和网络同步流程",
-      "@ue-game-dev 给 UE 功能补自动化测试"
+      "@ue-game-dev 检查 GAS 和网络同步流程"
     ],
     "brandColor": "#0F172A",
     "composerIcon": "./assets/UE_Logo_Black_Centered.svg.png",

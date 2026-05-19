@@ -4,6 +4,17 @@
 
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
+## [0.3.0] - 2026-05-19
+
+### 新增
+- `ue-project-onboarding` 技能 — 用于旧项目接手、项目熟悉、二开前只读分析和接手报告。
+  - `references/project-audit-checklist.md` — UE 项目结构、模块、资产、配置和风险检查清单。
+  - `references/onboarding-report-template.md` — UE 项目接手报告模板。
+
+### 变更
+- `ue-game-dev-router` 新增旧项目、二开、接手、熟悉项目等场景的路由入口。
+- `README.md` 和 `plugin.json` 更新项目接手/二开前分析能力说明。
+
 ## [0.2.1] - 2026-05-19
 
 ### 新增

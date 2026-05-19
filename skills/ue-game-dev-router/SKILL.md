@@ -1,6 +1,6 @@
 ---
 name: ue-game-dev-router
-description: Route Unreal Engine game and client development requests to the most specific UE workflow skill. Use as the entry point when the domain or best skill is unclear, or when the request spans multiple UE areas including Blueprint, C++, plugins, modules, editor tooling, GAS, networking, AI, animation, rendering, UI, testing, debugging, performance, or packaging.
+description: Route Unreal Engine game and client development requests to the most specific UE workflow skill. Use as the entry point when the domain or best skill is unclear, or when the request spans multiple UE areas including project onboarding, Blueprint, C++, plugins, modules, editor tooling, GAS, networking, AI, animation, rendering, UI, testing, debugging, performance, or packaging.
 ---
 
 # UE Game Dev Router
@@ -10,6 +10,7 @@ Use this skill first when the request spans multiple Unreal Engine areas or the 
 ## Route The Request
 
 - Use `$ue-cpp-gameplay` for Actors, Components, UObject ownership, DataAssets, Subsystems, input-driven gameplay, world interaction, save/load hooks, and general gameplay C++.
+- Use `$ue-project-onboarding` when the user asks to understand, audit, take over, inherit, familiarize itself with, or prepare secondary development for an existing Unreal Engine project before changing code or assets.
 - Use `$ue-blueprint-workflow` for Blueprint graph logic, Event Graph changes, function graphs, input events, node/pin wiring, Widget Blueprint logic, and Blueprint compile validation.
 - Use `$ue-plugin-module-dev` for UE plugin structure, `.uplugin`, module descriptors, Runtime/Editor module split, `.Build.cs`, export API macros, Public/Private folders, plugin content/config/resources, and UE asset/code naming conventions.
 - Use `$ue-editor-tooling-slate` for editor plugins, Slate editor UI, ToolMenus, UICommands, toolbar/menu extensions, custom details panels, asset type actions, factories, tab spawners, and editor subsystems.
@@ -43,6 +44,7 @@ If the request involves audio, physics, destruction, level streaming, World Part
 - Discover existing Blueprint assets, Input Actions, Input Mapping Contexts, Widget Blueprints, Gameplay Tags, and GAS assets by filename before naming new assets.
 - Read the nearest existing class, Blueprint naming pattern, or subsystem before introducing new architecture.
 - Before creating files/assets, apply UE naming conventions: C++ type prefixes (`U`, `A`, `F`, `E`, `I`, `S`), module API macros, and asset names like `[AssetTypePrefix]_[AssetName]_[Descriptor]_[Variant]`.
+- If the user wants Codex to first learn an old, unfamiliar, inherited, or existing project before implementation, keep the first pass read-only and route to `$ue-project-onboarding`.
 
 ## Working Rules
 
