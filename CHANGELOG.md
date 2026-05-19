@@ -1,0 +1,35 @@
+# Changelog
+
+本文件记录 ue-game-dev 插件的所有重要变更。
+
+格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
+
+## [0.2.0] - 2026-05-19
+
+### 新增
+- `ue-ai-navigation` 技能 — 覆盖行为树、黑板、EQS、NavMesh、AI 感知、StateTree
+  - `references/ai-behavior-checklist.md` — AI 行为检查清单
+  - `references/navigation-checklist.md` — 导航系统检查清单
+- `ue-animation` 技能 — 覆盖动画蓝图、蒙太奇、IK、Control Rig、Motion Matching
+  - `references/animation-checklist.md` — 动画检查清单
+  - `references/animation-performance.md` — 动画性能参考
+- `ue-testing-automation` 技能 — 覆盖 AutomationSpec、FAutomationTestBase、Functional Tests、编辑器冒烟测试、PIE/多人验证、资产校验
+  - `references/testing-checklist.md` — 测试层级选择、插件/模块检查、断言和运行建议
+- `README.md` — 项目说明文档
+- `CHANGELOG.md` — 版本变更记录
+- `LICENSE` — MIT 许可证文件
+- `.gitattributes` — 行尾符统一控制
+
+### 变更
+- `ue-game-dev-router` — 新增 AI/导航、动画、测试自动化路由条目，新增兜底规则
+- `plugin.json` — 精简 description，新增 AI/动画/测试关键词，清理占位符元数据
+- `plugin.json` — 更新 shortDescription 和 longDescription 以反映新技能
+
+## [0.1.0] - 初始版本
+
+### 新增
+- 插件框架和 `plugin.json` 元数据
+- `ue-game-dev-router` 路由技能
+- 12 个领域技能：cpp-gameplay、blueprint-workflow、plugin-module-dev、editor-tooling-slate、architecture、gas-networking、save-load-sync、world-interaction、render-vfx、client-ui、debug-validation、performance-packaging
+- 每个技能包含 SKILL.md、agents/openai.yaml 和 references 参考文档
+- SVG 插件图标

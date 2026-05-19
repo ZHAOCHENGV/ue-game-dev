@@ -1,0 +1,68 @@
+{
+  "name": "ue-game-dev",
+  "version": "0.2.0",
+  "description": "Unreal Engine game and client development workflows for Blueprint, C++, plugins, modules, editor tooling, Slate, naming conventions, GAS, networking, AI, animation, rendering, materials, Niagara, gameplay, UI, testing, debugging, and packaging.",
+  "author": {
+    "name": "zhaocw",
+    "email": "zcw1419@qq.com",
+    "url": "https://space.bilibili.com/76571515"
+  },
+  "homepage": "https://www.unrealengine.com/",
+  "repository": "https://github.com/zhaocw/ue-game-dev",
+  "license": "MIT",
+  "keywords": [
+    "unreal-engine",
+    "plugins",
+    "blueprint",
+    "ue-cpp",
+    "uplugin",
+    "modules",
+    "build.cs",
+    "editor-tools",
+    "toolmenus",
+    "naming-conventions",
+    "gameplay",
+    "gas",
+    "networking",
+    "replication",
+    "rendering",
+    "materials",
+    "niagara",
+    "umg",
+    "slate",
+    "ai-navigation",
+    "behavior-tree",
+    "animation",
+    "montage",
+    "testing",
+    "automation-tests",
+    "functional-tests",
+    "debugging",
+    "packaging"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "UE Game Dev",
+    "shortDescription": "Unreal Engine workflows for Blueprint, C++, plugins, modules, editor tools, GAS, AI, animation, rendering, UI, and tests",
+    "longDescription": "Use UE Game Dev for Unreal Engine client and gameplay work across Blueprint graphs, C++, plugins, modules, editor tooling, Slate, naming conventions, Gameplay Ability System, multiplayer replication, save/load, AI/navigation, animation, rendering, materials, Niagara VFX, UMG, testing automation, debugging, performance, and packaging validation.",
+    "developerName": "zhaocw",
+    "category": "Coding",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://www.unrealengine.com/",
+    "privacyPolicyURL": "https://www.unrealengine.com/privacypolicy",
+    "termsOfServiceURL": "https://www.unrealengine.com/tos",
+    "defaultPrompt": [
+      "Use UE Game Dev to design this Unreal plugin, module, or editor tool.",
+      "Use UE Game Dev to review this GAS and replication flow.",
+      "Use UE Game Dev to add tests for this UE feature."
+    ],
+    "brandColor": "#0F172A",
+    "composerIcon": "./assets/UE_Logo_Black_Centered.svg.png",
+    "logo": "./assets/UE_Logo_Black_Centered.svg.png",
+    "screenshots": []
+  }
+}

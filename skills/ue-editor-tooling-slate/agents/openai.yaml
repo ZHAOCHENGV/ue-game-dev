@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE Editor Tooling Slate"
+  short_description: "Build Unreal editor tools, Slate UI, menus, and detail panels."
+  default_prompt: "Use $ue-editor-tooling-slate to build this Unreal editor tool."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE C++ Gameplay"
+  short_description: "Build UE C++ actors, components, data, and gameplay systems."
+  default_prompt: "Use $ue-cpp-gameplay to implement this Unreal gameplay feature in C++."
