@@ -1,6 +1,6 @@
 # UE Game Dev - Codex Plugin
 
-面向 Unreal Engine 游戏与客户端开发的 Codex 技能插件。它不是 Unreal Editor 的 `.uplugin` 插件，不需要放进 UE 项目的 `Plugins/` 目录；它是给 Codex App 使用的工作流插件，用来辅助旧项目接手、二开前分析、UE C++、蓝图、GAS、网络同步、渲染、材质、Niagara、UI、调试、测试和打包等开发任务。
+面向 Unreal Engine 游戏与客户端开发的 Codex 技能插件。它不是 Unreal Editor 的 `.uplugin` 插件，不需要放进 UE 项目的 `Plugins/` 目录；它是给 Codex App 使用的工作流插件，用来辅助旧项目接手、二开前分析、UE C++、蓝图、Enhanced Input、GAS、网络同步、渲染、材质、Niagara、UI、调试、测试和显式打包自动化等开发任务。
 
 ## 安装方法
 
@@ -78,6 +78,8 @@ New-Item -ItemType Junction -Path "$env:USERPROFILE\plugins\ue-game-dev" -Target
 @ue-game-dev 先熟悉这个旧 UE 项目，后面我要基于它二开
 @ue-game-dev 帮我设计一个 UE 编辑器插件
 @ue-game-dev 检查这个 GAS 网络同步流程
+@ue-game-dev 给这个项目生成 Win64 Development 的 RunUAT 打包命令
+@ue-game-dev 帮我排查 Enhanced Input 的 IA_Jump 为什么不触发
 ```
 
 如果你的 Codex App 版本支持 `/` 插件入口，也可以这样使用：
@@ -99,7 +101,7 @@ Use UE Game Dev to add tests for this UE feature.
 
 ## 功能概览
 
-本插件包含 **1 个路由技能 + 16 个领域技能**，覆盖 UE 开发全链路：
+本插件包含 **1 个路由技能 + 18 个领域技能**，覆盖 UE 开发全链路：
 
 | 技能 | 领域 |
 |------|------|
@@ -110,6 +112,7 @@ Use UE Game Dev to add tests for this UE feature.
 | `ue-plugin-module-dev` | 插件与模块开发（.uplugin、Build.cs、命名规范） |
 | `ue-editor-tooling-slate` | 编辑器工具与 Slate UI |
 | `ue-architecture` | 架构设计与模块边界 |
+| `ue-input-enhanced` | Enhanced Input（Input Action、Mapping Context、重绑定、UI 焦点） |
 | `ue-gas-networking` | GAS 技能系统与网络同步 |
 | `ue-save-load-sync` | 存档/加载与状态同步 |
 | `ue-world-interaction` | 世界交互（拾取、生成器、碰撞） |
@@ -117,6 +120,7 @@ Use UE Game Dev to add tests for this UE feature.
 | `ue-client-ui` | 客户端 UI（UMG、CommonUI、HUD） |
 | `ue-debug-validation` | 调试与验证 |
 | `ue-performance-packaging` | 性能分析与打包发布 |
+| `ue-build-release-automation` | 显式自动打包、RunUAT/BuildCookRun、CI 发版流水线 |
 | `ue-ai-navigation` | AI 行为树、EQS、导航系统 |
 | `ue-animation` | 动画蓝图、蒙太奇、IK、状态机 |
 | `ue-testing-automation` | 自动化测试、功能测试、PIE/多人验证、资产校验 |
@@ -134,6 +138,8 @@ Use UE Game Dev to add tests for this UE feature.
 2. 路由器分发到最匹配的领域技能，例如 C++ 游戏逻辑会进入 `ue-cpp-gameplay`。
 3. 领域技能提供专业化工作流、检查清单、命名规范和参考模板。
 4. 跨领域任务会按优先级组合多个技能，例如插件模块 + Slate 编辑器工具 + 自动化测试。
+
+> 自动打包能力只在用户明确提出“打包 / 自动打包 / 一键打包 / RunUAT / BuildCookRun / CI 打包 / 发版流水线”等请求时使用。普通性能检查、发布前检查或打包失败诊断仍由 `ue-performance-packaging` 处理，不会被动触发打包。
 
 ## 目录结构
 

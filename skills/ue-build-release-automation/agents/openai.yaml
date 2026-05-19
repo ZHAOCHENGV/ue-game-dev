@@ -1,0 +1,6 @@
+interface:
+  display_name: "UE Build Release Automation"
+  short_description: "Generate explicit Unreal package and release automation."
+  default_prompt: "Use $ue-build-release-automation to create an explicit Unreal BuildCookRun packaging workflow."
+policy:
+  allow_implicit_invocation: false

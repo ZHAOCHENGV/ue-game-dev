@@ -4,6 +4,22 @@
 
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
+## [0.4.0] - 2026-05-19
+
+### 新增
+- `ue-build-release-automation` 技能 — 用于用户显式请求自动打包、一键打包、`RunUAT`、`BuildCookRun`、Project Launcher 或 CI 发版流水线时生成/执行打包流程。
+  - `references/buildcookrun-commands.md` — 常用 `BuildCookRun` 命令、参数和输出模板。
+  - `references/release-automation-checklist.md` — 自动打包前置检查、执行规则、打包后冒烟和失败归因。
+  - `references/ci-build-templates.md` — PowerShell 打包脚本和 GitHub Actions 自托管 runner 模板。
+- `ue-input-enhanced` 技能 — 用于 Enhanced Input、Input Action、Input Mapping Context、触发器/修饰器、按键重绑定、UI 焦点冲突和输入事件不触发排查。
+  - `references/enhanced-input-checklist.md` — Enhanced Input 资产、C++ 绑定、Build.cs 和验证清单。
+  - `references/rebinding-and-ui.md` — 运行时重绑定、UI 输入模式、CommonUI 和蓝图交接模板。
+
+### 变更
+- `ue-game-dev-router` 新增 Enhanced Input 路由。
+- `ue-game-dev-router` 增加显式打包边界：自动打包只在用户主动提出打包/RunUAT/BuildCookRun/CI 发版等请求时使用，普通发布检查仍走 `ue-performance-packaging`。
+- `README.md` 和 `plugin.json` 更新技能数量、默认提示、关键词和插件能力说明。
+
 ## [0.3.1] - 2026-05-19
 
 ### 变更

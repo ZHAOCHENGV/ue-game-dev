@@ -1,6 +1,6 @@
 ---
 name: ue-game-dev-router
-description: Route Unreal Engine game and client development requests to the most specific UE workflow skill. Use as the entry point when the domain or best skill is unclear, or when the request spans multiple UE areas including project onboarding, Blueprint, C++, plugins, modules, editor tooling, GAS, networking, AI, animation, rendering, UI, testing, debugging, performance, or packaging.
+description: Route Unreal Engine game and client development requests to the most specific UE workflow skill. Use as the entry point when the domain or best skill is unclear, or when the request spans multiple UE areas including project onboarding, Blueprint, C++, plugins, modules, editor tooling, GAS, networking, input, AI, animation, rendering, UI, testing, debugging, performance, or packaging.
 ---
 
 # UE Game Dev Router
@@ -9,19 +9,21 @@ Use this skill first when the request spans multiple Unreal Engine areas or the 
 
 ## Route The Request
 
-- Use `$ue-cpp-gameplay` for Actors, Components, UObject ownership, DataAssets, Subsystems, input-driven gameplay, world interaction, save/load hooks, and general gameplay C++.
+- Use `$ue-cpp-gameplay` for Actors, Components, UObject ownership, DataAssets, Subsystems, input-driven gameplay handlers, world interaction, save/load hooks, and general gameplay C++.
 - Use `$ue-project-onboarding` when the user asks to understand, audit, take over, inherit, familiarize itself with, or prepare secondary development for an existing Unreal Engine project before changing code or assets.
 - Use `$ue-blueprint-workflow` for Blueprint graph logic, Event Graph changes, function graphs, input events, node/pin wiring, Widget Blueprint logic, and Blueprint compile validation.
 - Use `$ue-plugin-module-dev` for UE plugin structure, `.uplugin`, module descriptors, Runtime/Editor module split, `.Build.cs`, export API macros, Public/Private folders, plugin content/config/resources, and UE asset/code naming conventions.
 - Use `$ue-editor-tooling-slate` for editor plugins, Slate editor UI, ToolMenus, UICommands, toolbar/menu extensions, custom details panels, asset type actions, factories, tab spawners, and editor subsystems.
 - Use `$ue-architecture` for module layout, `.Build.cs` dependencies, Public/Private boundaries, reflection exposure strategy, plugin boundaries, and large refactors.
 - Use `$ue-gas-networking` for GAS abilities, attributes, effects, cues, prediction, replication, RPCs, authority flow, multiplayer debugging, and network relevance.
+- Use `$ue-input-enhanced` for Enhanced Input, Input Actions, Input Mapping Contexts, input modifiers/triggers, pawn/controller binding, runtime mapping changes, key rebinding, local multiplayer input, UI focus/input mode conflicts, and input events that do not fire.
 - Use `$ue-save-load-sync` for SaveGame schemas, serialization, restore flows, RepNotify, RPC entry points, and persistent state that intersects with network state.
 - Use `$ue-world-interaction` for pickups, spawners, overlap/trace interactions, interaction radius checks, world actor lifecycle, and success/failure feedback.
 - Use `$ue-render-vfx` for renderer settings, materials, material functions, shader code, post process, Niagara systems, particles, GPU simulation, LODs, and visual performance.
 - Use `$ue-client-ui` for client architecture, UMG widgets, Slate, HUDs, CommonUI, view models, Enhanced Input UI flows, loading screens, localization, and UI performance.
 - Use `$ue-debug-validation` when behavior is broken or unproven and the task is to diagnose logs, assets, Blueprints, C++, networking, or editor configuration.
-- Use `$ue-performance-packaging` for profiling, stat review, packaging failures, build configuration sanity, release readiness, and go/no-go checklists.
+- Use `$ue-build-release-automation` only when the current user explicitly asks to package a project, create or run one-click packaging, generate `RunUAT`/`BuildCookRun` commands, configure Project Launcher, or create CI release build automation. Do not route here for passive readiness checks.
+- Use `$ue-performance-packaging` for profiling, stat review, packaging failures, build configuration sanity, release readiness, packaging smoke checks, and go/no-go checklists.
 - Use `$ue-ai-navigation` for Behavior Trees, Blackboards, EQS, NavMesh, AI Controllers, AI Perception, StateTree, crowd AI, and autonomous agent behavior.
 - Use `$ue-animation` for Animation Blueprints, Montages, Blend Spaces, state machines, IK, Control Rig, Motion Matching, root motion, Anim Notifies, and animation performance.
 - Use `$ue-testing-automation` for AutomationSpec, `FAutomationTestBase`, Functional Tests, editor tool smoke tests, PIE/multiplayer scenarios, asset validation, packaging smoke checks, and regression planning.
@@ -29,6 +31,13 @@ Use this skill first when the request spans multiple Unreal Engine areas or the 
 If a task crosses domains, start with the skill that owns the first failing or user-facing behavior, then bring in the others as needed.
 
 If the request involves audio, physics, destruction, level streaming, World Partition, or another domain without a dedicated sibling skill, handle it directly within this router using general Unreal best practices and note the coverage gap.
+
+## Explicit Packaging Boundary
+
+- Treat automatic packaging as an active operation, not a passive suggestion.
+- Do not invoke `$ue-build-release-automation` merely because a task touches release readiness, performance, testing, or package failure diagnosis.
+- Route to `$ue-build-release-automation` only when the user uses intent such as "打包", "一键打包", "自动打包", "生成打包脚本", "运行打包", "BuildCookRun", "RunUAT", "Project Launcher", "CI 打包", "发版流水线", or equivalent explicit packaging automation wording.
+- If the user asks whether a project is ready to package, route to `$ue-performance-packaging` until they explicitly ask to build/package.
 
 ## Blueprint And C++ Split
 

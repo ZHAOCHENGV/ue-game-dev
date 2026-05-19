@@ -24,6 +24,7 @@ Use this skill when the task depends on measured runtime behavior or a packaged 
 ## Packaging Workflow
 
 - Validate maps, game mode, asset references, plugin availability, config files, platform settings, and build target.
+- Keep this workflow diagnostic and readiness-focused; do not generate or run automatic packaging unless the user explicitly asks for packaging automation, in which case route to `$ue-build-release-automation`.
 - For failures, isolate the first blocking error and dependency chain.
 - Check editor-only references leaking into runtime builds.
 - Produce a go/no-go checklist with unresolved blockers.
