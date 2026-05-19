@@ -6,22 +6,23 @@
 
 ### 方式一：安装到 Codex 本地插件目录
 
-1. 打开 PowerShell，创建本地插件目录：
+1. 打开 PowerShell，创建本地插件目录和本地 marketplace 目录：
 
 ```powershell
+New-Item -ItemType Directory -Force "$env:USERPROFILE\plugins"
 New-Item -ItemType Directory -Force "$env:USERPROFILE\.agents\plugins"
 ```
 
 2. 将本仓库克隆到 Codex 本地插件目录：
 
 ```powershell
-git clone https://github.com/zhaocw/ue-game-dev "$env:USERPROFILE\.agents\plugins\ue-game-dev"
+git clone https://github.com/zhaocw/ue-game-dev "$env:USERPROFILE\plugins\ue-game-dev"
 ```
 
 如果你已经有本仓库源码，也可以把当前目录复制过去：
 
 ```powershell
-Copy-Item -Recurse -Force "C:\path\to\ue-game-dev" "$env:USERPROFILE\.agents\plugins\ue-game-dev"
+Copy-Item -Recurse -Force "C:\path\to\ue-game-dev" "$env:USERPROFILE\plugins\ue-game-dev"
 ```
 
 3. 确认或创建本地插件市场文件：
@@ -64,7 +65,7 @@ Copy-Item -Recurse -Force "C:\path\to\ue-game-dev" "$env:USERPROFILE\.agents\plu
 如果你正在本地开发这个插件，不想每次修改后复制文件，可以把插件目录链接到 Codex 本地插件目录：
 
 ```powershell
-New-Item -ItemType Junction -Path "$env:USERPROFILE\.agents\plugins\ue-game-dev" -Target "C:\path\to\ue-game-dev"
+New-Item -ItemType Junction -Path "$env:USERPROFILE\plugins\ue-game-dev" -Target "C:\path\to\ue-game-dev"
 ```
 
 之后重启 Codex App，Codex 会从链接目录读取最新文件。
