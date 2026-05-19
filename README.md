@@ -1,6 +1,100 @@
-# UE Game Dev — Codex Plugin
+# UE Game Dev - Codex Plugin
 
-面向 Unreal Engine 游戏与客户端开发的 Codex 技能插件。通过 Router + 领域技能的分层架构，为 UE 开发的各个环节提供专业化的工作流指导。
+面向 Unreal Engine 游戏与客户端开发的 Codex 技能插件。它不是 Unreal Editor 的 `.uplugin` 插件，不需要放进 UE 项目的 `Plugins/` 目录；它是给 Codex App 使用的工作流插件，用来辅助 UE C++、蓝图、GAS、网络同步、渲染、材质、Niagara、UI、调试、测试和打包等开发任务。
+
+## 安装方法
+
+### 方式一：安装到 Codex 本地插件目录
+
+1. 打开 PowerShell，创建本地插件目录：
+
+```powershell
+New-Item -ItemType Directory -Force "$env:USERPROFILE\.agents\plugins"
+```
+
+2. 将本仓库克隆到 Codex 本地插件目录：
+
+```powershell
+git clone https://github.com/zhaocw/ue-game-dev "$env:USERPROFILE\.agents\plugins\ue-game-dev"
+```
+
+如果你已经有本仓库源码，也可以把当前目录复制过去：
+
+```powershell
+Copy-Item -Recurse -Force "C:\path\to\ue-game-dev" "$env:USERPROFILE\.agents\plugins\ue-game-dev"
+```
+
+3. 确认或创建本地插件市场文件：
+
+```text
+%USERPROFILE%\.agents\plugins\marketplace.json
+```
+
+内容示例：
+
+```json
+{
+  "name": "zhaocw-local",
+  "interface": {
+    "displayName": "zhaocw Local Plugins"
+  },
+  "plugins": [
+    {
+      "name": "ue-game-dev",
+      "source": {
+        "source": "local",
+        "path": "./plugins/ue-game-dev"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Coding"
+    }
+  ]
+}
+```
+
+如果 `marketplace.json` 已经存在，只需要把上面 `plugins` 数组里的 `ue-game-dev` 条目追加进去。
+
+4. 重启 Codex App，然后在插件页面启用 `UE Game Dev`。
+
+### 方式二：开发时使用目录链接
+
+如果你正在本地开发这个插件，不想每次修改后复制文件，可以把插件目录链接到 Codex 本地插件目录：
+
+```powershell
+New-Item -ItemType Junction -Path "$env:USERPROFILE\.agents\plugins\ue-game-dev" -Target "C:\path\to\ue-game-dev"
+```
+
+之后重启 Codex App，Codex 会从链接目录读取最新文件。
+
+## 快速调用
+
+安装并启用后，推荐用最短入口调用：
+
+```text
+@ue-game-dev 帮我设计一个 UE 编辑器插件
+@ue-game-dev 检查这个 GAS 网络同步流程
+@ue-game-dev 给这个 UE 功能补自动化测试
+```
+
+如果你的 Codex App 版本支持 `/` 插件入口，也可以这样使用：
+
+```text
+/ue-game-dev 设计一个 Runtime + Editor 双模块 UE 插件
+/ue-game-dev 排查这个蓝图输入事件为什么没有触发
+```
+
+也可以直接用自然语言：
+
+```text
+Use UE Game Dev to design this Unreal plugin, module, or editor tool.
+Use UE Game Dev to review this GAS and replication flow.
+Use UE Game Dev to add tests for this UE feature.
+```
+
+> 注意：`@ue-game-dev` 和 `/ue-game-dev` 是否出现自动补全，取决于当前 Codex App 版本和插件市场加载状态。如果 `/` 没有弹出插件，优先使用 `@ue-game-dev` 或直接写 `Use UE Game Dev ...`。
 
 ## 功能概览
 
@@ -8,81 +102,70 @@
 
 | 技能 | 领域 |
 |------|------|
-| `ue-game-dev-router` | 🔀 请求路由与分发 |
-| `ue-cpp-gameplay` | 🎮 C++ 游戏逻辑（Actor、Component、Subsystem） |
-| `ue-blueprint-workflow` | 📊 蓝图工作流（事件图、函数图、Widget） |
-| `ue-plugin-module-dev` | 🔌 插件与模块开发（.uplugin、Build.cs、命名规范） |
-| `ue-editor-tooling-slate` | 🛠️ 编辑器工具与 Slate UI |
-| `ue-architecture` | 🏗️ 架构设计与模块边界 |
-| `ue-gas-networking` | ⚔️ GAS 技能系统与网络同步 |
-| `ue-save-load-sync` | 💾 存档/加载与状态同步 |
-| `ue-world-interaction` | 🌍 世界交互（拾取、生成器、碰撞） |
-| `ue-render-vfx` | 🎨 渲染、材质与 Niagara 特效 |
-| `ue-client-ui` | 🖥️ 客户端 UI（UMG、CommonUI、HUD） |
-| `ue-debug-validation` | 🔍 调试与验证 |
-| `ue-performance-packaging` | 📦 性能分析与打包发布 |
-| `ue-ai-navigation` | 🤖 AI 行为树、EQS、导航系统 |
-| `ue-animation` | 🏃 动画蓝图、蒙太奇、IK、状态机 |
-| `ue-testing-automation` | ✅ 自动化测试、功能测试、PIE/多人验证、资产校验 |
+| `ue-game-dev-router` | 请求路由与分发 |
+| `ue-cpp-gameplay` | C++ 游戏逻辑（Actor、Component、Subsystem） |
+| `ue-blueprint-workflow` | 蓝图工作流（事件图、函数图、Widget） |
+| `ue-plugin-module-dev` | 插件与模块开发（.uplugin、Build.cs、命名规范） |
+| `ue-editor-tooling-slate` | 编辑器工具与 Slate UI |
+| `ue-architecture` | 架构设计与模块边界 |
+| `ue-gas-networking` | GAS 技能系统与网络同步 |
+| `ue-save-load-sync` | 存档/加载与状态同步 |
+| `ue-world-interaction` | 世界交互（拾取、生成器、碰撞） |
+| `ue-render-vfx` | 渲染、材质与 Niagara 特效 |
+| `ue-client-ui` | 客户端 UI（UMG、CommonUI、HUD） |
+| `ue-debug-validation` | 调试与验证 |
+| `ue-performance-packaging` | 性能分析与打包发布 |
+| `ue-ai-navigation` | AI 行为树、EQS、导航系统 |
+| `ue-animation` | 动画蓝图、蒙太奇、IK、状态机 |
+| `ue-testing-automation` | 自动化测试、功能测试、PIE/多人验证、资产校验 |
 
 ## 工作原理
 
-```
-用户请求 → ue-game-dev-router（路由分析）→ 最匹配的领域技能
-                                           ↓
+```text
+用户请求 -> ue-game-dev-router（路由分析）-> 最匹配的领域技能
+                                           |
+                                           v
                                     专业化的规则、检查清单和参考文档
 ```
 
-1. **路由器**接收用户请求，分析所涉及的 UE 领域
-2. **分发**到最匹配的领域技能（如 C++ 游戏逻辑 → `ue-cpp-gameplay`）
-3. 领域技能提供**专业化的工作流规则**和**参考文档检查清单**
-4. 跨领域任务会**按优先级链式调用**多个技能
+1. `ue-game-dev-router` 接收用户请求，分析所涉及的 UE 领域。
+2. 路由器分发到最匹配的领域技能，例如 C++ 游戏逻辑会进入 `ue-cpp-gameplay`。
+3. 领域技能提供专业化工作流、检查清单、命名规范和参考模板。
+4. 跨领域任务会按优先级组合多个技能，例如插件模块 + Slate 编辑器工具 + 自动化测试。
 
 ## 目录结构
 
-```
+```text
 ue-game-dev/
 ├── .codex-plugin/
-│   └── plugin.json          # 插件元数据
+│   └── plugin.json
 ├── assets/
-│   └── ue-game-dev.svg      # 插件图标
+│   ├── UE_Logo_Black_Centered.svg.png
+│   └── ue-game-dev.svg
 ├── skills/
-│   ├── ue-game-dev-router/  # 路由技能
+│   ├── ue-game-dev-router/
 │   │   ├── SKILL.md
 │   │   └── agents/openai.yaml
-│   ├── ue-cpp-gameplay/     # 领域技能示例
+│   ├── ue-cpp-gameplay/
 │   │   ├── SKILL.md
 │   │   ├── agents/openai.yaml
 │   │   └── references/
-│   │       ├── cpp-patterns.md
-│   │       ├── blueprint-api.md
-│   │       └── validation.md
-│   └── ...                  # 其余 14 个领域技能
+│   └── ...
+├── CHANGELOG.md
 ├── LICENSE
-├── .gitattributes
 └── README.md
 ```
 
 ## 每个技能的结构
 
-```
+```text
 skill-name/
-├── SKILL.md              # 技能定义：触发条件、工作流规则、跨技能引用
+├── SKILL.md
 ├── agents/
-│   └── openai.yaml       # Agent 接口配置
-└── references/           # 参考文档（检查清单、模式、代码模板）
-    ├── checklist-1.md
-    └── checklist-2.md
-```
-
-## 使用方式
-
-在支持 Codex 插件的环境中安装本插件后，可通过以下方式触发：
-
-```
-Use UE Game Dev to design this Unreal plugin, module, or editor tool.
-Use UE Game Dev to review this GAS and replication flow.
-Use UE Game Dev to add tests for this UE feature.
+│   └── openai.yaml
+└── references/
+    ├── checklist.md
+    └── templates.md
 ```
 
 ## 许可证

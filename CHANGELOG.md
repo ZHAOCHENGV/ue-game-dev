@@ -4,6 +4,16 @@
 
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
+## [0.2.1] - 2026-05-19
+
+### 新增
+- `README.md` 增加 Codex 本地插件安装步骤、`marketplace.json` 示例和开发目录链接方式。
+- `README.md` 增加 `@ue-game-dev` 与 `/ue-game-dev` 快速调用示例。
+
+### 变更
+- `plugin.json` 增加别名触发说明，便于通过 `@ue-game-dev`、`/ue-game-dev` 或自然语言调用插件。
+- `plugin.json` 更新 composer 默认提示为更短的中文入口示例。
+
 ## [0.2.0] - 2026-05-19
 
 ### 新增
