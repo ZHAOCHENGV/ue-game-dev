@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE Blueprint Workflow"
+  short_description: "Build and validate Unreal Blueprint graph logic."
+  default_prompt: "Use $ue-blueprint-workflow to implement this Blueprint graph behavior."

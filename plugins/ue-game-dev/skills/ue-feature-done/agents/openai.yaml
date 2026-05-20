@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE Feature Done"
+  short_description: "Close out Unreal work with validation and handoff checks."
+  default_prompt: "Use $ue-feature-done to verify this Unreal feature is ready."

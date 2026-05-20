@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE Feature Brief"
+  short_description: "Turn Unreal feature ideas into scoped development briefs."
+  default_prompt: "Use $ue-feature-brief to scope this Unreal feature request."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE Plugin Module Dev"
+  short_description: "Build Unreal plugins, modules, Build.cs, and naming rules."
+  default_prompt: "Use $ue-plugin-module-dev to design this Unreal plugin or module."

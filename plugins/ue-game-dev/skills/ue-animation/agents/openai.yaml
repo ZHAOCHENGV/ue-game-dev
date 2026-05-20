@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE Animation"
+  short_description: "Build Unreal animation systems, montages, IK, and state machines."
+  default_prompt: "Use $ue-animation to implement this Unreal animation feature."

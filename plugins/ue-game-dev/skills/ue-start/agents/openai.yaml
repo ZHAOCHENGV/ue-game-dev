@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE Start"
+  short_description: "Choose the right Unreal workflow from the first request."
+  default_prompt: "Use $ue-start to choose the right Unreal project workflow."

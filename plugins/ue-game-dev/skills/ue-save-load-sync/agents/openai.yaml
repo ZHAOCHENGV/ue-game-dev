@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE Save Load Sync"
+  short_description: "Design Unreal SaveGame, restore, replication, and RPC flows."
+  default_prompt: "Use $ue-save-load-sync to design this save/load and network sync flow."

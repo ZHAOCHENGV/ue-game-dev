@@ -8,6 +8,8 @@ ROOT = Path(__file__).resolve().parents[1]
 SKILLS = ROOT / "skills"
 PLUGIN_JSON = ROOT / ".codex-plugin" / "plugin.json"
 README = ROOT / "README.md"
+MARKETPLACE_JSON = ROOT / ".agents" / "plugins" / "marketplace.json"
+MARKETPLACE_PACKAGE = ROOT / "plugins" / "ue-game-dev"
 ROUTE_SCENARIOS = ROOT / "tests" / "route_scenarios.json"
 PACKAGING_OPENAI = SKILLS / "ue-build-release-automation" / "agents" / "openai.yaml"
 PACKAGING_SKILL = SKILLS / "ue-build-release-automation" / "SKILL.md"
@@ -90,14 +92,16 @@ def validate_plugin_json() -> None:
         fail("plugin.json skills must be ./skills/")
 
     prompts = plugin.get("interface", {}).get("defaultPrompt", [])
-    if not any("RunUAT" in prompt for prompt in prompts):
-        fail("plugin default prompts should include RunUAT example")
-    if not any("Enhanced Input" in prompt for prompt in prompts):
-        fail("plugin default prompts should include Enhanced Input example")
+    if len(prompts) > 3:
+        fail("plugin default prompts should include at most 3 entries for marketplace UI")
     if not any("CodexWorkflow" in prompt for prompt in prompts):
         fail("plugin default prompts should include CodexWorkflow example")
     if not any("Saved/Logs" in prompt or "callstack" in prompt for prompt in prompts):
         fail("plugin default prompts should include log/crash triage example")
+    keywords = set(plugin.get("keywords", []))
+    for keyword in ["runuat", "enhanced-input", "workflow-state", "log-triage"]:
+        if keyword not in keywords:
+            fail(f"plugin keywords should include {keyword}")
 
 
 def validate_packaging_boundary() -> None:
@@ -188,12 +192,71 @@ def validate_required_support_files() -> None:
             fail(f"missing support file: {path.relative_to(ROOT)}")
 
 
+def validate_marketplace_package() -> None:
+    if not MARKETPLACE_JSON.exists():
+        return
+
+    try:
+        marketplace = json.loads(read_text(MARKETPLACE_JSON))
+    except json.JSONDecodeError as exc:
+        fail(f"marketplace.json invalid JSON: {exc}")
+
+    if marketplace.get("name") != "zhaochengv-ue":
+        fail("marketplace name must be zhaochengv-ue")
+    if marketplace.get("interface", {}).get("displayName") != "ZHAOCHENGV UE Plugins":
+        fail("marketplace displayName must be ZHAOCHENGV UE Plugins")
+
+    entries = marketplace.get("plugins", [])
+    matching = [entry for entry in entries if entry.get("name") == "ue-game-dev"]
+    if len(matching) != 1:
+        fail("marketplace must contain exactly one ue-game-dev entry")
+
+    entry = matching[0]
+    if entry.get("source", {}).get("source") != "local":
+        fail("ue-game-dev marketplace source must be local")
+    if entry.get("source", {}).get("path") != "./plugins/ue-game-dev":
+        fail("ue-game-dev marketplace path must be ./plugins/ue-game-dev")
+    if entry.get("policy", {}).get("installation") != "AVAILABLE":
+        fail("ue-game-dev marketplace installation policy must be AVAILABLE")
+    if entry.get("policy", {}).get("authentication") != "ON_INSTALL":
+        fail("ue-game-dev marketplace authentication policy must be ON_INSTALL")
+    if entry.get("category") != "Coding":
+        fail("ue-game-dev marketplace category must be Coding")
+
+    package_plugin_json = MARKETPLACE_PACKAGE / ".codex-plugin" / "plugin.json"
+    package_skills = MARKETPLACE_PACKAGE / "skills"
+    package_assets = MARKETPLACE_PACKAGE / "assets"
+    package_rules = MARKETPLACE_PACKAGE / "rules"
+    package_templates = MARKETPLACE_PACKAGE / "templates"
+    package_readme = MARKETPLACE_PACKAGE / "README.md"
+    package_license = MARKETPLACE_PACKAGE / "LICENSE"
+    for path in [
+        package_plugin_json,
+        package_skills,
+        package_assets,
+        package_rules,
+        package_templates,
+        package_readme,
+        package_license,
+    ]:
+        if not path.exists():
+            fail(f"missing marketplace package file: {path.relative_to(ROOT)}")
+
+    root_plugin = json.loads(read_text(PLUGIN_JSON))
+    package_plugin = json.loads(read_text(package_plugin_json))
+    if package_plugin.get("name") != root_plugin.get("name"):
+        fail("marketplace package plugin name must match root plugin")
+    if package_plugin.get("version") != root_plugin.get("version"):
+        fail("marketplace package plugin version must match root plugin")
+
+
 def main() -> None:
     skill_dirs = validate_skill_dirs()
     validate_readme_skill_count(skill_dirs)
     validate_plugin_json()
     validate_packaging_boundary()
     validate_required_support_files()
+    validate_marketplace_package()
     validate_route_scenarios(skill_dirs)
     print(f"OK: {len(skill_dirs)} skills validated")
 

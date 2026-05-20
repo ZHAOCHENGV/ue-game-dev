@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE World Interaction"
+  short_description: "Build Unreal pickups, spawners, traces, overlaps, and feedback."
+  default_prompt: "Use $ue-world-interaction to implement this Unreal interaction system."

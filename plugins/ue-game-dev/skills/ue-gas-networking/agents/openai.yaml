@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE GAS Networking"
+  short_description: "Design GAS abilities, attributes, prediction, and replication."
+  default_prompt: "Use $ue-gas-networking to design this GAS and replication workflow."

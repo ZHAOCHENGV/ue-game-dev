@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE AI Navigation"
+  short_description: "Build Unreal AI behavior, pathfinding, EQS, and perception systems."
+  default_prompt: "Use $ue-ai-navigation to implement this Unreal AI or navigation feature."
