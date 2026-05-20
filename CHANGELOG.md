@@ -4,6 +4,22 @@
 
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
+## [0.6.0] - 2026-05-20
+
+### 新增
+- `ue-stage-detect` 技能 — 用于只读检测 UE 项目当前工作流阶段、缺口和下一步建议。
+- `ue-gate-check` 技能 — 用于阶段门检查，输出 `PASS / CONCERNS / FAIL` 就绪评估。
+- `templates/ue-task.md` — UE 功能/修复任务模板。
+- `templates/ue-test-evidence.md` — UE 构建、蓝图、PIE、测试、多人和打包风险证据模板。
+- `rules/` 规则包 — 新增 UE C++、蓝图、网络、资产和打包规则。
+- `tests/route_scenarios.json` — 路由场景测试数据，覆盖旧项目接手、需求简报、实施计划、阶段检测、阶段门、自动打包边界、Enhanced Input 和完成验收。
+
+### 变更
+- `ue-game-dev-router` 新增阶段检测与阶段门路由，并引用共享规则包。
+- `ue-feature-done` 增加证据表输出要求，可使用 `templates/ue-test-evidence.md` 保存验证记录。
+- `scripts/validate_plugin.py` 增加共享文件检查、路由场景测试和自动打包边界回归测试。
+- `README.md` 和 `plugin.json` 更新到 `0.6.0`，补充阶段检测、阶段门和证据化验收能力说明。
+
 ## [0.5.0] - 2026-05-20
 
 ### 新增

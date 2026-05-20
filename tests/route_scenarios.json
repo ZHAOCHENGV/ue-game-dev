@@ -1,0 +1,53 @@
+[
+  {
+    "name": "old_project_onboarding",
+    "prompt": "先熟悉这个旧 UE 项目，后面我要基于它二开",
+    "expected_skill": "ue-project-onboarding"
+  },
+  {
+    "name": "feature_brief",
+    "prompt": "我想做一个背包系统，先帮我整理需求简报",
+    "expected_skill": "ue-feature-brief"
+  },
+  {
+    "name": "implementation_plan",
+    "prompt": "按这个功能需求写一份 C++/蓝图/资产/测试实施计划",
+    "expected_skill": "ue-implementation-plan"
+  },
+  {
+    "name": "stage_detect",
+    "prompt": "帮我看这个 UE 项目现在处于什么开发阶段，还缺什么",
+    "expected_skill": "ue-stage-detect"
+  },
+  {
+    "name": "gate_check",
+    "prompt": "检查一下这个功能是否可以进入打包前验证阶段",
+    "expected_skill": "ue-gate-check"
+  },
+  {
+    "name": "packaging_readiness_not_automation",
+    "prompt": "检查这个项目是否已经准备好打包发布",
+    "expected_skill": "ue-performance-packaging",
+    "forbidden_skill": "ue-build-release-automation"
+  },
+  {
+    "name": "explicit_packaging",
+    "prompt": "给这个项目生成 Win64 Development 的 RunUAT BuildCookRun 打包命令",
+    "expected_skill": "ue-build-release-automation"
+  },
+  {
+    "name": "enhanced_input",
+    "prompt": "排查 Enhanced Input 的 IA_Jump 为什么不触发",
+    "expected_skill": "ue-input-enhanced"
+  },
+  {
+    "name": "blueprint_api_handoff",
+    "prompt": "我在 C++ 添加了 BlueprintCallable 方法，需要告诉我蓝图怎么接",
+    "expected_skill": "ue-cpp-gameplay"
+  },
+  {
+    "name": "feature_done",
+    "prompt": "这个 UE 功能做完了，帮我做完成验收和交接清单",
+    "expected_skill": "ue-feature-done"
+  }
+]

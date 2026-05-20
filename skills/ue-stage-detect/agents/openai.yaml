@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE Stage Detect"
+  short_description: "Detect Unreal project workflow stage and gaps."
+  default_prompt: "Use $ue-stage-detect to analyze this Unreal project stage."

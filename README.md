@@ -1,6 +1,6 @@
 # UE Game Dev - Codex Plugin
 
-面向 Unreal Engine 游戏与客户端开发的 Codex 技能插件。它不是 Unreal Editor 的 `.uplugin` 插件，不需要放进 UE 项目的 `Plugins/` 目录；它是给 Codex App 使用的 UE 开发工作流插件，用来辅助项目入口判断、需求简报、实施计划、完成验收、旧项目接手、二开前分析、UE C++、蓝图、Enhanced Input、GAS、网络同步、渲染、材质、Niagara、UI、调试、测试和显式打包自动化等开发任务。
+面向 Unreal Engine 游戏与客户端开发的 Codex 技能插件。它不是 Unreal Editor 的 `.uplugin` 插件，不需要放进 UE 项目的 `Plugins/` 目录；它是给 Codex App 使用的 UE 开发工作流插件，用来辅助项目入口判断、阶段检测、阶段门检查、需求简报、实施计划、证据化完成验收、旧项目接手、二开前分析、UE C++、蓝图、Enhanced Input、GAS、网络同步、渲染、材质、Niagara、UI、调试、测试和显式打包自动化等开发任务。
 
 ## 安装方法
 
@@ -76,6 +76,8 @@ New-Item -ItemType Junction -Path "$env:USERPROFILE\plugins\ue-game-dev" -Target
 
 ```text
 @ue-game-dev 先熟悉这个旧 UE 项目，后面我要基于它二开
+@ue-game-dev 帮我看这个 UE 项目现在处于什么开发阶段，还缺什么
+@ue-game-dev 检查一下这个功能是否可以进入打包前验证阶段
 @ue-game-dev 我想做一个 UE 背包系统，先帮我整理需求简报
 @ue-game-dev 按这个功能需求写一份 C++/蓝图/资产/测试实施计划
 @ue-game-dev 帮我设计一个 UE 编辑器插件
@@ -103,12 +105,14 @@ Use UE Game Dev to add tests for this UE feature.
 
 ## 功能概览
 
-本插件包含 **1 个路由技能 + 22 个领域技能**，覆盖 UE 开发全链路：
+本插件包含 **1 个路由技能 + 24 个领域技能**，覆盖 UE 开发全链路：
 
 | 技能 | 领域 |
 |------|------|
 | `ue-game-dev-router` | 请求路由与分发 |
 | `ue-start` | UE 任务入口判断、阶段识别、下一步路由 |
+| `ue-stage-detect` | UE 项目阶段检测、缺口分析、下一步建议 |
+| `ue-gate-check` | 阶段门检查、PASS/CONCERNS/FAIL 就绪评估 |
 | `ue-feature-brief` | 功能需求简报、范围澄清、约束整理 |
 | `ue-implementation-plan` | C++/蓝图/资产/配置/测试实施计划 |
 | `ue-feature-done` | 功能完成验收、验证证据、交接清单 |
@@ -172,6 +176,17 @@ ue-game-dev/
 │   └── ...
 ├── scripts/
 │   └── validate_plugin.py
+├── templates/
+│   ├── ue-task.md
+│   └── ue-test-evidence.md
+├── rules/
+│   ├── ue-cpp.md
+│   ├── ue-blueprint.md
+│   ├── ue-networking.md
+│   ├── ue-assets.md
+│   └── ue-packaging.md
+├── tests/
+│   └── route_scenarios.json
 ├── CHANGELOG.md
 ├── LICENSE
 └── README.md
@@ -198,7 +213,14 @@ $env:PYTHONUTF8='1'
 python scripts\validate_plugin.py
 ```
 
-该脚本会检查 `plugin.json`、技能 frontmatter、`agents/openai.yaml`、README 技能数量，以及自动打包技能必须保持显式调用。
+该脚本会检查 `plugin.json`、技能 frontmatter、`agents/openai.yaml`、README 技能数量、共享模板/规则文件、路由场景，以及自动打包技能必须保持显式调用。
+
+## 工作流工件
+
+- `templates/ue-task.md`：用于保存 UE 单个功能/修复任务的目标、范围、实现计划和验收条件。
+- `templates/ue-test-evidence.md`：用于记录构建、蓝图编译、PIE、自动化测试、多人验证和打包风险证据。
+- `rules/`：集中存放 UE C++、蓝图、网络、资产和打包规则，供 router、领域技能和自检脚本引用。
+- `tests/route_scenarios.json`：记录典型用户请求应路由到哪个技能，防止自动打包等边界被误改。
 
 ## 许可证
 

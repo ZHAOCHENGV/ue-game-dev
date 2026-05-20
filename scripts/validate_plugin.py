@@ -8,6 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SKILLS = ROOT / "skills"
 PLUGIN_JSON = ROOT / ".codex-plugin" / "plugin.json"
 README = ROOT / "README.md"
+ROUTE_SCENARIOS = ROOT / "tests" / "route_scenarios.json"
 PACKAGING_OPENAI = SKILLS / "ue-build-release-automation" / "agents" / "openai.yaml"
 PACKAGING_SKILL = SKILLS / "ue-build-release-automation" / "SKILL.md"
 ROUTER_SKILL = SKILLS / "ue-game-dev-router" / "SKILL.md"
@@ -108,11 +109,79 @@ def validate_packaging_boundary() -> None:
         fail("router must protect automatic packaging from passive routing")
 
 
+def route_prompt(prompt: str) -> str:
+    lower = prompt.lower()
+    if any(token in prompt for token in ["RunUAT", "BuildCookRun", "一键打包", "自动打包", "生成打包命令", "打包命令"]):
+        return "ue-build-release-automation"
+    if any(token in prompt for token in ["是否可以进入", "gate", "Gate", "检查一下这个功能是否可以"]):
+        return "ue-gate-check"
+    if any(token in prompt for token in ["是否已经准备好打包", "准备好打包", "打包发布", "打包前验证"]):
+        return "ue-performance-packaging"
+    if any(token in prompt for token in ["处于什么开发阶段", "开发阶段", "还缺什么", "阶段"]):
+        return "ue-stage-detect"
+    if any(token in prompt for token in ["旧 UE 项目", "旧项目", "二开", "熟悉"]):
+        return "ue-project-onboarding"
+    if any(token in prompt for token in ["需求简报", "整理需求", "先帮我想清楚"]):
+        return "ue-feature-brief"
+    if any(token in prompt for token in ["实施计划", "实现计划", "C++/蓝图/资产/测试"]):
+        return "ue-implementation-plan"
+    if any(token in prompt for token in ["完成验收", "交接清单", "做完了"]):
+        return "ue-feature-done"
+    if "Enhanced Input" in prompt or "IA_" in prompt or "Input Mapping" in prompt:
+        return "ue-input-enhanced"
+    if "BlueprintCallable" in prompt or "蓝图怎么接" in prompt:
+        return "ue-cpp-gameplay"
+    if "gas" in lower:
+        return "ue-gas-networking"
+    return "ue-game-dev-router"
+
+
+def validate_route_scenarios(skill_dirs: list[Path]) -> None:
+    try:
+        scenarios = json.loads(read_text(ROUTE_SCENARIOS))
+    except json.JSONDecodeError as exc:
+        fail(f"route_scenarios.json invalid JSON: {exc}")
+
+    known_skills = {path.name for path in skill_dirs}
+    for scenario in scenarios:
+        name = scenario.get("name", "<unnamed>")
+        prompt = scenario.get("prompt", "")
+        expected = scenario.get("expected_skill")
+        forbidden = scenario.get("forbidden_skill")
+        if expected not in known_skills:
+            fail(f"route scenario {name} expects unknown skill: {expected}")
+        if forbidden and forbidden not in known_skills:
+            fail(f"route scenario {name} forbids unknown skill: {forbidden}")
+        actual = route_prompt(prompt)
+        if actual != expected:
+            fail(f"route scenario {name}: expected {expected}, got {actual}")
+        if forbidden and actual == forbidden:
+            fail(f"route scenario {name}: routed to forbidden skill {forbidden}")
+
+
+def validate_required_support_files() -> None:
+    required_files = [
+        ROOT / "templates" / "ue-task.md",
+        ROOT / "templates" / "ue-test-evidence.md",
+        ROOT / "rules" / "ue-cpp.md",
+        ROOT / "rules" / "ue-blueprint.md",
+        ROOT / "rules" / "ue-networking.md",
+        ROOT / "rules" / "ue-assets.md",
+        ROOT / "rules" / "ue-packaging.md",
+        ROUTE_SCENARIOS,
+    ]
+    for path in required_files:
+        if not path.exists():
+            fail(f"missing support file: {path.relative_to(ROOT)}")
+
+
 def main() -> None:
     skill_dirs = validate_skill_dirs()
     validate_readme_skill_count(skill_dirs)
     validate_plugin_json()
     validate_packaging_boundary()
+    validate_required_support_files()
+    validate_route_scenarios(skill_dirs)
     print(f"OK: {len(skill_dirs)} skills validated")
 
 

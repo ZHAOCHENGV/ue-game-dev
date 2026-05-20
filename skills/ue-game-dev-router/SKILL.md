@@ -1,6 +1,6 @@
 ---
 name: ue-game-dev-router
-description: Route Unreal Engine game and client development requests to the most specific UE workflow skill. Use as the entry point when the domain or best skill is unclear, or when the request spans project intake, feature brief, implementation planning, completion handoff, onboarding, Blueprint, C++, plugins, modules, editor tooling, GAS, networking, input, AI, animation, rendering, UI, testing, debugging, performance, or packaging.
+description: Route Unreal Engine game and client development requests to the most specific UE workflow skill. Use as the entry point when the domain or best skill is unclear, or when the request spans project intake, stage detection, gate checks, feature brief, implementation planning, completion handoff, onboarding, Blueprint, C++, plugins, modules, editor tooling, GAS, networking, input, AI, animation, rendering, UI, testing, debugging, performance, or packaging.
 ---
 
 # UE Game Dev Router
@@ -10,6 +10,8 @@ Use this skill first when the request spans multiple Unreal Engine areas or the 
 ## Route The Stage
 
 - Use `$ue-start` when the user begins a UE task and scope, project stage, or next workflow is unclear.
+- Use `$ue-stage-detect` when the user asks what stage an Unreal project is in, what is missing, or wants a read-only workflow gap report.
+- Use `$ue-gate-check` when the user asks whether the project or feature is ready to move to implementation, validation, packaging readiness, or explicit release packaging.
 - Use `$ue-feature-brief` when the user has a rough feature idea that needs a scoped UE brief before implementation.
 - Use `$ue-implementation-plan` when requirements are clear enough to plan code, Blueprint, assets, config, tests, and verification before changes.
 - Use `$ue-feature-done` when work is ready for closeout, handoff, commit, or "is this done?" verification.
@@ -44,11 +46,13 @@ If the request involves audio, physics, destruction, level streaming, World Part
 Use this sequence when the user wants broader help rather than one narrow fix:
 
 ```text
-intake -> brief -> implementation plan -> domain implementation -> testing/debugging -> feature done
+intake -> stage detect -> brief -> gate check -> implementation plan -> domain implementation -> testing/debugging -> feature done
 ```
 
 - Keep onboarding read-only until the user approves implementation.
 - Use briefs to remove ambiguity before designing architecture.
+- Use stage detection to identify missing UE workflow artifacts without editing project files.
+- Use gate checks for PASS/CONCERNS/FAIL readiness decisions.
 - Use implementation plans to split C++, Blueprint, assets, config, and validation.
 - Use domain skills for actual UE implementation details.
 - Use `$ue-feature-done` before claiming completion or handing work back.
@@ -90,6 +94,7 @@ intake -> brief -> implementation plan -> domain implementation -> testing/debug
 - For UI work, separate presentation from gameplay state where the project already has view models, controllers, managers, or subsystems.
 - For production-facing features, include an appropriate test or smoke validation path unless the user explicitly asks for exploration only.
 - For feature lifecycle work, preserve the intake/brief/plan/done chain when it adds clarity, but do not force it on small direct fixes.
+- Use the shared `rules/` guidance when a task touches C++, Blueprint, networking, assets, or packaging.
 
 ## Verification
 
