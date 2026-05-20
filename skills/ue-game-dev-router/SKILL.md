@@ -1,6 +1,6 @@
 ---
 name: ue-game-dev-router
-description: Route Unreal Engine game and client development requests to the most specific UE workflow skill. Use as the entry point when the domain or best skill is unclear, or when the request spans project intake, stage detection, gate checks, feature brief, implementation planning, completion handoff, onboarding, Blueprint, C++, plugins, modules, editor tooling, GAS, networking, input, AI, animation, rendering, UI, testing, debugging, performance, or packaging.
+description: Route Unreal Engine game and client development requests to the most specific UE workflow skill. Use as the entry point when the domain or best skill is unclear, or when the request spans project intake, stage detection, gate checks, workflow state, log/crash triage, feature brief, implementation planning, completion handoff, onboarding, Blueprint, C++, plugins, modules, editor tooling, GAS, networking, input, AI, animation, rendering, UI, testing, debugging, performance, or packaging.
 ---
 
 # UE Game Dev Router
@@ -16,6 +16,7 @@ Use this skill first when the request spans multiple Unreal Engine areas or the 
 - Use `$ue-implementation-plan` when requirements are clear enough to plan code, Blueprint, assets, config, tests, and verification before changes.
 - Use `$ue-feature-done` when work is ready for closeout, handoff, commit, or "is this done?" verification.
 - Use `$ue-project-onboarding` when the user asks to understand, audit, take over, inherit, familiarize itself with, or prepare secondary development for an existing Unreal Engine project before changing code or assets.
+- Use `$ue-workflow-state` when the user asks to create, refresh, read, or use persistent project memory such as `Saved/CodexWorkflow/`, project context, module maps, asset indexes, decisions, known risks, or active task notes.
 
 ## Route The Request
 
@@ -30,7 +31,8 @@ Use this skill first when the request spans multiple Unreal Engine areas or the 
 - Use `$ue-world-interaction` for pickups, spawners, overlap/trace interactions, interaction radius checks, world actor lifecycle, and success/failure feedback.
 - Use `$ue-render-vfx` for renderer settings, materials, material functions, shader code, post process, Niagara systems, particles, GPU simulation, LODs, and visual performance.
 - Use `$ue-client-ui` for client architecture, UMG widgets, Slate, HUDs, CommonUI, view models, Enhanced Input UI flows, loading screens, localization, and UI performance.
-- Use `$ue-debug-validation` when behavior is broken or unproven and the task is to diagnose logs, assets, Blueprints, C++, networking, or editor configuration.
+- Use `$ue-log-crash-triage` when the user provides or asks to analyze logs, UBT/UHT compile errors, linker errors, Blueprint compile errors, Editor crashes, callstacks, ensures/asserts, UAT packaging failures, Cook errors, or `Saved/Logs` output.
+- Use `$ue-debug-validation` when behavior is broken or unproven and the task is to diagnose runtime behavior, assets, Blueprints, C++, networking, or editor configuration after evidence is collected.
 - Use `$ue-build-release-automation` only when the current user explicitly asks to package a project, create or run one-click packaging, generate `RunUAT`/`BuildCookRun` commands, configure Project Launcher, or create CI release build automation. Do not route here for passive readiness checks.
 - Use `$ue-performance-packaging` for profiling, stat review, packaging failures, build configuration sanity, release readiness, packaging smoke checks, and go/no-go checklists.
 - Use `$ue-ai-navigation` for Behavior Trees, Blackboards, EQS, NavMesh, AI Controllers, AI Perception, StateTree, crowd AI, and autonomous agent behavior.
@@ -46,15 +48,17 @@ If the request involves audio, physics, destruction, level streaming, World Part
 Use this sequence when the user wants broader help rather than one narrow fix:
 
 ```text
-intake -> stage detect -> brief -> gate check -> implementation plan -> domain implementation -> testing/debugging -> feature done
+intake -> stage detect -> workflow state -> brief -> gate check -> implementation plan -> domain implementation -> log/debug triage -> feature done -> workflow state refresh
 ```
 
 - Keep onboarding read-only until the user approves implementation.
 - Use briefs to remove ambiguity before designing architecture.
 - Use stage detection to identify missing UE workflow artifacts without editing project files.
+- Use workflow state to preserve project understanding across sessions in `Saved/CodexWorkflow/`.
 - Use gate checks for PASS/CONCERNS/FAIL readiness decisions.
 - Use implementation plans to split C++, Blueprint, assets, config, and validation.
 - Use domain skills for actual UE implementation details.
+- Use log/crash triage before debugging from UBT, UHT, UAT, Blueprint, Editor, or crash output.
 - Use `$ue-feature-done` before claiming completion or handing work back.
 
 ## Explicit Packaging Boundary
@@ -78,7 +82,7 @@ intake -> stage detect -> brief -> gate check -> implementation plan -> domain i
 - Discover existing Blueprint assets, Input Actions, Input Mapping Contexts, Widget Blueprints, Gameplay Tags, and GAS assets by filename before naming new assets.
 - Read the nearest existing class, Blueprint naming pattern, or subsystem before introducing new architecture.
 - Before creating files/assets, apply UE naming conventions: C++ type prefixes (`U`, `A`, `F`, `E`, `I`, `S`), module API macros, and asset names like `[AssetTypePrefix]_[AssetName]_[Descriptor]_[Variant]`.
-- If the user wants Codex to first learn an old, unfamiliar, inherited, or existing project before implementation, keep the first pass read-only and route to `$ue-project-onboarding`.
+- If the user wants Codex to first learn an old, unfamiliar, inherited, or existing project before implementation, keep the first pass read-only and route to `$ue-project-onboarding`; use `$ue-workflow-state` when the user wants that understanding saved or refreshed for future sessions.
 
 ## Working Rules
 

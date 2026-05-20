@@ -94,6 +94,10 @@ def validate_plugin_json() -> None:
         fail("plugin default prompts should include RunUAT example")
     if not any("Enhanced Input" in prompt for prompt in prompts):
         fail("plugin default prompts should include Enhanced Input example")
+    if not any("CodexWorkflow" in prompt for prompt in prompts):
+        fail("plugin default prompts should include CodexWorkflow example")
+    if not any("Saved/Logs" in prompt or "callstack" in prompt for prompt in prompts):
+        fail("plugin default prompts should include log/crash triage example")
 
 
 def validate_packaging_boundary() -> None:
@@ -111,8 +115,15 @@ def validate_packaging_boundary() -> None:
 
 def route_prompt(prompt: str) -> str:
     lower = prompt.lower()
+    failure_or_log = any(token in prompt for token in ["失败", "错误", "日志", "崩溃", "callstack", "Crash", "crash", "Cook failed", "PackagingResults"])
+    if failure_or_log and any(token in prompt for token in ["RunUAT", "BuildCookRun", "UAT", "UBT", "UHT", "Saved/Logs"]):
+        return "ue-log-crash-triage"
     if any(token in prompt for token in ["RunUAT", "BuildCookRun", "一键打包", "自动打包", "生成打包命令", "打包命令"]):
         return "ue-build-release-automation"
+    if any(token in prompt for token in ["Saved/CodexWorkflow", "项目记忆", "workflow state", "Workflow State", "module-map", "known-risks", "active-task"]):
+        return "ue-workflow-state"
+    if any(token in prompt for token in ["Saved/Logs", "callstack", "崩溃", "日志", "UBT", "UHT", "UAT", "Cook failed", "Blueprint compile", "蓝图编译错误"]):
+        return "ue-log-crash-triage"
     if any(token in prompt for token in ["是否可以进入", "gate", "Gate", "检查一下这个功能是否可以"]):
         return "ue-gate-check"
     if any(token in prompt for token in ["是否已经准备好打包", "准备好打包", "打包发布", "打包前验证"]):
@@ -168,6 +179,8 @@ def validate_required_support_files() -> None:
         ROOT / "rules" / "ue-networking.md",
         ROOT / "rules" / "ue-assets.md",
         ROOT / "rules" / "ue-packaging.md",
+        SKILLS / "ue-workflow-state" / "references" / "state-file-templates.md",
+        SKILLS / "ue-log-crash-triage" / "references" / "triage-report-template.md",
         ROUTE_SCENARIOS,
     ]
     for path in required_files:

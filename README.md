@@ -1,6 +1,6 @@
 # UE Game Dev - Codex Plugin
 
-面向 Unreal Engine 游戏与客户端开发的 Codex 技能插件。它不是 Unreal Editor 的 `.uplugin` 插件，不需要放进 UE 项目的 `Plugins/` 目录；它是给 Codex App 使用的 UE 开发工作流插件，用来辅助项目入口判断、阶段检测、阶段门检查、需求简报、实施计划、证据化完成验收、旧项目接手、二开前分析、UE C++、蓝图、Enhanced Input、GAS、网络同步、渲染、材质、Niagara、UI、调试、测试和显式打包自动化等开发任务。
+面向 Unreal Engine 游戏与客户端开发的 Codex 技能插件。它不是 Unreal Editor 的 `.uplugin` 插件，不需要放进 UE 项目的 `Plugins/` 目录；它是给 Codex App 使用的 UE 开发工作流插件，用来辅助项目入口判断、阶段检测、阶段门检查、项目记忆、日志/崩溃分诊、需求简报、实施计划、证据化完成验收、旧项目接手、二开前分析、UE C++、蓝图、Enhanced Input、GAS、网络同步、渲染、材质、Niagara、UI、调试、测试和显式打包自动化等开发任务。
 
 ## 安装方法
 
@@ -78,6 +78,8 @@ New-Item -ItemType Junction -Path "$env:USERPROFILE\plugins\ue-game-dev" -Target
 @ue-game-dev 先熟悉这个旧 UE 项目，后面我要基于它二开
 @ue-game-dev 帮我看这个 UE 项目现在处于什么开发阶段，还缺什么
 @ue-game-dev 检查一下这个功能是否可以进入打包前验证阶段
+@ue-game-dev 为这个 UE 项目建立 Saved/CodexWorkflow 项目记忆
+@ue-game-dev 分析这个 Saved/Logs 日志或崩溃 callstack，找出第一个可行动错误
 @ue-game-dev 我想做一个 UE 背包系统，先帮我整理需求简报
 @ue-game-dev 按这个功能需求写一份 C++/蓝图/资产/测试实施计划
 @ue-game-dev 帮我设计一个 UE 编辑器插件
@@ -105,7 +107,7 @@ Use UE Game Dev to add tests for this UE feature.
 
 ## 功能概览
 
-本插件包含 **1 个路由技能 + 24 个领域技能**，覆盖 UE 开发全链路：
+本插件包含 **1 个路由技能 + 26 个领域技能**，覆盖 UE 开发全链路：
 
 | 技能 | 领域 |
 |------|------|
@@ -117,6 +119,7 @@ Use UE Game Dev to add tests for this UE feature.
 | `ue-implementation-plan` | C++/蓝图/资产/配置/测试实施计划 |
 | `ue-feature-done` | 功能完成验收、验证证据、交接清单 |
 | `ue-project-onboarding` | 旧项目接手、项目熟悉、二开前分析 |
+| `ue-workflow-state` | 项目记忆、Saved/CodexWorkflow 状态文件、跨会话上下文刷新 |
 | `ue-cpp-gameplay` | C++ 游戏逻辑（Actor、Component、Subsystem） |
 | `ue-blueprint-workflow` | 蓝图工作流（事件图、函数图、Widget） |
 | `ue-plugin-module-dev` | 插件与模块开发（.uplugin、Build.cs、命名规范） |
@@ -128,6 +131,7 @@ Use UE Game Dev to add tests for this UE feature.
 | `ue-world-interaction` | 世界交互（拾取、生成器、碰撞） |
 | `ue-render-vfx` | 渲染、材质与 Niagara 特效 |
 | `ue-client-ui` | 客户端 UI（UMG、CommonUI、HUD） |
+| `ue-log-crash-triage` | 日志、崩溃、UBT/UHT/UAT、蓝图编译错误分诊 |
 | `ue-debug-validation` | 调试与验证 |
 | `ue-performance-packaging` | 性能分析与打包发布 |
 | `ue-build-release-automation` | 显式自动打包、RunUAT/BuildCookRun、CI 发版流水线 |
@@ -145,7 +149,7 @@ Use UE Game Dev to add tests for this UE feature.
 ```
 
 1. `ue-game-dev-router` 接收用户请求，分析所涉及的 UE 领域。
-2. 路由器先判断阶段：入口判断、需求简报、实施计划、具体实现、调试验证、完成验收或显式打包。
+2. 路由器先判断阶段：入口判断、阶段检测、项目记忆、需求简报、实施计划、具体实现、日志/崩溃分诊、调试验证、完成验收或显式打包。
 3. 路由器分发到最匹配的领域技能，例如 C++ 游戏逻辑会进入 `ue-cpp-gameplay`。
 4. 领域技能提供专业化工作流、检查清单、命名规范和参考模板。
 5. 跨领域任务会按优先级组合多个技能，例如功能简报 + C++ 实施计划 + 蓝图交接 + 自动化测试。
@@ -219,6 +223,7 @@ python scripts\validate_plugin.py
 
 - `templates/ue-task.md`：用于保存 UE 单个功能/修复任务的目标、范围、实现计划和验收条件。
 - `templates/ue-test-evidence.md`：用于记录构建、蓝图编译、PIE、自动化测试、多人验证和打包风险证据。
+- `Saved/CodexWorkflow/`：推荐用于 UE 项目内的 AI 可读项目记忆，例如 `project-context.md`、`module-map.md`、`asset-index.md`、`decisions.md`、`known-risks.md` 和 `active-task.md`。
 - `rules/`：集中存放 UE C++、蓝图、网络、资产和打包规则，供 router、领域技能和自检脚本引用。
 - `tests/route_scenarios.json`：记录典型用户请求应路由到哪个技能，防止自动打包等边界被误改。
 

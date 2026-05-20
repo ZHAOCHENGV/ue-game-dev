@@ -25,6 +25,22 @@
     "expected_skill": "ue-gate-check"
   },
   {
+    "name": "workflow_state",
+    "prompt": "为这个 UE 项目建立 Saved/CodexWorkflow 项目记忆，后续二开时要能继续读取",
+    "expected_skill": "ue-workflow-state"
+  },
+  {
+    "name": "log_crash_triage",
+    "prompt": "分析这个 Saved/Logs 日志和崩溃 callstack，找出第一个可行动错误",
+    "expected_skill": "ue-log-crash-triage"
+  },
+  {
+    "name": "runuat_failure_log_not_automation",
+    "prompt": "分析这个 RunUAT 打包失败日志，找出第一个错误",
+    "expected_skill": "ue-log-crash-triage",
+    "forbidden_skill": "ue-build-release-automation"
+  },
+  {
     "name": "packaging_readiness_not_automation",
     "prompt": "检查这个项目是否已经准备好打包发布",
     "expected_skill": "ue-performance-packaging",

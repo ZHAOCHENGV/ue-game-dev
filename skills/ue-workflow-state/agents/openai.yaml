@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE Workflow State"
+  short_description: "Persist and refresh AI-readable Unreal project memory."
+  default_prompt: "Use $ue-workflow-state to create or refresh CodexWorkflow project memory."

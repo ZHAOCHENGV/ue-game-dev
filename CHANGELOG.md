@@ -4,6 +4,18 @@
 
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
+## [0.7.0] - 2026-05-20
+
+### 新增
+- `ue-workflow-state` 技能 — 用于创建、读取和刷新 `Saved/CodexWorkflow/` 项目记忆，保存项目上下文、模块地图、资产索引、决策、已知风险和当前任务状态。
+- `ue-log-crash-triage` 技能 — 用于分诊 UBT/UHT 编译错误、链接错误、蓝图编译错误、Editor 崩溃、callstack、ensure/assert、UAT/Cook/打包失败和 `Saved/Logs` 输出。
+- `ue-workflow-state/references/state-file-templates.md` — 项目记忆默认 markdown 文件模板。
+- `ue-log-crash-triage/references/triage-report-template.md` — 日志/崩溃分诊报告模板。
+
+### 变更
+- `ue-game-dev-router` 新增项目记忆和日志/崩溃分诊路由。
+- `README.md`、`plugin.json` 和路由场景测试更新到 `0.7.0`。
+
 ## [0.6.0] - 2026-05-20
 
 ### 新增
