@@ -1,16 +1,23 @@
 ---
 name: ue-game-dev-router
-description: Route Unreal Engine game and client development requests to the most specific UE workflow skill. Use as the entry point when the domain or best skill is unclear, or when the request spans multiple UE areas including project onboarding, Blueprint, C++, plugins, modules, editor tooling, GAS, networking, input, AI, animation, rendering, UI, testing, debugging, performance, or packaging.
+description: Route Unreal Engine game and client development requests to the most specific UE workflow skill. Use as the entry point when the domain or best skill is unclear, or when the request spans project intake, feature brief, implementation planning, completion handoff, onboarding, Blueprint, C++, plugins, modules, editor tooling, GAS, networking, input, AI, animation, rendering, UI, testing, debugging, performance, or packaging.
 ---
 
 # UE Game Dev Router
 
-Use this skill first when the request spans multiple Unreal Engine areas or the right workflow is unclear. Keep the response brief, then load the most specific sibling skill.
+Use this skill first when the request spans multiple Unreal Engine areas or the right workflow is unclear. Treat it as the UE production workflow entry point: classify stage first, then route to the most specific sibling skill.
+
+## Route The Stage
+
+- Use `$ue-start` when the user begins a UE task and scope, project stage, or next workflow is unclear.
+- Use `$ue-feature-brief` when the user has a rough feature idea that needs a scoped UE brief before implementation.
+- Use `$ue-implementation-plan` when requirements are clear enough to plan code, Blueprint, assets, config, tests, and verification before changes.
+- Use `$ue-feature-done` when work is ready for closeout, handoff, commit, or "is this done?" verification.
+- Use `$ue-project-onboarding` when the user asks to understand, audit, take over, inherit, familiarize itself with, or prepare secondary development for an existing Unreal Engine project before changing code or assets.
 
 ## Route The Request
 
 - Use `$ue-cpp-gameplay` for Actors, Components, UObject ownership, DataAssets, Subsystems, input-driven gameplay handlers, world interaction, save/load hooks, and general gameplay C++.
-- Use `$ue-project-onboarding` when the user asks to understand, audit, take over, inherit, familiarize itself with, or prepare secondary development for an existing Unreal Engine project before changing code or assets.
 - Use `$ue-blueprint-workflow` for Blueprint graph logic, Event Graph changes, function graphs, input events, node/pin wiring, Widget Blueprint logic, and Blueprint compile validation.
 - Use `$ue-plugin-module-dev` for UE plugin structure, `.uplugin`, module descriptors, Runtime/Editor module split, `.Build.cs`, export API macros, Public/Private folders, plugin content/config/resources, and UE asset/code naming conventions.
 - Use `$ue-editor-tooling-slate` for editor plugins, Slate editor UI, ToolMenus, UICommands, toolbar/menu extensions, custom details panels, asset type actions, factories, tab spawners, and editor subsystems.
@@ -31,6 +38,20 @@ Use this skill first when the request spans multiple Unreal Engine areas or the 
 If a task crosses domains, start with the skill that owns the first failing or user-facing behavior, then bring in the others as needed.
 
 If the request involves audio, physics, destruction, level streaming, World Partition, or another domain without a dedicated sibling skill, handle it directly within this router using general Unreal best practices and note the coverage gap.
+
+## Production Workflow
+
+Use this sequence when the user wants broader help rather than one narrow fix:
+
+```text
+intake -> brief -> implementation plan -> domain implementation -> testing/debugging -> feature done
+```
+
+- Keep onboarding read-only until the user approves implementation.
+- Use briefs to remove ambiguity before designing architecture.
+- Use implementation plans to split C++, Blueprint, assets, config, and validation.
+- Use domain skills for actual UE implementation details.
+- Use `$ue-feature-done` before claiming completion or handing work back.
 
 ## Explicit Packaging Boundary
 
@@ -68,6 +89,7 @@ If the request involves audio, physics, destruction, level streaming, World Part
 - For rendering/VFX work, check scalability, platform, material instruction cost, Niagara bounds, tick cost, and shader permutations.
 - For UI work, separate presentation from gameplay state where the project already has view models, controllers, managers, or subsystems.
 - For production-facing features, include an appropriate test or smoke validation path unless the user explicitly asks for exploration only.
+- For feature lifecycle work, preserve the intake/brief/plan/done chain when it adds clarity, but do not force it on small direct fixes.
 
 ## Verification
 

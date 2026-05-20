@@ -4,6 +4,20 @@
 
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
+## [0.5.0] - 2026-05-20
+
+### 新增
+- `ue-start` 技能 — 用于 UE 任务入口判断、阶段识别和下一步技能路由。
+- `ue-feature-brief` 技能 — 用于将粗略 UE 功能想法整理成可实施的需求简报。
+- `ue-implementation-plan` 技能 — 用于将明确需求拆成 C++、蓝图、资产、配置、测试和验证计划。
+- `ue-feature-done` 技能 — 用于功能完成验收、验证证据、蓝图/编辑器交接和残余风险说明。
+- `scripts/validate_plugin.py` — 插件自检脚本，校验技能结构、README 技能数量、`plugin.json` 和自动打包显式调用边界。
+
+### 变更
+- 强化 `ue-game-dev-router`，将其作为统一生产工作流入口，先判断阶段，再分发到领域技能。
+- `README.md` 增加工作流型调用示例、自检说明和 22 个领域技能清单。
+- `plugin.json` 更新到 `0.5.0`，补充 project intake、feature brief、implementation plan、completion handoff 等关键词和默认提示。
+
 ## [0.4.0] - 2026-05-19
 
 ### 新增

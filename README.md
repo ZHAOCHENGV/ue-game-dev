@@ -1,6 +1,6 @@
 # UE Game Dev - Codex Plugin
 
-面向 Unreal Engine 游戏与客户端开发的 Codex 技能插件。它不是 Unreal Editor 的 `.uplugin` 插件，不需要放进 UE 项目的 `Plugins/` 目录；它是给 Codex App 使用的工作流插件，用来辅助旧项目接手、二开前分析、UE C++、蓝图、Enhanced Input、GAS、网络同步、渲染、材质、Niagara、UI、调试、测试和显式打包自动化等开发任务。
+面向 Unreal Engine 游戏与客户端开发的 Codex 技能插件。它不是 Unreal Editor 的 `.uplugin` 插件，不需要放进 UE 项目的 `Plugins/` 目录；它是给 Codex App 使用的 UE 开发工作流插件，用来辅助项目入口判断、需求简报、实施计划、完成验收、旧项目接手、二开前分析、UE C++、蓝图、Enhanced Input、GAS、网络同步、渲染、材质、Niagara、UI、调试、测试和显式打包自动化等开发任务。
 
 ## 安装方法
 
@@ -76,6 +76,8 @@ New-Item -ItemType Junction -Path "$env:USERPROFILE\plugins\ue-game-dev" -Target
 
 ```text
 @ue-game-dev 先熟悉这个旧 UE 项目，后面我要基于它二开
+@ue-game-dev 我想做一个 UE 背包系统，先帮我整理需求简报
+@ue-game-dev 按这个功能需求写一份 C++/蓝图/资产/测试实施计划
 @ue-game-dev 帮我设计一个 UE 编辑器插件
 @ue-game-dev 检查这个 GAS 网络同步流程
 @ue-game-dev 给这个项目生成 Win64 Development 的 RunUAT 打包命令
@@ -101,11 +103,15 @@ Use UE Game Dev to add tests for this UE feature.
 
 ## 功能概览
 
-本插件包含 **1 个路由技能 + 18 个领域技能**，覆盖 UE 开发全链路：
+本插件包含 **1 个路由技能 + 22 个领域技能**，覆盖 UE 开发全链路：
 
 | 技能 | 领域 |
 |------|------|
 | `ue-game-dev-router` | 请求路由与分发 |
+| `ue-start` | UE 任务入口判断、阶段识别、下一步路由 |
+| `ue-feature-brief` | 功能需求简报、范围澄清、约束整理 |
+| `ue-implementation-plan` | C++/蓝图/资产/配置/测试实施计划 |
+| `ue-feature-done` | 功能完成验收、验证证据、交接清单 |
 | `ue-project-onboarding` | 旧项目接手、项目熟悉、二开前分析 |
 | `ue-cpp-gameplay` | C++ 游戏逻辑（Actor、Component、Subsystem） |
 | `ue-blueprint-workflow` | 蓝图工作流（事件图、函数图、Widget） |
@@ -135,9 +141,10 @@ Use UE Game Dev to add tests for this UE feature.
 ```
 
 1. `ue-game-dev-router` 接收用户请求，分析所涉及的 UE 领域。
-2. 路由器分发到最匹配的领域技能，例如 C++ 游戏逻辑会进入 `ue-cpp-gameplay`。
-3. 领域技能提供专业化工作流、检查清单、命名规范和参考模板。
-4. 跨领域任务会按优先级组合多个技能，例如插件模块 + Slate 编辑器工具 + 自动化测试。
+2. 路由器先判断阶段：入口判断、需求简报、实施计划、具体实现、调试验证、完成验收或显式打包。
+3. 路由器分发到最匹配的领域技能，例如 C++ 游戏逻辑会进入 `ue-cpp-gameplay`。
+4. 领域技能提供专业化工作流、检查清单、命名规范和参考模板。
+5. 跨领域任务会按优先级组合多个技能，例如功能简报 + C++ 实施计划 + 蓝图交接 + 自动化测试。
 
 > 自动打包能力只在用户明确提出“打包 / 自动打包 / 一键打包 / RunUAT / BuildCookRun / CI 打包 / 发版流水线”等请求时使用。普通性能检查、发布前检查或打包失败诊断仍由 `ue-performance-packaging` 处理，不会被动触发打包。
 
@@ -163,6 +170,8 @@ ue-game-dev/
 │   │   ├── agents/openai.yaml
 │   │   └── references/
 │   └── ...
+├── scripts/
+│   └── validate_plugin.py
 ├── CHANGELOG.md
 ├── LICENSE
 └── README.md
@@ -179,6 +188,17 @@ skill-name/
     ├── checklist.md
     └── templates.md
 ```
+
+## 自检
+
+修改插件后可以运行：
+
+```powershell
+$env:PYTHONUTF8='1'
+python scripts\validate_plugin.py
+```
+
+该脚本会检查 `plugin.json`、技能 frontmatter、`agents/openai.yaml`、README 技能数量，以及自动打包技能必须保持显式调用。
 
 ## 许可证
 

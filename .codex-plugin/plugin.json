@@ -1,7 +1,7 @@
 {
   "name": "ue-game-dev",
-  "version": "0.4.0",
-  "description": "Unreal Engine game and client development workflows for existing project onboarding, Blueprint, C++, plugins, modules, editor tooling, Slate, naming conventions, Enhanced Input, GAS, networking, AI, animation, rendering, materials, Niagara, gameplay, UI, testing, debugging, performance, and explicit packaging automation.\n\nAliases: @ue-game-dev, /ue-game-dev, UE Game Dev, Unreal Engine assistant.\n\nUse UE Game Dev when the user asks to understand an old or existing UE project before secondary development, or for Unreal Engine C++, Blueprint, Enhanced Input, plugin/module, editor tooling, GAS, networking, rendering, materials, Niagara, UI, AI, animation, testing, debugging, performance, or explicit RunUAT/BuildCookRun packaging automation help.",
+  "version": "0.5.0",
+  "description": "Unreal Engine game and client development workflows for project intake, feature briefs, implementation planning, completion handoff, existing project onboarding, Blueprint, C++, plugins, modules, editor tooling, Slate, naming conventions, Enhanced Input, GAS, networking, AI, animation, rendering, materials, Niagara, gameplay, UI, testing, debugging, performance, and explicit packaging automation.\n\nAliases: @ue-game-dev, /ue-game-dev, UE Game Dev, Unreal Engine assistant.\n\nUse UE Game Dev when the user asks to start or scope an Unreal task, understand an old or existing UE project before secondary development, plan C++/Blueprint/assets/tests, verify completion, or work on Unreal Engine C++, Blueprint, Enhanced Input, plugin/module, editor tooling, GAS, networking, rendering, materials, Niagara, UI, AI, animation, testing, debugging, performance, or explicit RunUAT/BuildCookRun packaging automation.",
   "author": {
     "name": "zhaocw",
     "email": "zcw1419@qq.com",
@@ -15,6 +15,10 @@
     "project-onboarding",
     "legacy-project",
     "secondary-development",
+    "project-intake",
+    "feature-brief",
+    "implementation-plan",
+    "completion-handoff",
     "plugins",
     "blueprint",
     "ue-cpp",
@@ -55,8 +59,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "UE Game Dev",
-    "shortDescription": "Unreal Engine workflows for onboarding, Blueprint, C++, Enhanced Input, plugins, GAS, AI, UI, tests, and packaging",
-    "longDescription": "Use UE Game Dev for Unreal Engine client and gameplay work across existing project onboarding, Blueprint graphs, C++, Enhanced Input, plugins, modules, editor tooling, Slate, naming conventions, Gameplay Ability System, multiplayer replication, save/load, AI/navigation, animation, rendering, materials, Niagara VFX, UMG, testing automation, debugging, performance, packaging validation, and explicit RunUAT/BuildCookRun release automation.",
+    "shortDescription": "Unreal Engine workflows for intake, briefs, planning, C++, Blueprint, tests, and packaging",
+    "longDescription": "Use UE Game Dev for Unreal Engine client and gameplay work across project intake, feature briefs, implementation planning, completion handoff, existing project onboarding, Blueprint graphs, C++, Enhanced Input, plugins, modules, editor tooling, Slate, naming conventions, Gameplay Ability System, multiplayer replication, save/load, AI/navigation, animation, rendering, materials, Niagara VFX, UMG, testing automation, debugging, performance, packaging validation, and explicit RunUAT/BuildCookRun release automation.",
     "developerName": "zhaocw",
     "category": "Coding",
     "capabilities": [
@@ -69,6 +73,8 @@
     "termsOfServiceURL": "https://www.unrealengine.com/tos",
     "defaultPrompt": [
       "@ue-game-dev 先熟悉这个旧 UE 项目，准备二开",
+      "@ue-game-dev 我想做一个 UE 背包系统，先帮我整理需求简报",
+      "@ue-game-dev 按这个功能需求写一份 C++/蓝图/资产/测试实施计划",
       "@ue-game-dev 设计一个 UE 插件、模块或编辑器工具",
       "@ue-game-dev 检查 GAS 和网络同步流程",
       "@ue-game-dev 生成 Win64 Development 的 RunUAT 打包命令",
