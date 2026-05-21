@@ -60,6 +60,12 @@ Use only the roles needed:
 7. Resolve conflicts through the Coordinator. No role may unilaterally change files outside its assigned ownership.
 8. Route implementation slices to the focused sibling skills.
 
+## Tooling
+
+- Use `scripts/ue_agent_plan.py --request "<request>" --format json` to draft a read-only `solo` / `lean` / `full` role plan, ownership boundaries, packaging boundary, and recommended next skills.
+- Treat the tool output as a planning accelerator, not a command runner. It does not spawn agents, edit files, or run packaging.
+- If the tool returns `solo`, route to the focused skill and avoid a full multi-agent report.
+
 ## Explicit Packaging Boundary
 
 Multi-agent orchestration must not trigger `$ue-build-release-automation` by itself. Use packaging automation only when the current user explicitly asks to package, run packaging, generate `RunUAT`/`BuildCookRun`, create one-click packaging, or configure CI release automation.

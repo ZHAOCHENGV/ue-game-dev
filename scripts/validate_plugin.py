@@ -20,6 +20,12 @@ MULTI_AGENT_REFERENCES = [
     SKILLS / "ue-multi-agent-workflow" / "references" / "ue-agent-output-template.md",
     SKILLS / "ue-multi-agent-workflow" / "references" / "ue-agent-conflict-resolution.md",
 ]
+UE_TOOL_SCRIPTS = [
+    SKILLS / "ue-project-onboarding" / "scripts" / "ue_project_scan.py",
+    SKILLS / "ue-log-crash-triage" / "scripts" / "ue_log_triage.py",
+    SKILLS / "ue-cpp-gameplay" / "scripts" / "ue_blueprint_api_report.py",
+    SKILLS / "ue-multi-agent-workflow" / "scripts" / "ue_agent_plan.py",
+]
 
 
 def fail(message: str) -> None:
@@ -105,7 +111,18 @@ def validate_plugin_json() -> None:
     if not any("Saved/Logs" in prompt or "callstack" in prompt for prompt in prompts):
         fail("plugin default prompts should include log/crash triage example")
     keywords = set(plugin.get("keywords", []))
-    for keyword in ["runuat", "enhanced-input", "workflow-state", "log-triage", "multi-agent", "agent-orchestration"]:
+    for keyword in [
+        "runuat",
+        "enhanced-input",
+        "workflow-state",
+        "log-triage",
+        "multi-agent",
+        "agent-orchestration",
+        "ue-project-scan",
+        "ue-log-triage",
+        "blueprint-api-report",
+        "agent-plan",
+    ]:
         if keyword not in keywords:
             fail(f"plugin keywords should include {keyword}")
 
@@ -221,10 +238,27 @@ def validate_required_support_files() -> None:
         SKILLS / "ue-workflow-state" / "references" / "state-file-templates.md",
         SKILLS / "ue-log-crash-triage" / "references" / "triage-report-template.md",
         ROUTE_SCENARIOS,
+        ROOT / "tests" / "test_ue_tools.py",
+        *UE_TOOL_SCRIPTS,
     ]
     for path in required_files:
         if not path.exists():
             fail(f"missing support file: {path.relative_to(ROOT)}")
+
+
+def validate_tool_mentions() -> None:
+    expected_mentions = {
+        "ue_project_scan.py": SKILLS / "ue-project-onboarding" / "SKILL.md",
+        "ue_log_triage.py": SKILLS / "ue-log-crash-triage" / "SKILL.md",
+        "ue_blueprint_api_report.py": SKILLS / "ue-cpp-gameplay" / "SKILL.md",
+        "ue_agent_plan.py": SKILLS / "ue-multi-agent-workflow" / "SKILL.md",
+    }
+    readme = read_text(README)
+    for script_name, skill_path in expected_mentions.items():
+        if script_name not in read_text(skill_path):
+            fail(f"{skill_path.relative_to(ROOT)} should mention {script_name}")
+        if script_name not in readme:
+            fail(f"README should mention {script_name}")
 
 
 def validate_marketplace_package() -> None:
@@ -284,6 +318,11 @@ def validate_marketplace_package() -> None:
     if package_plugin.get("version") != root_plugin.get("version"):
         fail("marketplace package plugin version must match root plugin")
 
+    for tool_path in UE_TOOL_SCRIPTS:
+        package_tool = MARKETPLACE_PACKAGE / tool_path.relative_to(ROOT)
+        if not package_tool.exists():
+            fail(f"marketplace package missing UE tool script: {package_tool.relative_to(ROOT)}")
+
 
 def main() -> None:
     skill_dirs = validate_skill_dirs()
@@ -292,6 +331,7 @@ def main() -> None:
     validate_packaging_boundary()
     validate_multi_agent_support()
     validate_required_support_files()
+    validate_tool_mentions()
     validate_marketplace_package()
     validate_route_scenarios(skill_dirs)
     print(f"OK: {len(skill_dirs)} skills validated")

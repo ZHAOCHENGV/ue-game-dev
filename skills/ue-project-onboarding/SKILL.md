@@ -41,6 +41,12 @@ Produce a concise "UE Project Onboarding Report" with:
 
 Use `references/onboarding-report-template.md` when a structured report helps. Use `references/project-audit-checklist.md` for a deeper audit.
 
+## Tooling
+
+- Use `scripts/ue_project_scan.py --project <path> --format json` for a read-only structure scan before writing an onboarding report or refreshing workflow state.
+- The tool reads `.uproject`, `Source/`, `Plugins/`, `Config/`, and `Content` filenames only. It does not edit project files and does not inspect binary `.uasset` internals.
+- Treat the tool output as a starting index; still read high-signal source files before making architecture conclusions.
+
 ## Routing After Onboarding
 
 After the report, route the next task to the most specific sibling skill:

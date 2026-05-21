@@ -1,0 +1,109 @@
+#!/usr/bin/env python3
+import argparse
+import json
+import re
+from pathlib import Path
+
+
+ACTIONABLE_PATTERNS = [
+    re.compile(r"\b(error|fatal error|assertion failed|ensure condition failed|exception_access_violation)\b", re.I),
+    re.compile(r"\bLNK\d+|UnrealHeaderTool|Blueprint Runtime Error|Cook failed|PackagingResults\b", re.I),
+]
+
+
+def classify_phase(lines: list[str]) -> str:
+    text = "\n".join(lines)
+    if re.search(r"Cook failed|LogCook|Cooking", text, re.I):
+        return "Cook"
+    if re.search(r"UnrealHeaderTool|UHT|generated\.h", text, re.I):
+        return "UHT"
+    if re.search(r"\bLNK\d+|unresolved external", text, re.I):
+        return "Link"
+    if re.search(r"RunUAT|BuildCookRun|PackagingResults|AutomationTool", text, re.I):
+        return "UAT"
+    if re.search(r"Blueprint Runtime Error|Blueprint compile", text, re.I):
+        return "Blueprint"
+    if re.search(r"Fatal error|Assertion failed|Crash|callstack", text, re.I):
+        return "Crash"
+    if re.search(r"\berror:", text, re.I):
+        return "Build"
+    return "Unknown"
+
+
+def is_summary_noise(line: str) -> bool:
+    return bool(re.search(r"AutomationTool exiting|ExitCode=|UnknownCookFailure|BUILD FAILED", line, re.I))
+
+
+def find_first_failure(lines: list[str]) -> tuple[str, list[str]]:
+    for index, line in enumerate(lines):
+        if is_summary_noise(line):
+            continue
+        if any(pattern.search(line) for pattern in ACTIONABLE_PATTERNS):
+            start = max(0, index - 2)
+            end = min(len(lines), index + 3)
+            context = [entry.strip() for entry in lines[start:end] if entry.strip() and entry.strip() != line.strip()]
+            evidence = [line.strip(), *context]
+            return line.strip(), evidence
+    return "No actionable failure found", []
+
+
+def triage_log(path: Path) -> dict:
+    if not path.exists():
+        raise SystemExit(f"Log file not found: {path}")
+    lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+    first_failure, evidence = find_first_failure(lines)
+    phase = classify_phase(lines)
+    return {
+        "tool": "ue-log-triage",
+        "read_only": True,
+        "log_source": str(path),
+        "first_actionable_failure": first_failure,
+        "failure_phase": phase,
+        "evidence": evidence,
+        "probable_root_cause": infer_root_cause(first_failure, phase),
+        "recommended_next_skill": "ue-log-crash-triage",
+        "packaging_boundary": "review only",
+    }
+
+
+def infer_root_cause(first_failure: str, phase: str) -> str:
+    if "Assertion failed" in first_failure:
+        return "A runtime/editor assertion is the earliest actionable failure; inspect the referenced source file and state preconditions."
+    if phase == "UHT":
+        return "Reflection or generated-header error; inspect UCLASS/USTRUCT/UFUNCTION/UPROPERTY declarations near the first failure."
+    if phase == "Link":
+        return "Linker failure; inspect module dependencies, missing implementation, or export macros."
+    if phase == "Cook":
+        return "Cook failed after an earlier actionable error; fix the first error before treating the final cook summary as root cause."
+    return "Use the first actionable failure as the next investigation point."
+
+
+def render_text(result: dict) -> str:
+    return "\n".join(
+        [
+            "UE Log/Crash Triage",
+            f"- Log source: {result['log_source']}",
+            f"- First actionable failure: {result['first_actionable_failure']}",
+            f"- Failure phase: {result['failure_phase']}",
+            f"- Probable root cause: {result['probable_root_cause']}",
+            f"- Recommended next skill: {result['recommended_next_skill']}",
+            f"- Packaging boundary: {result['packaging_boundary']}",
+        ]
+    )
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Read-only Unreal log triage helper.")
+    parser.add_argument("--log", required=True, help="Path to an Unreal log file.")
+    parser.add_argument("--format", choices=["json", "text"], default="text")
+    args = parser.parse_args()
+
+    result = triage_log(Path(args.log).resolve())
+    if args.format == "json":
+        print(json.dumps(result, ensure_ascii=False, indent=2))
+    else:
+        print(render_text(result))
+
+
+if __name__ == "__main__":
+    main()

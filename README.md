@@ -2,6 +2,8 @@
 
 面向 Unreal Engine 游戏与客户端开发的 Codex 技能插件。它不是 Unreal Editor 的 `.uplugin` 插件，不需要放进 UE 项目的 `Plugins/` 目录；它是给 Codex App 使用的 UE 开发工作流插件，用来辅助项目入口判断、阶段检测、阶段门检查、项目记忆、日志/崩溃分诊、需求简报、实施计划、多 Agent 编排、证据化完成验收、旧项目接手、二开前分析、UE C++、蓝图、Enhanced Input、GAS、网络同步、渲染、材质、Niagara、UI、调试、测试和显式打包自动化等开发任务。
 
+插件还内置一组只读 UE 辅助工具，用于快速扫描项目结构、提取日志首个可行动错误、整理 C++ 暴露给蓝图的 API，以及生成轻量多 Agent 分工计划。这些工具默认不修改 UE 项目、不编辑 `.uasset`、不执行打包。
+
 ## 安装方法
 
 ### 方式一：通过 Codex App 添加插件市场（推荐）
@@ -220,6 +222,24 @@ Use UE Game Dev to add tests for this UE feature.
 | `full` | 旧项目深度接手、插件架构审查、跨 C++/蓝图/UI/资产/测试/发布风险的大任务 |
 
 为避免简单任务变重，下面这些场景不会默认启用多 Agent：单个 Enhanced Input 事件不触发、一个 `BlueprintCallable` 方法的蓝图接法、蓝图单点连线、单条 `RunUAT` 命令生成、普通解释性问题。多 Agent 参考协议位于 `skills/ue-multi-agent-workflow/references/`，包括角色职责、统一输出模板和冲突处理规则，仅在 `lean` 或 `full` 模式按需读取。
+
+## 内置工具
+
+| 工具 | 路径 | 用途 |
+|------|------|------|
+| `ue-project-scan` | `skills/ue-project-onboarding/scripts/ue_project_scan.py` | 只读扫描 `.uproject`、模块、插件、源码文件、Build 文件和常见资产文件名 |
+| `ue-log-triage` | `skills/ue-log-crash-triage/scripts/ue_log_triage.py` | 从 UE 日志中提取首个可行动错误、失败阶段、证据和下一步技能 |
+| `ue-blueprint-api-report` | `skills/ue-cpp-gameplay/scripts/ue_blueprint_api_report.py` | 扫描 `BlueprintCallable`、`BlueprintPure`、蓝图事件和可绑定属性，生成蓝图接法提示 |
+| `ue-agent-plan` | `skills/ue-multi-agent-workflow/scripts/ue_agent_plan.py` | 根据用户请求生成 `solo` / `lean` / `full` 角色分工、所有权边界和后续技能 |
+
+示例：
+
+```powershell
+python skills\ue-project-onboarding\scripts\ue_project_scan.py --project F:\UEObject\MyGame --format json
+python skills\ue-log-crash-triage\scripts\ue_log_triage.py --log F:\UEObject\MyGame\Saved\Logs\MyGame.log --format json
+python skills\ue-cpp-gameplay\scripts\ue_blueprint_api_report.py --project F:\UEObject\MyGame --format json
+python skills\ue-multi-agent-workflow\scripts\ue_agent_plan.py --request "用多 Agent 熟悉这个旧 UE 项目，准备二开" --format json
+```
 
 ## 目录结构
 

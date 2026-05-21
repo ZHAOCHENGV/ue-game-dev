@@ -4,6 +4,21 @@
 
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
+## [0.10.0] - 2026-05-21
+
+### 新增
+- `ue-project-scan` 只读工具：扫描 `.uproject`、模块、插件、源码文件、Build 文件和常见资产文件名。
+- `ue-log-triage` 只读工具：提取 UE 日志中的首个可行动错误、失败阶段、证据和下一步技能，保持打包边界为 review-only。
+- `ue-blueprint-api-report` 只读工具：扫描 C++ 头文件中的 Blueprint 暴露 API，并生成蓝图接法提示。
+- `ue-agent-plan` 只读工具：根据请求生成 `solo` / `lean` / `full` 多 Agent 分工、所有权边界和后续技能。
+- `tests/test_ue_tools.py`：为四个工具增加 fixture 驱动的单元测试。
+
+### 变更
+- `ue-project-onboarding`、`ue-log-crash-triage`、`ue-cpp-gameplay` 和 `ue-multi-agent-workflow` 补充工具调用说明和只读边界。
+- `README.md` 新增内置工具表和命令示例。
+- `plugin.json` 版本更新到 `0.10.0`，补充工具关键词和说明。
+- `scripts/validate_plugin.py` 增加内置工具脚本存在性校验。
+
 ## [0.9.1] - 2026-05-21
 
 ### 新增

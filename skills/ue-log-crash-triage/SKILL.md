@@ -38,6 +38,12 @@ Use this skill to diagnose Unreal logs and crashes from evidence before changing
 5. Provide a narrow fix plan and a verification command or editor check.
 6. If the issue is recurring or project-specific, suggest recording it with `$ue-workflow-state` in `known-risks.md`.
 
+## Tooling
+
+- Use `scripts/ue_log_triage.py --log <path> --format json` when a log file path is available and a quick first-failure extraction will help.
+- The tool is read-only and returns the first actionable failure, phase classification, short evidence, probable root cause, and recommended next skill.
+- For packaging failures, the tool keeps `packaging_boundary` as `review only`; it must not trigger `$ue-build-release-automation`.
+
 ## Output
 
 ```text
