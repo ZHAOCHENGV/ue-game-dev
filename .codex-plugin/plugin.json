@@ -1,6 +1,6 @@
 {
   "name": "ue-game-dev",
-  "version": "0.8.0",
+  "version": "0.8.1",
   "description": "Unreal Engine game and client development workflows for project intake, stage detection, gate checks, persistent workflow state, log/crash triage, feature briefs, implementation planning, evidence-based completion handoff, existing project onboarding, Blueprint, C++, plugins, modules, editor tooling, Slate, naming conventions, Enhanced Input, GAS, networking, AI, animation, rendering, materials, Niagara, gameplay, UI, testing, debugging, performance, and explicit packaging automation.\n\nAliases: @ue-game-dev, /ue-game-dev, UE Game Dev, Unreal Engine assistant.\n\nUse UE Game Dev when the user asks to start or scope an Unreal task, detect project stage, run a readiness gate, persist project memory, triage logs/crashes, understand an old or existing UE project before secondary development, plan C++/Blueprint/assets/tests, verify completion with evidence, or work on Unreal Engine C++, Blueprint, Enhanced Input, plugin/module, editor tooling, GAS, networking, rendering, materials, Niagara, UI, AI, animation, testing, debugging, performance, or explicit RunUAT/BuildCookRun packaging automation.",
   "author": {
     "name": "zhaocw",

@@ -1,6 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="UE Game Dev">
-  <rect width="256" height="256" rx="48" fill="#0f172a"/>
-  <path d="M58 66h140v32h-50v92h-40V98H58V66Z" fill="#f8fafc"/>
-  <path d="M64 190h128v-30h-42v-26h34v-30h-74v86H64Z" fill="#38bdf8"/>
-  <path d="M186 52l18 18-18 18-18-18 18-18ZM54 150l14 14-14 14-14-14 14-14Z" fill="#f59e0b"/>
+  <rect width="256" height="256" rx="48" fill="#000"/>
+  <circle cx="128" cy="96" r="58" fill="none" stroke="#fff" stroke-width="6"/>
+  <circle cx="128" cy="96" r="51" fill="none" stroke="#fff" stroke-width="2"/>
+  <path d="M74 112c9-30 28-54 57-70-11 13-16 28-12 39 4 0 8-1 11-3v44c0 10 10 15 18 9V78c9-8 23-14 38-18-13 14-23 29-27 43v42c11-2 19-8 27-19-7 20-21 35-42 47l-14-15-14 16c-25-3-44-13-56-29 10 3 20 3 29-1v-61c-7 0-16 9-25 29Z" fill="none" stroke="#fff" stroke-width="5" stroke-linejoin="round"/>
+  <text x="128" y="211" fill="#fff" font-family="Arial Black, Arial, sans-serif" font-size="35" font-weight="900" text-anchor="middle">UNREAL</text>
+  <text x="128" y="234" fill="#fff" font-family="Arial Black, Arial, sans-serif" font-size="20" font-weight="900" text-anchor="middle">ENGINE</text>
 </svg>
