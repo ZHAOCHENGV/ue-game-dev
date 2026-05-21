@@ -1,6 +1,6 @@
 ---
 name: ue-game-dev-router
-description: Route Unreal Engine game and client development requests to the most specific UE workflow skill. Use as the entry point when the domain or best skill is unclear, or when the request spans project intake, stage detection, gate checks, workflow state, log/crash triage, feature brief, implementation planning, completion handoff, onboarding, Blueprint, C++, plugins, modules, editor tooling, GAS, networking, input, AI, animation, rendering, UI, testing, debugging, performance, or packaging.
+description: Route Unreal Engine game and client development requests to the most specific UE workflow skill. Use as the entry point when the domain or best skill is unclear, or when the request spans project intake, stage detection, gate checks, workflow state, log/crash triage, feature brief, implementation planning, completion handoff, onboarding, multi-agent coordination, Blueprint, C++, plugins, modules, editor tooling, GAS, networking, input, AI, animation, rendering, UI, testing, debugging, performance, or packaging.
 ---
 
 # UE Game Dev Router
@@ -17,6 +17,7 @@ Use this skill first when the request spans multiple Unreal Engine areas or the 
 - Use `$ue-feature-done` when work is ready for closeout, handoff, commit, or "is this done?" verification.
 - Use `$ue-project-onboarding` when the user asks to understand, audit, take over, inherit, familiarize itself with, or prepare secondary development for an existing Unreal Engine project before changing code or assets.
 - Use `$ue-workflow-state` when the user asks to create, refresh, read, or use persistent project memory such as `Saved/CodexWorkflow/`, project context, module maps, asset indexes, decisions, known risks, or active task notes.
+- Use `$ue-multi-agent-workflow` when the user explicitly asks for multi-agent, multi-expert, team-style, parallel specialist, `lean`, or `full` mode coordination, or when a complex request spans old-project onboarding, architecture review, C++/Blueprint/UI/assets/tests, and release/log risk analysis. Do not use it for narrow single-domain tasks.
 
 ## Route The Request
 
@@ -41,6 +42,8 @@ Use this skill first when the request spans multiple Unreal Engine areas or the 
 
 If a task crosses domains, start with the skill that owns the first failing or user-facing behavior, then bring in the others as needed.
 
+If the user explicitly asks for multi-agent coordination, route to `$ue-multi-agent-workflow` first so it can define roles, ownership boundaries, parallel discovery, dependent phases, and the focused follow-up skills.
+
 If the request involves audio, physics, destruction, level streaming, World Partition, or another domain without a dedicated sibling skill, handle it directly within this router using general Unreal best practices and note the coverage gap.
 
 ## Production Workflow
@@ -51,6 +54,7 @@ Use this sequence when the user wants broader help rather than one narrow fix:
 intake -> stage detect -> workflow state -> brief -> gate check -> implementation plan -> domain implementation -> log/debug triage -> feature done -> workflow state refresh
 ```
 
+- Insert `$ue-multi-agent-workflow` before onboarding, architecture review, implementation planning, or log/release risk review only when the request is explicit multi-agent or genuinely complex enough to need role coordination.
 - Keep onboarding read-only until the user approves implementation.
 - Use briefs to remove ambiguity before designing architecture.
 - Use stage detection to identify missing UE workflow artifacts without editing project files.
@@ -98,6 +102,7 @@ intake -> stage detect -> workflow state -> brief -> gate check -> implementatio
 - For UI work, separate presentation from gameplay state where the project already has view models, controllers, managers, or subsystems.
 - For production-facing features, include an appropriate test or smoke validation path unless the user explicitly asks for exploration only.
 - For feature lifecycle work, preserve the intake/brief/plan/done chain when it adds clarity, but do not force it on small direct fixes.
+- For multi-agent work, require a coordinator synthesis, role statuses, file ownership boundaries, and focused follow-up skills before implementation.
 - Use the shared `rules/` guidance when a task touches C++, Blueprint, networking, assets, or packaging.
 
 ## Verification

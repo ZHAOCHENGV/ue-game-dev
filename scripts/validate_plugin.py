@@ -14,6 +14,7 @@ ROUTE_SCENARIOS = ROOT / "tests" / "route_scenarios.json"
 PACKAGING_OPENAI = SKILLS / "ue-build-release-automation" / "agents" / "openai.yaml"
 PACKAGING_SKILL = SKILLS / "ue-build-release-automation" / "SKILL.md"
 ROUTER_SKILL = SKILLS / "ue-game-dev-router" / "SKILL.md"
+MULTI_AGENT_SKILL = SKILLS / "ue-multi-agent-workflow" / "SKILL.md"
 
 
 def fail(message: str) -> None:
@@ -99,7 +100,7 @@ def validate_plugin_json() -> None:
     if not any("Saved/Logs" in prompt or "callstack" in prompt for prompt in prompts):
         fail("plugin default prompts should include log/crash triage example")
     keywords = set(plugin.get("keywords", []))
-    for keyword in ["runuat", "enhanced-input", "workflow-state", "log-triage"]:
+    for keyword in ["runuat", "enhanced-input", "workflow-state", "log-triage", "multi-agent", "agent-orchestration"]:
         if keyword not in keywords:
             fail(f"plugin keywords should include {keyword}")
 
@@ -115,10 +116,33 @@ def validate_packaging_boundary() -> None:
         fail("packaging skill must state explicit-only invocation")
     if "Do not route here for passive readiness checks" not in router_skill:
         fail("router must protect automatic packaging from passive routing")
+    if "must not trigger `$ue-build-release-automation` by itself" not in read_text(MULTI_AGENT_SKILL):
+        fail("multi-agent workflow must protect automatic packaging from implicit routing")
+
+
+def validate_multi_agent_support() -> None:
+    multi_agent_skill = read_text(MULTI_AGENT_SKILL)
+    router_skill = read_text(ROUTER_SKILL)
+
+    for token in ["Mode", "Coordinator", "Parallel Discovery Results", "BLOCKED", "Ownership boundaries"]:
+        if token not in multi_agent_skill:
+            fail(f"multi-agent skill should mention {token}")
+    if "$ue-multi-agent-workflow" not in router_skill:
+        fail("router must reference ue-multi-agent-workflow")
 
 
 def route_prompt(prompt: str) -> str:
     lower = prompt.lower()
+    multi_agent = any(
+        token in prompt
+        for token in ["多 Agent", "多Agent", "multi-agent", "Multi-Agent", "多专家", "团队协作", "并行专家", "full 模式", "lean 模式"]
+    )
+    complex_coordination = multi_agent and any(
+        token in prompt
+        for token in ["旧 UE 项目", "旧项目", "二开", "架构", "C++", "蓝图", "UI", "资产", "测试", "打包失败", "Saved/Logs", "Build.cs"]
+    )
+    if complex_coordination:
+        return "ue-multi-agent-workflow"
     failure_or_log = any(token in prompt for token in ["失败", "错误", "日志", "崩溃", "callstack", "Crash", "crash", "Cook failed", "PackagingResults"])
     if failure_or_log and any(token in prompt for token in ["RunUAT", "BuildCookRun", "UAT", "UBT", "UHT", "Saved/Logs"]):
         return "ue-log-crash-triage"
@@ -255,6 +279,7 @@ def main() -> None:
     validate_readme_skill_count(skill_dirs)
     validate_plugin_json()
     validate_packaging_boundary()
+    validate_multi_agent_support()
     validate_required_support_files()
     validate_marketplace_package()
     validate_route_scenarios(skill_dirs)

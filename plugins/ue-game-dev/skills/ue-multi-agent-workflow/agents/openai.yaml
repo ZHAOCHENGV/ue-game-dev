@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE Multi-Agent Workflow"
+  short_description: "Coordinate complex Unreal work across specialist roles."
+  default_prompt: "Use $ue-multi-agent-workflow to coordinate a complex Unreal Engine task with specialist roles."

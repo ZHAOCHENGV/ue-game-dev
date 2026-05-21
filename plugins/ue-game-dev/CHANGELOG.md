@@ -4,6 +4,17 @@
 
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
+## [0.9.0] - 2026-05-21
+
+### 新增
+- `ue-multi-agent-workflow` 技能 — 用于用户明确要求多 Agent、多专家、团队协作、`lean`/`full` 模式，或复杂 UE 跨域任务需要角色分工、并行发现、文件所有权边界和协调汇总时使用。
+- 路由场景测试新增多 Agent 旧项目接手、插件架构审查、打包失败风险排查，以及 Enhanced Input 不应误触发多 Agent 的回归用例。
+
+### 变更
+- `ue-game-dev-router` 新增多 Agent 编排路由，同时保持简单单域任务直接进入具体技能。
+- `plugin.json`、`README.md` 和市场展示说明更新到 `0.9.0`，补充多 Agent / 多专家 / 并行工作流关键词。
+- `scripts/validate_plugin.py` 增加多 Agent 技能结构、router 引用、关键词和自动打包边界校验。
+
 ## [0.8.1] - 2026-05-21
 
 ### 变更

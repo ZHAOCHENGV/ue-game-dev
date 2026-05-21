@@ -1,6 +1,6 @@
 # UE Game Dev - Codex Plugin
 
-面向 Unreal Engine 游戏与客户端开发的 Codex 技能插件。它不是 Unreal Editor 的 `.uplugin` 插件，不需要放进 UE 项目的 `Plugins/` 目录；它是给 Codex App 使用的 UE 开发工作流插件，用来辅助项目入口判断、阶段检测、阶段门检查、项目记忆、日志/崩溃分诊、需求简报、实施计划、证据化完成验收、旧项目接手、二开前分析、UE C++、蓝图、Enhanced Input、GAS、网络同步、渲染、材质、Niagara、UI、调试、测试和显式打包自动化等开发任务。
+面向 Unreal Engine 游戏与客户端开发的 Codex 技能插件。它不是 Unreal Editor 的 `.uplugin` 插件，不需要放进 UE 项目的 `Plugins/` 目录；它是给 Codex App 使用的 UE 开发工作流插件，用来辅助项目入口判断、阶段检测、阶段门检查、项目记忆、日志/崩溃分诊、需求简报、实施计划、多 Agent 编排、证据化完成验收、旧项目接手、二开前分析、UE C++、蓝图、Enhanced Input、GAS、网络同步、渲染、材质、Niagara、UI、调试、测试和显式打包自动化等开发任务。
 
 ## 安装方法
 
@@ -104,6 +104,7 @@ New-Item -ItemType Junction -Path "$env:USERPROFILE\plugins\ue-game-dev" -Target
 @ue-game-dev 检查一下这个功能是否可以进入打包前验证阶段
 @ue-game-dev 为这个 UE 项目建立 Saved/CodexWorkflow 项目记忆
 @ue-game-dev 分析这个 Saved/Logs 日志或崩溃 callstack，找出第一个可行动错误
+@ue-game-dev 用多 Agent 熟悉这个旧 UE 项目，准备二开
 @ue-game-dev 我想做一个 UE 背包系统，先帮我整理需求简报
 @ue-game-dev 按这个功能需求写一份 C++/蓝图/资产/测试实施计划
 @ue-game-dev 帮我设计一个 UE 编辑器插件
@@ -131,7 +132,7 @@ Use UE Game Dev to add tests for this UE feature.
 
 ## 功能概览
 
-本插件包含 **1 个路由技能 + 26 个领域技能**，覆盖 UE 开发全链路：
+本插件包含 **1 个路由技能 + 27 个领域技能**，覆盖 UE 开发全链路：
 
 | 技能 | 领域 |
 |------|------|
@@ -144,6 +145,7 @@ Use UE Game Dev to add tests for this UE feature.
 | `ue-feature-done` | 功能完成验收、验证证据、交接清单 |
 | `ue-project-onboarding` | 旧项目接手、项目熟悉、二开前分析 |
 | `ue-workflow-state` | 项目记忆、Saved/CodexWorkflow 状态文件、跨会话上下文刷新 |
+| `ue-multi-agent-workflow` | 多 Agent / 多专家编排、复杂跨域任务分工、并行发现和协调汇总 |
 | `ue-cpp-gameplay` | C++ 游戏逻辑（Actor、Component、Subsystem） |
 | `ue-blueprint-workflow` | 蓝图工作流（事件图、函数图、Widget） |
 | `ue-plugin-module-dev` | 插件与模块开发（.uplugin、Build.cs、命名规范） |
@@ -173,10 +175,12 @@ Use UE Game Dev to add tests for this UE feature.
 ```
 
 1. `ue-game-dev-router` 接收用户请求，分析所涉及的 UE 领域。
-2. 路由器先判断阶段：入口判断、阶段检测、项目记忆、需求简报、实施计划、具体实现、日志/崩溃分诊、调试验证、完成验收或显式打包。
+2. 路由器先判断阶段：入口判断、阶段检测、项目记忆、多 Agent 编排、需求简报、实施计划、具体实现、日志/崩溃分诊、调试验证、完成验收或显式打包。
 3. 路由器分发到最匹配的领域技能，例如 C++ 游戏逻辑会进入 `ue-cpp-gameplay`。
 4. 领域技能提供专业化工作流、检查清单、命名规范和参考模板。
 5. 跨领域任务会按优先级组合多个技能，例如功能简报 + C++ 实施计划 + 蓝图交接 + 自动化测试。
+
+多 Agent 能力是轻量编排层，适合“用多 Agent 熟悉旧项目”“full 模式审查插件架构”“多专家排查打包失败风险”这类复杂请求。它会先给出 Coordinator、Project Explorer、Architecture Reviewer、C++ Implementer、Blueprint Integrator、Verifier 等角色分工、文件所有权边界、并行发现结果和后续应进入的具体技能；普通单点问题仍会直接路由到对应技能。
 
 > 自动打包能力只在用户明确提出“打包 / 自动打包 / 一键打包 / RunUAT / BuildCookRun / CI 打包 / 发版流水线”等请求时使用。普通性能检查、发布前检查或打包失败诊断仍由 `ue-performance-packaging` 处理，不会被动触发打包。
 

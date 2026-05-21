@@ -5,6 +5,22 @@
     "expected_skill": "ue-project-onboarding"
   },
   {
+    "name": "multi_agent_old_project_onboarding",
+    "prompt": "用多 Agent 熟悉这个旧 UE 项目，准备二开",
+    "expected_skill": "ue-multi-agent-workflow"
+  },
+  {
+    "name": "multi_agent_architecture_review",
+    "prompt": "full 模式审查这个 UE 插件架构，包含 C++、蓝图、打包风险",
+    "expected_skill": "ue-multi-agent-workflow"
+  },
+  {
+    "name": "multi_agent_packaging_failure_log_not_automation",
+    "prompt": "用多 Agent 排查打包失败，查看 Saved/Logs 和 Build.cs",
+    "expected_skill": "ue-multi-agent-workflow",
+    "forbidden_skill": "ue-build-release-automation"
+  },
+  {
     "name": "feature_brief",
     "prompt": "我想做一个背包系统，先帮我整理需求简报",
     "expected_skill": "ue-feature-brief"
@@ -54,7 +70,8 @@
   {
     "name": "enhanced_input",
     "prompt": "排查 Enhanced Input 的 IA_Jump 为什么不触发",
-    "expected_skill": "ue-input-enhanced"
+    "expected_skill": "ue-input-enhanced",
+    "forbidden_skill": "ue-multi-agent-workflow"
   },
   {
     "name": "blueprint_api_handoff",
