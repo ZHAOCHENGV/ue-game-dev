@@ -13,6 +13,12 @@ Use this skill as a lightweight orchestration layer for complex UE work. It coor
 
 Route simple single-domain tasks to the specific skill instead. Multi-agent work is for complex or explicit coordination, not a default wrapper around every UE request.
 
+Do not load these references for simple single-domain work. Load them only after this skill selects `lean` or `full` mode:
+
+- `references/ue-agent-roles.md` for role responsibilities, ownership boundaries, and optional specialists.
+- `references/ue-agent-output-template.md` for the full report shape.
+- `references/ue-agent-conflict-resolution.md` when roles disagree, file ownership overlaps, evidence conflicts, or packaging boundaries are at risk.
+
 ## Modes
 
 | Mode | Use When | Shape |
@@ -21,7 +27,7 @@ Route simple single-domain tasks to the specific skill instead. Multi-agent work
 | `lean` | Default for complex UE tasks with 2-3 independent perspectives. | Coordinator plus the minimum specialists needed. |
 | `full` | The user asks for full review, architecture review, large refactor, release risk, or broad old-project analysis. | Coordinator plus all relevant specialists and a verifier. |
 
-If the user names a mode, respect it. Otherwise choose `lean` unless the task spans 4+ domains or has release/blocking risk.
+If the user names a mode, respect it. Otherwise choose `lean` unless the task spans 4+ domains or has release/blocking risk. If the request is narrow even though it mentions a UE domain, choose `solo` and explain the focused skill route in one sentence.
 
 ## Role Palette
 
@@ -39,6 +45,8 @@ Use only the roles needed:
 
 1. Identify whether the request is explicit multi-agent or genuinely cross-domain.
 2. Select `solo`, `lean`, or `full`.
+   - If `solo`, stop here and route to the focused sibling skill without producing a multi-agent report.
+   - If `lean` or `full`, read only the reference files needed for the selected mode.
 3. Create an Agent Plan before implementation:
    - goal and non-goals
    - selected roles

@@ -15,6 +15,11 @@ PACKAGING_OPENAI = SKILLS / "ue-build-release-automation" / "agents" / "openai.y
 PACKAGING_SKILL = SKILLS / "ue-build-release-automation" / "SKILL.md"
 ROUTER_SKILL = SKILLS / "ue-game-dev-router" / "SKILL.md"
 MULTI_AGENT_SKILL = SKILLS / "ue-multi-agent-workflow" / "SKILL.md"
+MULTI_AGENT_REFERENCES = [
+    SKILLS / "ue-multi-agent-workflow" / "references" / "ue-agent-roles.md",
+    SKILLS / "ue-multi-agent-workflow" / "references" / "ue-agent-output-template.md",
+    SKILLS / "ue-multi-agent-workflow" / "references" / "ue-agent-conflict-resolution.md",
+]
 
 
 def fail(message: str) -> None:
@@ -124,11 +129,17 @@ def validate_multi_agent_support() -> None:
     multi_agent_skill = read_text(MULTI_AGENT_SKILL)
     router_skill = read_text(ROUTER_SKILL)
 
-    for token in ["Mode", "Coordinator", "Parallel Discovery Results", "BLOCKED", "Ownership boundaries"]:
+    for token in ["Mode", "Coordinator", "Parallel Discovery Results", "BLOCKED", "Ownership boundaries", "Do not load these references"]:
         if token not in multi_agent_skill:
             fail(f"multi-agent skill should mention {token}")
     if "$ue-multi-agent-workflow" not in router_skill:
         fail("router must reference ue-multi-agent-workflow")
+
+    for path in MULTI_AGENT_REFERENCES:
+        text = read_text(path)
+        for token in ["Coordinator", "BLOCKED", "simple", "packaging"]:
+            if token not in text:
+                fail(f"{path.relative_to(ROOT)} should mention {token}")
 
 
 def route_prompt(prompt: str) -> str:

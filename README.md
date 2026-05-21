@@ -184,6 +184,43 @@ Use UE Game Dev to add tests for this UE feature.
 
 > 自动打包能力只在用户明确提出“打包 / 自动打包 / 一键打包 / RunUAT / BuildCookRun / CI 打包 / 发版流水线”等请求时使用。普通性能检查、发布前检查或打包失败诊断仍由 `ue-performance-packaging` 处理，不会被动触发打包。
 
+## Agent 编排说明
+
+`ue-multi-agent-workflow` 目前提供 **13 个角色位**，但不会每次全部启用。它默认把多 Agent 当成复杂任务的协调协议，而不是简单任务的固定流程。
+
+核心角色：
+
+| Agent 角色 | 负责内容 |
+|------|------|
+| Coordinator | 范围、分工、依赖顺序、冲突处理和最终汇总 |
+| Project Explorer | 旧项目/现有项目的只读结构侦察 |
+| UE Architecture Reviewer | 模块边界、Runtime/Editor 拆分、Blueprint/C++ 所有权 |
+| C++ Implementer | C++ API、反射暴露、UObject 生命周期和编译风险 |
+| Blueprint Integrator | 蓝图节点、pin 连接、默认值、资产交接和设计师实现步骤 |
+| Verifier | 构建、蓝图编译、PIE、自动化测试、日志证据和完成判断 |
+
+可选专项角色：
+
+| Agent 角色 | 触发场景 |
+|------|------|
+| GAS/Networking | GAS、RPC、复制、预测、多人 PIE |
+| UI/UMG | Widget Blueprint、CommonUI、HUD、输入模式、DPI |
+| Enhanced Input | Input Action、Mapping Context、重绑定、UI 焦点 |
+| AI/Animation | Behavior Tree、EQS、StateTree、动画蓝图、蒙太奇 |
+| Render/VFX | 材质、Niagara、后处理、shader、视觉性能 |
+| Packaging/Release | 打包风险、发布准备、Project Launcher、CI 发布关注点 |
+| Log/Crash Triage | UBT/UHT/UAT、`Saved/Logs`、callstack、ensure/assert |
+
+模式选择：
+
+| 模式 | 用法 |
+|------|------|
+| `solo` | 简单单域任务，直接回到具体技能，不输出多 Agent 报告 |
+| `lean` | 默认复杂任务，通常启用 Coordinator + 1-2 个专项角色 |
+| `full` | 旧项目深度接手、插件架构审查、跨 C++/蓝图/UI/资产/测试/发布风险的大任务 |
+
+为避免简单任务变重，下面这些场景不会默认启用多 Agent：单个 Enhanced Input 事件不触发、一个 `BlueprintCallable` 方法的蓝图接法、蓝图单点连线、单条 `RunUAT` 命令生成、普通解释性问题。多 Agent 参考协议位于 `skills/ue-multi-agent-workflow/references/`，包括角色职责、统一输出模板和冲突处理规则，仅在 `lean` 或 `full` 模式按需读取。
+
 ## 目录结构
 
 ```text

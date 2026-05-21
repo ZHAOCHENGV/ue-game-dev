@@ -4,6 +4,19 @@
 
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
+## [0.9.1] - 2026-05-21
+
+### 新增
+- `ue-multi-agent-workflow/references/ue-agent-roles.md`：补充 13 个 UE Agent 角色位、职责边界、触发条件和文件所有权规则。
+- `ue-multi-agent-workflow/references/ue-agent-output-template.md`：补充 `lean` / `full` 多 Agent 统一输出模板、状态含义和打包边界输出行。
+- `ue-multi-agent-workflow/references/ue-agent-conflict-resolution.md`：补充角色冲突、文件冲突、Blueprint/C++ 交接冲突和显式打包边界冲突的处理协议。
+
+### 变更
+- `ue-multi-agent-workflow` 主技能改为按需读取 reference，并明确 `solo` 模式不输出多 Agent 报告，避免简单任务流程过重。
+- `README.md` 新增 Agent 编排说明，列出核心角色、可选专项角色、模式选择和不会默认启用多 Agent 的简单场景。
+- `plugin.json` 版本更新到 `0.9.1`。
+- `scripts/validate_plugin.py` 增加多 Agent reference 文件存在性和关键边界内容校验。
+
 ## [0.9.0] - 2026-05-21
 
 ### 新增
