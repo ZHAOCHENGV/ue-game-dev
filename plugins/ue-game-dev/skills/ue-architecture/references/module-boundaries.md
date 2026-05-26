@@ -14,6 +14,16 @@
 - UI/client code should not own authoritative gameplay state.
 - Networking authority should live in server-owned gameplay systems.
 - Break cycles with a contracts/common module or interfaces.
+- External service clients should depend inward on shared DTOs/contracts; gameplay systems consume typed service events rather than owning HTTP/WebSocket/TCP details.
+- Async workers should have an owning subsystem/component/service that defines cancellation and teardown.
+
+## Service Ownership
+
+- Use `UGameInstanceSubsystem` for app/session level clients that must survive map travel.
+- Use `UWorldSubsystem` for world/session-scoped services.
+- Use `ULocalPlayerSubsystem` for local user state or UI-facing per-player service data.
+- Use editor modules or `UEditorSubsystem` for tool-only service integration.
+- Keep widgets as subscribers. They should not own network clients, socket loops, or backend auth state.
 
 ## Reflection And Assets
 

@@ -21,6 +21,8 @@ Use this skill before broad implementation or refactors. Output the intended own
 - Keep reflected APIs narrow. Only expose `UCLASS`, `USTRUCT`, `UENUM`, `UFUNCTION`, and `UPROPERTY` when Blueprint, serialization, config, replication, or editor tooling needs them.
 - Do not move reflected classes across modules or paths without listing Blueprint asset and redirector impact.
 - Do not prescribe exact descriptor fields or dependency arrays here; hand off to `$ue-plugin-module-dev` for concrete module/plugin files.
+- Prefer subsystems for long-lived runtime/editor services and `UDeveloperSettings` for project-configurable defaults instead of hiding global state in actors, widgets, or module singletons.
+- Separate external service clients from gameplay authority. HTTP/WebSocket/TCP clients should feed typed events into game systems; they should not replace Unreal replication or server authority.
 
 ## Game Features And Modular Gameplay
 
@@ -44,3 +46,5 @@ Use this skill before broad implementation or refactors. Output the intended own
 - Read `references/module-boundaries.md` for module graph and boundary review.
 - Read `references/architecture-templates.md` for module dependency graph templates, Game Feature Plugin structure, and shared contracts module patterns.
 - Use `$ue-plugin-module-dev` when the task needs concrete `.uplugin`, module descriptor, plugin folder, export macro, or naming-convention guidance.
+- Use `$ue-async-systems` when architecture depends on background work, cancellation, or game-thread handoff.
+- Use `$ue-external-services` when architecture depends on backend APIs, HTTP/WebSocket/TCP clients, or external processes.

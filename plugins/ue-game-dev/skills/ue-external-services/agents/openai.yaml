@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE External Services"
+  short_description: "Integrate Unreal with HTTP, JSON, WebSocket, and TCP services."
+  default_prompt: "Use $ue-external-services to design Unreal HTTP, JSON, WebSocket, or TCP service integration."

@@ -79,6 +79,24 @@
     "expected_skill": "ue-cpp-gameplay"
   },
   {
+    "name": "async_blueprint_node",
+    "prompt": "帮我做一个 UBlueprintAsyncActionBase 异步蓝图节点，后台线程完成后回到 GameThread 广播结果",
+    "expected_skill": "ue-async-systems",
+    "forbidden_skill": "ue-blueprint-workflow"
+  },
+  {
+    "name": "external_http_service",
+    "prompt": "帮我在 UE 里接一个 HTTP JSON 接口，把返回数据分发给 UI",
+    "expected_skill": "ue-external-services",
+    "forbidden_skill": "ue-gas-networking"
+  },
+  {
+    "name": "external_websocket_client",
+    "prompt": "设计一个 WebSocket 客户端连接外部服务，带心跳、重连和消息分发",
+    "expected_skill": "ue-external-services",
+    "forbidden_skill": "ue-gas-networking"
+  },
+  {
     "name": "feature_done",
     "prompt": "这个 UE 功能做完了，帮我做完成验收和交接清单",
     "expected_skill": "ue-feature-done"

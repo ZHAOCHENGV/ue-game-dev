@@ -39,7 +39,7 @@ Use only the roles needed:
 - C++ Implementer: runtime/editor C++ APIs, reflection exposure, UObject lifetime, and compile risks.
 - Blueprint Integrator: Blueprint graph handoff, node names, pins, event ownership, asset setup, and designer-facing steps.
 - Verifier: build, Blueprint compile, PIE, automation tests, log/crash triage, and evidence checklist.
-- Optional specialists: GAS/Networking, UI/UMG, Enhanced Input, AI/Animation, Render/VFX, Packaging/Release, Log/Crash Triage.
+- Optional specialists: Async Systems, External Services, GAS/Networking, UI/UMG, Enhanced Input, AI/Animation, Render/VFX, Packaging/Release, Log/Crash Triage.
 
 ## Coordination Protocol
 
@@ -97,7 +97,7 @@ Coordinator Synthesis
 - User action needed:
 ```
 
-For implementation work, include exact follow-up skill routing such as `$ue-project-onboarding`, `$ue-architecture`, `$ue-cpp-gameplay`, `$ue-blueprint-workflow`, `$ue-testing-automation`, `$ue-log-crash-triage`, or `$ue-performance-packaging`.
+For implementation work, include exact follow-up skill routing such as `$ue-project-onboarding`, `$ue-architecture`, `$ue-cpp-gameplay`, `$ue-async-systems`, `$ue-external-services`, `$ue-blueprint-workflow`, `$ue-testing-automation`, `$ue-log-crash-triage`, or `$ue-performance-packaging`.
 
 ## When Not To Use
 

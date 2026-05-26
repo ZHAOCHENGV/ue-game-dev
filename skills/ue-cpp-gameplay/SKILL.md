@@ -35,6 +35,7 @@ Use this skill for concrete Unreal C++ gameplay work. Favor project-local patter
 - Input: use Enhanced Input if the project already does; bind in pawn/controller setup and keep action handlers small.
 - Blueprint API: expose minimal stable calls and data; avoid `BlueprintReadWrite` for authoritative state unless designers truly need mutation.
 - Blueprint handoff: after C++ changes, state the target Blueprint class/asset, parent C++ class, node/event/function name, expected input values, output handling, and the PIE/editor validation step.
+- Subsystems and settings: prefer `UGameInstanceSubsystem`, `UWorldSubsystem`, `ULocalPlayerSubsystem`, `UEditorSubsystem`, or `UDeveloperSettings` when lifetime/configuration should be explicit instead of hidden in actors or widgets.
 
 ## References
 
@@ -42,3 +43,5 @@ Use this skill for concrete Unreal C++ gameplay work. Favor project-local patter
 - Read `references/cpp-patterns.md` when touching UObject ownership, reflection, module boundaries, or gameplay class design.
 - Read `references/blueprint-api.md` before exposing C++ to Blueprint or splitting work between C++ and Blueprint.
 - Read `references/validation.md` before claiming a UE C++ change is complete.
+- Use `$ue-async-systems` when work involves background execution, game-thread handoff, async Blueprint nodes, cancellation, or thread lifetime.
+- Use `$ue-external-services` when work involves HTTP, WebSocket, TCP, JSON backends, service clients, or external tool/process communication.

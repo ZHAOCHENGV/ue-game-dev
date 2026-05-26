@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE Async Systems"
+  short_description: "Design safe Unreal async work and Blueprint async nodes."
+  default_prompt: "Use $ue-async-systems to design safe Unreal async C++ work, game-thread handoff, or Blueprint async nodes."
