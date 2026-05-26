@@ -1,4 +1,4 @@
 interface:
   display_name: "UE Enhanced Input"
-  short_description: "Design and debug Unreal Enhanced Input flows."
-  default_prompt: "Use $ue-input-enhanced to implement this Enhanced Input action and mapping flow."
+  short_description: "设计和排查 UE Enhanced Input 输入流程。"
+  default_prompt: "使用 $ue-input-enhanced 实现或排查这个 Enhanced Input Action 与 Mapping 流程。"

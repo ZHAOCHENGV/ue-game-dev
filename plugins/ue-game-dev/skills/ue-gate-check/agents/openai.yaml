@@ -1,4 +1,4 @@
 interface:
   display_name: "UE Gate Check"
-  short_description: "Assess Unreal workflow readiness before phase changes."
-  default_prompt: "Use $ue-gate-check to assess readiness for the next Unreal workflow phase."
+  short_description: "评估 UE 工作进入下一阶段的就绪度。"
+  default_prompt: "使用 $ue-gate-check 评估这个 Unreal 工作是否能进入下一阶段。"

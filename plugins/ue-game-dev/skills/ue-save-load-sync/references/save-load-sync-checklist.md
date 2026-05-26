@@ -1,31 +1,34 @@
-# Save Load Sync Checklist
+# 存档与同步检查清单
 
-## Save Schema
+## 数据
 
-- Version field.
-- Stable identifiers.
-- Primitive/struct data only where possible.
-- Soft object paths or primary asset ids for asset references.
-- Migration path for old saves.
+- 需要持久化的字段。
+- 不应持久化的运行时临时状态。
+- 稳定 ID。
+- 资产 soft reference。
+- schema version。
 
-## Restore Flow
+## 流程
 
-- Validate data before applying.
-- Resolve assets/classes.
-- Spawn or find runtime actors.
-- Apply state in dependency order.
-- Report partial failures.
+- 保存时机。
+- 加载时机。
+- 迁移。
+- 恢复顺序。
+- 失败回退。
 
-## Replication Flow
+## 网络
 
-- Server owns durable multiplayer state.
-- RPCs carry client intent, not final truth.
-- Replicated properties carry durable observable state.
-- RepNotify updates client presentation.
-- Consider late join, respawn, seamless travel, and reconnect.
+- server authority。
+- replicated runtime state。
+- RPC 触发。
+- RepNotify 与加载值的顺序。
+- late join。
 
-## Conflict Rules
+## 验证
 
-- Decide whether loaded state overrides runtime state.
-- Decide whether runtime authority rejects stale save data.
-- Keep local-only saves separate from server-authoritative saves.
+- 新档。
+- 旧档。
+- 损坏档。
+- 缺资产。
+- 地图切换。
+- 多 PIE。

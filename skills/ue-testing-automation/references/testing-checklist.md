@@ -1,34 +1,35 @@
-# Testing Checklist
+# UE 测试清单
 
-## Choose The Layer
+## 测试层级
 
-- Pure C++ behavior: `AutomationSpec`, simple automation tests, or regular unit-style helpers inside an Unreal automation test.
-- UObject and reflection API: automation test that constructs objects with `NewObject`, checks metadata-facing behavior, and avoids editor-only dependencies unless required.
-- Blueprint-facing API: C++ contract test plus Blueprint compile or editor smoke validation.
-- Runtime gameplay: PIE or Functional Test map with explicit setup actors and expected state.
-- Networked gameplay: server plus at least one client; verify authority, ownership, replication, RPC order, prediction, and late join behavior when relevant.
-- Editor tooling: editor automation or smoke path for startup registration, command execution, UI creation, transactions, undo/redo, package dirtiness, and shutdown cleanup.
-- Asset pipeline: asset validation pass for naming, folder policy, references, redirectors, Blueprint compile, DataAsset required fields, material/Niagara/animation setup, and cookability.
-- Packaging: targeted cook/package smoke for touched platform and module set.
+- C++ 小逻辑：AutomationSpec 或 `FAutomationTestBase`。
+- Gameplay 流程：Functional Test、PIE 场景或自动化地图。
+- Blueprint/资产：编译、引用、默认值、PIE 行为。
+- 编辑器工具：注册、菜单、Tab、Undo/Redo、禁用插件。
+- 网络：Listen/Dedicated、多 PIE、authority、replication、RPC。
+- 打包：Cook、packaged build smoke、平台配置。
 
-## Plugin And Module Checks
+## 选择原则
 
-- `.uplugin` lists test/editor/runtime modules with correct `Type` and `LoadingPhase`.
-- Runtime modules do not depend on `UnrealEd`, `AssetTools`, `PropertyEditor`, `ToolMenus`, or other editor-only modules.
-- Editor tests live in editor/test modules rather than shipping runtime modules.
-- Public headers remain minimal; tests should not require private headers from another module unless the project has a deliberate friend/test pattern.
-- Export macros are present on public types used across module boundaries.
+- 风险高、共享逻辑、容易回归的代码优先自动化。
+- 资产和 UI 改动至少要有手工/PIE 验证路径。
+- 多人和异步功能要覆盖失败、取消、延迟和 owner 销毁。
+- 无法自动化时写清手工步骤和证据。
 
-## Assertions To Prefer
+## Automation 命令要素
 
-- Assert observable behavior: replicated value changed, ability activated, widget state updated, asset was created, command registered, or package cooked.
-- Assert failure behavior: invalid input rejected, missing asset logged, authority denied, RPC ignored, task aborts cleanly, or tool reports a user-facing error.
-- Assert cleanup: delegates removed, timers cleared, spawned actors destroyed, tabs unregistered, customizations unregistered, and transient packages not left dirty.
-- Assert naming using the project convention first, then Epic-style asset pattern `[AssetTypePrefix]_[AssetName]_[Descriptor]_[OptionalVariantLetterOrNumber]`.
+- 项目路径。
+- Test filter。
+- NullRHI 或真实渲染需求。
+- 日志输出位置。
+- 失败时如何定位首个错误。
 
-## Run Notes
+## 证据
 
-- Prefer targeted filters over running all editor automation during iteration.
-- Record the exact Unreal version and target because automation behavior can differ across UE4, UE5.0-5.4, UE5.5, UE5.6, and later versions.
-- When a full automation run is too expensive, keep a fast smoke path plus a named manual validation path.
-- Treat a passing compile as insufficient for Blueprint, editor tool, networking, rendering, Niagara, animation, and packaging changes.
+- 记录命令、场景、结果、日志路径和截图/视频（如适用）。
+- 未运行的验证必须写“未验证”和原因。
+- 结论使用 `PASS`、`CONCERNS` 或 `FAIL`。
+
+## 回归矩阵
+
+- 新档/旧档、Editor/PIE/Standalone/packaged、单人/多人、键鼠/手柄、目标平台。

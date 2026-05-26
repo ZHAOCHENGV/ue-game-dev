@@ -1,72 +1,38 @@
-# UE Task
+# UE 任务模板
 
-## Header
+## 背景
 
-```text
-ID:
-Title:
-Status: Draft
-Stage:
-Project:
-UE Version:
-Target Platform:
-Owner Skill:
-Created:
-Updated:
-```
+- 项目：
+- UE 版本：
+- 平台：
+- 相关模块/插件：
+- 相关 Blueprint/资产：
 
-## Goal
+## 目标
 
-One sentence describing the player, designer, editor, or release-facing outcome.
+- 用户可见行为：
+- 开发者/设计师工作流：
+- 非目标：
 
-## Scope
+## 范围
 
-### In Scope
+- C++：
+- Blueprint：
+- 资产：
+- 配置：
+- UI：
+- 网络/存档：
 
--
+## 验收
 
-### Out Of Scope
+- 构建：
+- Blueprint 编译：
+- PIE/多人：
+- 自动化测试：
+- 性能/打包风险：
 
--
+## 风险
 
-## Context
-
-- `.uproject`:
-- Modules:
-- Existing classes:
-- Existing Blueprint/assets:
-- Config/data:
-
-## Implementation Plan
-
-### C++
-
-- Files:
-- API exposed to Blueprint:
-- Validation:
-
-### Blueprint And Assets
-
-- Assets:
-- Nodes/graphs:
-- Compile checks:
-
-### Tests And Validation
-
-- Build command:
-- Automation/Functional test:
-- PIE/editor checks:
-- Multiplayer checks:
-- Packaging risk:
-
-## Acceptance Criteria
-
-- [ ]
-
-## Evidence
-
-- Build:
-- Blueprint:
-- PIE/editor:
-- Tests:
-- Remaining manual checks:
+- 已知风险：
+- 未确认问题：
+- 回滚点：

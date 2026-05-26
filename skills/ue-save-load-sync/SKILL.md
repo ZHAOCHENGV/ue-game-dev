@@ -1,64 +1,44 @@
 ---
 name: ue-save-load-sync
-description: Unreal Engine save/load and durable state synchronization workflow for SaveGame schema design, serialization, restore pipelines, persistent identifiers, version migration, replicated runtime state, RepNotify, RPC entry points, and server-authoritative validation. Use when requests involve persistence, loading state back into gameplay, checkpointing, late join restore, or deciding what must be saved versus replicated. Use `ue-gas-networking` for ability prediction, ASC setup, attributes, effects, and Gameplay Cues.
+description: 当 Unreal Engine 任务涉及 SaveGame schema、序列化、恢复管线、持久 ID、版本迁移、replicated runtime state、RepNotify、RPC 入口点、云存档或本地/网络状态同步时使用。
 ---
 
 # UE Save Load Sync
 
-Use this skill when gameplay state must persist, replicate, or both.
+## 概览
 
-## First Pass
+这个技能负责存档、加载和持久状态同步。先区分“可持久化状态”和“运行时复制状态”，再设计 schema、版本迁移、恢复顺序和网络边界。
 
-1. Define what must persist across sessions and what only exists as runtime replicated state.
-2. Identify owners: SaveGame object, GameInstance, GameState, PlayerState, Character/Pawn, ActorComponent, subsystem, or world actor.
-3. Define stable identifiers for actors/items/quests and a versioned schema.
-4. Define restore timing: startup, level load, player login, respawn, streaming level activation, or manual checkpoint.
+## 使用场景
 
-## Save/Load Rules
+- 实现 `USaveGame`、自定义 `FArchive`、配置存档、云存档或本地存档。
+- 排查加载后状态缺失、Actor 重复生成、版本不兼容、RepNotify 覆盖存档值。
+- 设计持久 ID、资产引用、关卡切换、多人会话中的保存时机。
 
-- Keep SaveGame schemas versionable; avoid fragile implicit ordering.
-- Serialize stable data, not transient UObject pointers.
-- Restore with validation and conflict handling.
-- Report partial restore results instead of silently corrupting state.
-- Keep designer-authored static asset defaults separate from mutable runtime state.
+## 工作流程
 
-## Schema Choice
+1. 列出需要持久化的数据：玩家、背包、任务、世界 Actor、设置、运行时生成对象。
+2. 定义 schema：结构体、版本号、持久 ID、软引用、默认值和迁移策略。
+3. 设计保存/加载时机：checkpoint、手动保存、地图切换、退出、云同步。
+4. 区分网络状态：server authority、replicated runtime state、RPC 触发和客户端表现。
+5. 验证新档、旧档、坏档、缺资产、多人、关卡切换和 packaged build。
 
-- Use `USaveGame` for ordinary slot-based player, profile, settings, checkpoint, and local progression data.
-- Use custom `FArchive` or structured archives only when the project needs compact binary formats, custom versioning, streaming, encryption, or large data sets.
-- Use Primary Asset Ids, soft object paths, stable GUIDs, or project-defined row keys for durable references.
-- Store schema version and migration notes beside the data that needs migration.
+## 规则
 
-## Restore Timing
+- 存档不要直接保存临时 Actor 指针；使用稳定 ID、软引用或可重建数据。
+- schema 需要版本号和迁移路径。
+- 加载顺序必须处理依赖：Subsystem、GameInstance、World、PlayerState、Actor、UI。
+- 多人游戏通常由服务器决定权威持久状态。
+- 云同步要定义冲突解决、离线行为和失败回退。
 
-- Restore global profile/settings before gameplay systems read them.
-- Restore world state after required maps, streamed levels, and asset registries are available.
-- Restore player state at login, respawn, possession, or checkpoint boundaries, not from arbitrary widgets.
-- Defer presentation updates to RepNotify, delegates, or explicit refresh events after authoritative state is applied.
+## 输出
 
-## Cloud And Local Sync
+- 数据模型：保存字段、版本、ID、引用和默认值。
+- 流程：保存、加载、迁移、恢复、网络同步。
+- Blueprint/C++ 边界：API、事件、错误处理和 UI 通知。
+- 验证：新旧档、损坏档、多 PIE、关卡切换和 packaged build。
 
-- Separate local slot format from cloud transport format.
-- Define conflict policy: newest timestamp, server-authoritative revision, manual choice, or merge by subsystem.
-- Keep write operations atomic where possible: temporary file, commit/rename, then update slot metadata.
-- Report sync failures as recoverable states unless data corruption is confirmed.
+## 参考
 
-## Network Sync Rules
-
-- Server owns durable multiplayer gameplay state.
-- Use RPCs for client intent and replicated properties/RepNotify for durable observable state.
-- Do not assume single-player save logic can run unchanged in multiplayer.
-- Reconcile loaded state with current replicated state, authority, late join, and respawn flows.
-- Do not model GAS ability prediction or cue behavior here; use `$ue-gas-networking` for ASC and ability-specific replication.
-
-## Migration And Validation
-
-- Test loading the newest schema, at least one older schema, and an invalid/corrupt slot.
-- Log migrated version, ignored fields, missing assets, and partial restore failures.
-- Validate save timing under level travel, streaming activation, disconnect, reconnect, and shutdown.
-- Keep destructive reset/delete operations explicit and user-approved.
-
-## References
-
-- Read `references/save-load-sync-checklist.md` for schema, restore, replication, and migration review.
-- Read `references/save-load-templates.md` for SaveGame class, stable identifiers, save/load flow, and version migration code templates.
+- 存档清单读取 `references/save-load-sync-checklist.md`。
+- 模板读取 `references/save-load-templates.md`。

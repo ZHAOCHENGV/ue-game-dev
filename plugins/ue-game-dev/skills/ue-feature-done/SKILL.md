@@ -1,62 +1,45 @@
 ---
 name: ue-feature-done
-description: Use when Unreal Engine work is ready to close out, before claiming completion, committing, handing off, or asking the user to test; especially for C++, Blueprint, assets, modules, UI, networking, tests, performance, packaging readiness, or production-facing changes.
+description: 当 Unreal Engine 工作准备收尾、声称完成、提交、交接或用户询问是否已完成时使用，尤其适用于 C++、Blueprint、资产、模块、UI、网络、测试、性能或打包相关任务。
 ---
 
 # UE Feature Done
 
-## Overview
+## 概览
 
-Use this skill as the UE completion gate. Verify the changed surface, explain Blueprint/asset handoff, list residual risks, and avoid claiming completion without fresh evidence.
+这个技能用于完成验收。不要只说“完成了”；要给出证据、未验证项、风险、回归范围和交接说明。
 
-## Closeout Workflow
+## 使用场景
 
-1. Re-read the user's request and any brief/plan to confirm scope.
-2. Inspect changed files and asset instructions; do not rely on memory.
-3. Run the smallest available verification: targeted build, script validation, JSON/YAML validation, skill validation, automation test, or static check.
-4. For Blueprint work, state compile/status expectations and exact graph validation steps.
-5. For C++ Blueprint APIs, include the user-facing Blueprint implementation/call steps.
-6. For multiplayer/GAS, state server/client validation and authority expectations.
-7. For packaging readiness, keep it diagnostic unless the user explicitly asked to package.
-8. Produce a verification evidence table; use `templates/ue-test-evidence.md` when the user wants a saved artifact.
-9. Report what was verified, what was not verified, and what the user should check in the editor.
+- 功能实现后需要确认是否可交付。
+- 用户要求提交前检查、验收清单、测试证据或交接说明。
+- C++、Blueprint、资产、UI、网络、性能或打包风险需要收尾记录。
 
-## Done Output
+## 工作流程
 
-Use this shape:
+1. 回看原始目标和范围，确认是否有偏离。
+2. 汇总实际改动：代码、Blueprint、资产、配置、文档、测试。
+3. 运行合适验证：构建、Blueprint compile、PIE、自动化测试、日志、多人、打包烟测。
+4. 标记未验证项和原因，不把未跑过的检查写成通过。
+5. 输出交接：如何测试、已知风险、后续建议和回滚点。
 
-```text
-UE Feature Done
-- Scope completed:
-- Files/assets changed:
-- Verification run:
-- Evidence table:
-- Blueprint/editor handoff:
-- Remaining manual checks:
-- Risks or follow-ups:
-```
+## 证据要求
 
-## Evidence Table
+- C++：目标模块构建、UHT/链接结果、关键日志。
+- Blueprint：编译状态、事件唯一性、Pin 兼容、PIE 流程。
+- UI：输入焦点、DPI/窗口尺寸、手柄/键鼠。
+- 网络：server/client、authority、replication、RPC 场景。
+- 性能/打包：stat/profiling、Cook/package 或明确未执行原因。
 
-Include this table in closeout responses:
+## 输出
 
-| Check | Evidence | Result |
-|-------|----------|--------|
-| Targeted build | command or reason not run | PASS / CONCERNS / FAIL |
-| Blueprint compile | asset/class and expected status | PASS / CONCERNS / FAIL / N/A |
-| PIE/editor smoke | scenario | PASS / CONCERNS / FAIL / N/A |
-| Automated test | command/filter | PASS / CONCERNS / FAIL / N/A |
-| Multiplayer | client count / authority path | PASS / CONCERNS / FAIL / N/A |
-| Packaging risk | readiness check or explicit package command | PASS / CONCERNS / FAIL / N/A |
+- 结果：完成、部分完成或存在阻塞。
+- 变更摘要：文件/资产/配置和行为变化。
+- 验证证据：命令、场景、结果。
+- 未验证与风险：具体、诚实、可追踪。
+- 下一步：如果需要，给出最小后续行动。
 
-## Completion Rules
+## 参考
 
-- Do not say the work is complete unless a fresh verification command or explicit manual validation path supports it.
-- Do not bury unverified Blueprint or asset work.
-- Do not turn "ready for packaging" into automatic packaging.
-- If verification cannot run locally, say exactly why and provide the next best editor or command-line check.
-
-## References
-
-- Read `references/done-checklist.md` before final handoff or commit.
-- Use `templates/ue-test-evidence.md` if the user asks to save a verification record.
+- 验收清单读取 `references/done-checklist.md`。
+- 可使用 `templates/ue-test-evidence.md` 记录证据。

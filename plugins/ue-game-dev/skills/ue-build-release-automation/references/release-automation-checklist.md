@@ -1,44 +1,28 @@
-# Release Automation Checklist
+# 发版自动化检查清单
 
-## Preflight
+## 前置条件
 
-```text
-[ ] .uproject path is resolved and quoted.
-[ ] Engine path is resolved and version matches the project.
-[ ] Target platform and build configuration are explicit.
-[ ] Archive directory is outside Intermediate/Saved.
-[ ] Default maps are set in Project Settings > Maps & Modes.
-[ ] MapsToCook or Primary Asset rules include required maps.
-[ ] Runtime plugins support the target platform.
-[ ] Editor-only modules are not referenced by runtime modules.
-[ ] Project builds in the same configuration used for packaging.
-[ ] Packaging container mode follows the project convention: pak or IoStore.
-[ ] Signing credentials are present when platform requires them.
-```
+- 用户明确要求打包或发版自动化。
+- `.uproject`、UE 安装路径、平台、配置、地图和输出目录已确认。
+- 构建机器具备 SDK、证书、权限和磁盘空间。
+- 知道会写入 `Binaries/`、`Intermediate/`、`Saved/`、StagedBuilds 和 Archive 目录。
 
-## Execution
+## 命令
 
-- Print the exact command before running.
-- Keep the output log path.
-- Preserve the first `Error:` or `AutomationTool exiting with ExitCode=` block.
-- Do not delete previous artifacts unless the user asked for clean packaging.
-- Do not upload, sign, notarize, or publish artifacts unless the user explicitly requested that step.
+- 使用绝对路径。
+- 明确 `-platform`、`-clientconfig` / `-serverconfig`、`-build`、`-cook`、`-stage`、`-pak`、`-archive`。
+- 需要 server/client 分包时明确 target。
+- 地图列表、culture、pak、IoStore、prereqs 按项目策略设置。
 
-## Post-Package Smoke
+## 日志与产物
 
-```text
-[ ] Packaged executable exists.
-[ ] Build launches outside the editor.
-[ ] Startup map loads.
-[ ] Logs do not contain fatal startup errors.
-[ ] Basic input path works.
-[ ] Save/log directory is writable.
-[ ] Version/build identifier is visible or recorded.
-```
+- 记录 UAT log、Cook log、Project log、Archive 路径。
+- 上传或保存失败日志。
+- 产物命名包含项目、平台、配置、版本和 commit。
 
-## Failure Triage
+## 安全
 
-1. Report the first blocking error, not the last wall of log noise.
-2. Classify failure as build, cook, stage, archive, signing, platform SDK, missing asset, plugin dependency, or runtime startup.
-3. Suggest the smallest next command or editor check to unblock.
-4. Route to `$ue-performance-packaging` if the issue is a cook/package diagnostic task rather than automation generation.
+- CI secret 不进入源码。
+- 证书和 keystore 使用安全存储。
+- 自动化脚本不要删除未确认路径。
+- 大型产物输出到明确目录，避免污染工作区。

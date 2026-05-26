@@ -1,51 +1,47 @@
-# Debug Validation Templates
+# 调试报告模板
 
-## Log Category Setup
+```text
+Issue:
+Expected:
+Actual:
+Repro steps:
+Environment:
 
-```cpp
-// MyGame.h
-DECLARE_LOG_CATEGORY_EXTERN(LogMyGame, Log, All);
+Evidence:
+- Logs:
+- Breakpoints:
+- Debug commands:
+- Assets/classes:
 
-// MyGame.cpp
-DEFINE_LOG_CATEGORY(LogMyGame);
+Hypotheses:
+- Confirmed:
+- Ruled out:
+- Still open:
+
+Likely cause:
+Next action:
+Verification:
 ```
 
-## Network Debug Logging
+## 多人问题补充
 
-```cpp
-void DebugLogNetState(const AActor* Actor, const FString& Context)
-{
-#if !UE_BUILD_SHIPPING
-    if (!IsValid(Actor)) return;
-    const UWorld* World = Actor->GetWorld();
-    UE_LOG(LogMyGame, Log,
-        TEXT("[NET][%s] Actor=%s, NetMode=%s, Role=%s, RemoteRole=%s, Auth=%d"),
-        *Context, *Actor->GetName(),
-        World ? *UEnum::GetValueAsString(World->GetNetMode()) : TEXT("None"),
-        *UEnum::GetValueAsString(Actor->GetLocalRole()),
-        *UEnum::GetValueAsString(Actor->GetRemoteRole()),
-        Actor->HasAuthority());
-#endif
-}
+```text
+Server:
+Owning client:
+Simulated client:
+Authority owner:
+Replicated fields:
+RPC path:
+PIE setup:
 ```
 
-## Safe Pointer Validation
+## Blueprint 问题补充
 
-```cpp
-// 使用 ensure 进行开发期校验
-if (!ensure(IsValid(TargetActor)))
-{
-    UE_LOG(LogMyGame, Error, TEXT("%s: TargetActor invalid"), *FString(__FUNCTION__));
-    return;
-}
-```
-
-## Common Console Commands
-
-```
-stat fps / stat unit / stat game / stat net
-showflag.navigation 1
-ai.debug
-log LogMyGame Verbose
-obj list class=MyClass
+```text
+Blueprint asset:
+Graph:
+Event/node:
+Pin mismatch:
+Compile status:
+Runtime observation:
 ```

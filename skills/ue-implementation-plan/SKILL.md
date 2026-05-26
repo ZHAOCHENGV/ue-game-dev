@@ -1,58 +1,44 @@
 ---
 name: ue-implementation-plan
-description: Use when an Unreal Engine feature, bug fix, refactor, plugin/module change, Blueprint/C++ hybrid task, editor tool, UI flow, GAS/networking change, or production workflow needs a concrete implementation plan before files or assets are changed.
+description: 当 Unreal Engine 功能、Bug 修复、重构、插件/模块改动、Blueprint/C++ 混合任务、编辑器工具、UI 流程、GAS/网络改动或生产工作流需要在改文件或资产前形成具体实施计划时使用。
 ---
 
 # UE Implementation Plan
 
-## Overview
+## 概览
 
-Use this skill to create a concrete UE implementation plan that separates code, Blueprint/assets, config, tests, and verification. The plan should be small enough to execute safely and specific enough to avoid inventing project patterns.
+这个技能把明确需求拆成可执行计划。计划要覆盖 C++、Blueprint、资产、配置、测试、验证、风险和回滚点。
 
-## Planning Workflow
+## 使用场景
 
-1. Start from a feature brief, onboarding report, bug reproduction, or user requirement.
-2. Inspect project-local conventions before planning new files: `.uproject`, `Source/`, `Plugins/`, `Config/`, `.Build.cs`, target files, and similar classes/assets.
-3. Split work by UE ownership boundary:
-   - C++ runtime/editor code.
-   - Blueprint graph and asset setup.
-   - Config and module descriptors.
-   - Data assets, input assets, maps, widgets, VFX/audio/animation assets.
-   - Tests and validation.
-4. Assign the most specific domain skill to each work slice.
-5. Include verification gates after each risky slice, not only at the end.
-6. Keep explicit packaging automation out of the plan unless the user requested packaging.
+- 用户已经有需求简报或清楚目标，要求“怎么实现”。
+- 任务跨 C++、Blueprint、UI、资产、网络、存档、测试或打包风险。
+- 需要在动手前明确文件、顺序、依赖和验证。
 
-## Plan Output
+## 工作流程
 
-Use this shape:
+1. 读取项目结构和相关现有实现：`.uproject`、`Source/`、`Plugins/`、`Config/`、相邻类和资产命名。
+2. 明确范围：目标、非目标、接口、数据、资产、配置和平台限制。
+3. 拆解阶段：发现、代码、Blueprint、资产、配置、测试、验证、文档。
+4. 标记依赖和顺序：哪些必须先完成，哪些可并行。
+5. 写出验证矩阵：构建、Blueprint compile、PIE、多人、自动化、性能、打包风险。
 
-```text
-UE Implementation Plan
-1. Discovery and constraints
-2. C++/module changes
-3. Blueprint/asset changes
-4. Data/config changes
-5. Test and validation path
-6. Handoff notes
-```
+## 规则
 
-For each step include:
+- 不要用“实现功能”这种笼统步骤；每步要有文件/资产/行为边界。
+- Blueprint 和 C++ 混合任务必须说明谁拥有状态、谁提供 API、谁负责表现。
+- 未确认项目结构前，不编造具体路径；可写“先定位现有 X，再改相邻文件”。
+- 把风险和验证放进计划，不留到最后才想。
 
-- Files or asset names to inspect/create/change.
-- Owning skill, such as `$ue-cpp-gameplay` or `$ue-blueprint-workflow`.
-- Expected change.
-- Validation command or editor/PIE check.
-- Rollback or risk note when touching shared systems.
+## 输出
 
-## Required Gates
+- 目标与假设。
+- 文件/资产影响面。
+- 分阶段实施步骤。
+- Blueprint/C++/资产/配置交接。
+- 测试与验证矩阵。
+- 风险、回滚和开放问题。
 
-- C++ exposed to Blueprint: include Blueprint node search names, pins, and validation.
-- Enhanced Input: include `IA_`, `IMC_`, subsystem context addition, and binding owner.
-- Networking/GAS: include authority, prediction/replication, and PIE client count.
-- Editor tooling: include registration/unregistration symmetry.
-- Packaging: use `$ue-build-release-automation` only for explicit packaging requests.
+## 参考
 
-## References
-
-- Read `references/implementation-plan-template.md` when producing a user-facing plan.
+- 计划模板读取 `references/implementation-plan-template.md`。

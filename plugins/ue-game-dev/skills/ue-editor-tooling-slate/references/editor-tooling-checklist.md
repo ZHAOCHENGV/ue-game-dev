@@ -1,40 +1,28 @@
-# UE Editor Tooling Checklist
+# 编辑器工具检查清单
 
-## Module And Dependencies
+## 模块
 
-- Editor tooling belongs in an Editor module.
-- Runtime logic used by shipped builds belongs in a Runtime module.
-- Common editor dependencies include `UnrealEd`, `ToolMenus`, `Slate`, `SlateCore`, `EditorSubsystem`, `PropertyEditor`, `AssetTools`, `LevelEditor`, `EditorStyle`/`AppFramework`, and `Projects`.
-- Do not add editor-only dependencies to runtime modules.
+- Editor 模块与 Runtime 模块分离。
+- `.uplugin` Type、LoadingPhase、依赖和平台设置正确。
+- Runtime 不依赖 `UnrealEd`、`AssetTools`、Slate editor-only 模块。
 
-## Registrations
+## 注册/注销
 
-- Commands: register and unregister command lists/command infos.
-- Menus/toolbars: register with ToolMenus or extenders and unregister owner entries.
-- Tabs: register and unregister nomad tab spawners.
-- Details panels: register and unregister custom class/property layouts.
-- Asset tools: register and unregister asset type actions.
-- Styles/icons: initialize and shutdown style sets.
+- StartupModule 注册菜单、命令、Tab、Style、AssetTypeActions。
+- ShutdownModule 成对注销。
+- 热重载或 Editor 重启后不重复注册。
 
-## Editor UX
+## UI
 
-- Use transactions for undoable changes.
-- Mark modified packages dirty.
-- Respect selection state and multi-select behavior.
-- Avoid blocking the game/editor thread for long operations.
-- Provide progress and cancellation for expensive work.
-- Validate assets before mutating them.
+- `FUICommandList`、`ToolMenus`、`SDockTab`、`SWidget` 生命周期清楚。
+- Slate 不长期强持有易销毁 UObject。
+- Details customization 处理多选、空对象和属性变更。
 
-## Slate
+## 资产操作
 
-- Keep widget ownership in `TSharedRef`/`TSharedPtr`.
-- Avoid capturing raw UObject pointers in long-lived delegates without validity checks.
-- Use weak pointers for editor objects that can be destroyed.
-- Prefer event-driven refresh over polling.
+- 修改资产使用 transaction、dirty 标记和保存提示。
+- Factory、Asset Action、Content Browser 操作验证路径和命名冲突。
 
-## Validation
+## 验证
 
-- Open the editor with the plugin enabled.
-- Verify menu/tab/detail/action appears once.
-- Verify command works after hot reload or editor restart.
-- Verify shutdown/restart does not leave stale extenders or crash.
+- Editor 启动、禁用插件、热重载、Undo/Redo、资产选择、packaged build 边界。

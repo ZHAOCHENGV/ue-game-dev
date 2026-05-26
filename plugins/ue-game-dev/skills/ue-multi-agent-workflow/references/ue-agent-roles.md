@@ -1,43 +1,37 @@
-# UE Agent Roles
+# UE Agent 角色
 
-Use these roles only after `ue-multi-agent-workflow` has selected `lean` or `full` mode. For simple single-domain tasks, do not load this file; route directly to the focused UE skill.
+## 核心角色
 
-## Core Roles
+| 角色 | 职责 |
+|------|------|
+| Coordinator | 范围、角色、依赖顺序、冲突处理、最终综合和后续技能路由。 |
+| Project Explorer | 只读梳理旧项目/现有项目结构、模块、插件、资产命名和可读文档。 |
+| UE Architecture Reviewer | 模块边界、Runtime/Editor 拆分、Blueprint/C++ ownership boundaries、依赖方向。 |
+| C++ Implementer | C++ API、反射、UObject 生命周期、编译风险和 Blueprint 暴露面。 |
+| Blueprint Integrator | Blueprint 节点、Pin、默认值、事件、资产交接和设计师实现步骤。 |
+| Verifier | 构建、Blueprint compile、PIE、自动化测试、日志证据和完成判断。 |
 
-| Role | Use When | Owns | Must Not Do |
-|------|----------|------|-------------|
-| Coordinator | Any multi-agent run. | Scope, role selection, dependency order, conflicts, final synthesis. | Edit domain files without assigning ownership. |
-| Project Explorer | Existing or old UE project, unclear structure, onboarding. | Read-only scan of `.uproject`, `Source/`, `Plugins/`, `Config/`, asset filenames, `Saved/CodexWorkflow/`. | Modify project files or infer binary asset internals. |
-| UE Architecture Reviewer | Module, plugin, subsystem, Blueprint/C++ boundary, large refactor. | `.Build.cs`, module boundaries, Runtime/Editor split, ownership model, dependency risks. | Override user-approved product goals. |
-| C++ Implementer | Runtime/editor code, reflected APIs, gameplay systems. | C++ files, headers, reflection exposure, UObject lifetime, compile risk. | Change Blueprint assets or packaging automation. |
-| Blueprint Integrator | Blueprint handoff, asset wiring, Widget Blueprint, designer-facing behavior. | Node search names, pin wiring, default values, graph validation, asset setup instructions. | Pretend `.uasset` internals were inspected as text. |
-| Verifier | Completion, risky change, cross-domain implementation. | Build/compile checks, Blueprint compile notes, PIE scenarios, test evidence, log triage summary. | Claim COMPLETE without fresh evidence. |
+## 可选专项角色
 
-## Optional Specialists
+| 角色 | 触发场景 |
+|------|----------|
+| GAS/Networking | GAS、ASC、RPC、replication、prediction、多 PIE。 |
+| UI/UMG | Widget Blueprint、CommonUI、HUD、输入模式、DPI。 |
+| Enhanced Input | Input Action、Mapping Context、重绑、UI 焦点。 |
+| AI/Animation | Behavior Tree、EQS、StateTree、AnimBP、Montage。 |
+| Render/VFX | Material、Niagara、post process、shader、视觉性能。 |
+| Packaging/Release | packaging readiness、Project Launcher、CI、release 风险审查。 |
+| Log/Crash Triage | UBT/UHT/UAT、`Saved/Logs`、callstack、ensure/assert。 |
 
-| Role | Trigger |
-|------|---------|
-| GAS/Networking | Ability System, replication, RPC, prediction, authority, multiplayer PIE. |
-| UI/UMG | Widget Blueprint, CommonUI, HUD, view models, input mode, DPI/layout. |
-| Enhanced Input | Input Actions, Mapping Contexts, triggers/modifiers, rebinding, UI focus. |
-| Async Systems | AsyncTask, Async(), UE::Tasks, FRunnable, ParallelFor, Blueprint async nodes, cancellation. |
-| External Services | HTTP, REST, JSON, WebSocket, TCP, backend clients, heartbeat, reconnect, service event dispatch. |
-| AI/Animation | Behavior Tree, EQS, StateTree, AI Perception, Anim Blueprint, montage, IK. |
-| Render/VFX | Materials, Niagara, post process, shader, visual performance. |
-| Packaging/Release | Release readiness, Project Launcher, RunUAT risk review, CI release concerns. |
-| Log/Crash Triage | UBT/UHT/UAT errors, Saved/Logs, callstack, ensure/assert, first actionable failure. |
+## 角色状态
 
-## Mode Guidance
+- `COMPLETE`：角色已有足够证据完成检查。
+- `CONCERNS`：可继续，但需要携带风险。
+- `BLOCKED`：缺少项目路径、日志、权限、构建访问、编辑器检查或 ownership 信息。
 
-- `lean`: Coordinator + 1-2 specialists. Use for old-project orientation, architecture concern, or one complex feature.
-- `full`: Coordinator + Project Explorer + Architecture Reviewer + Verifier + only relevant domain specialists. Use for broad audits or release-risk work.
-- `solo`: No role table. Return to `$ue-game-dev-router` and the focused skill.
+## 轻量原则
 
-## Ownership Rules
-
-- One role owns each file or asset category at a time.
-- Read-only roles may report risks but cannot propose edits as if approved.
-- C++ and Blueprint roles must coordinate any reflected API handoff.
-- Async and External Services roles must coordinate game-thread handoff, weak ownership, and teardown with the owning C++ or subsystem role.
-- Packaging/Release may review packaging risk, but packaging automation remains explicit-only.
-- If two roles need the same file, the Coordinator serializes the work or marks the overlap as `BLOCKED`.
+- simple 单域任务不要启用完整角色池。
+- `lean` 默认只选 Coordinator 和 1-2 个专项角色。
+- `full` 才适合旧项目深度接手、架构审查或跨 C++/Blueprint/UI/资产/测试/packaging 的大任务。
+- 每个角色必须说明文件/资产所有权边界，避免建议互相踩踏。

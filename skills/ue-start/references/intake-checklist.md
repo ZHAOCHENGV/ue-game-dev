@@ -1,33 +1,27 @@
-# UE Intake Checklist
+# UE 入口检查清单
 
-## Classify The Request
+## 必要上下文
 
-```text
-[ ] Is there a local .uproject path?
-[ ] Is the user asking to understand an existing project first?
-[ ] Is this a new feature, bug, refactor, test, performance, or packaging request?
-[ ] Is the requested outcome player-facing, designer-facing, editor-facing, or release-facing?
-[ ] Is the owning area clear: C++, Blueprint, UI, GAS/networking, input, AI, animation, rendering, plugin/module, or packaging?
-[ ] Is there enough information to implement, or should this become a feature brief first?
-```
+- `.uproject` 路径。
+- UE 版本。
+- 目标平台。
+- 当前阶段：旧项目接手、需求、计划、实现、调试、验证、性能、打包。
+- 相关系统：C++、Blueprint、UI、GAS、Input、AI、Animation、Render、Save、Services。
 
-## Minimal Questions
+## 判断问题
 
-Ask only the first blocker:
+- 用户是要先理解项目，还是直接改功能？
+- 需求是否足够清楚，可以进入实施计划？
+- 是否有日志、崩溃或错误输出？
+- 是否明确要求运行或生成打包自动化？
+- 是否需要保存项目记忆？
 
-- Project path when no `.uproject` is discoverable.
-- Target UE version when multiple engine installs matter.
-- Target platform when packaging/performance/platform settings matter.
-- Expected behavior and current behavior when debugging.
-- Whether Codex should stay read-only when touching an old project.
+## 路由
 
-## Routing Examples
-
-| Request | Stage | Next skill |
-|---------|-------|------------|
-| "先熟悉这个旧项目" | onboarding | `$ue-project-onboarding` |
-| "我要做一个背包系统，先帮我想清楚" | brief | `$ue-feature-brief` |
-| "按这个需求写实施计划" | plan | `$ue-implementation-plan` |
-| "蓝图输入事件不触发" | debug/input | `$ue-input-enhanced` or `$ue-debug-validation` |
-| "打包失败，看日志" | packaging diagnostic | `$ue-performance-packaging` |
-| "生成 RunUAT 一键打包脚本" | explicit packaging automation | `$ue-build-release-automation` |
+- 旧项目接手：`$ue-project-onboarding`
+- 项目阶段：`$ue-stage-detect`
+- 需求澄清：`$ue-feature-brief`
+- 实施计划：`$ue-implementation-plan`
+- 日志/崩溃：`$ue-log-crash-triage`
+- 行为调试：`$ue-debug-validation`
+- 完成验收：`$ue-feature-done`

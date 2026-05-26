@@ -1,42 +1,36 @@
 ---
 name: ue-render-vfx
-description: Unreal Engine rendering, material, shader, and Niagara VFX workflow. Use for material graphs, material functions, custom HLSL, post process, renderer settings, lighting, LODs, Niagara systems, particles, GPU emitters, visual bugs, shader permutation cost, and rendering or VFX performance issues.
+description: 当 Unreal Engine 任务涉及渲染设置、材质、Material Function、自定义 HLSL、后处理、光照、LOD、Niagara、粒子、GPU emitter、视觉 Bug 或视觉性能时使用。
 ---
 
 # UE Render VFX
 
-Use this skill for visual features and visual performance. Treat assets, scalability, and platform constraints as part of the implementation.
+## 概览
 
-## First Pass
+这个技能负责 UE 渲染、材质和 Niagara。先确认视觉目标、平台预算、资产路径和性能约束，再设计材质、VFX 或渲染调试方案。
 
-1. Identify the target renderer and platform: deferred/forward, Nanite, Lumen, virtual shadow maps, mobile, VR, or console-like constraints.
-2. Determine whether the work belongs in material graph, material function, Niagara, Blueprint, C++, post process, or renderer config.
-3. Inspect nearby materials, Niagara systems, scalability settings, and naming conventions before adding assets or code.
-4. For visual bugs, separate asset authoring problems from runtime state, bounds/culling, shader permutations, and platform feature support.
+## 使用场景
 
-## Materials And Shaders
+- 创建材质、后处理、Niagara 粒子、GPU 爆炸、拖尾、命中特效。
+- 排查材质不显示、粒子被裁剪、LOD 错误、shader 编译慢、GPU/CPU 过高。
+- 优化材质指令数、shader permutation、Niagara bounds、Scalability。
 
-- Prefer material functions for reusable graph logic and material instances for tunable variations.
-- Keep static switches intentional; each switch can multiply shader permutations.
-- Use parameters with clear names and default values that are safe for instances.
-- Watch instruction count, texture sample count, translucent overdraw, world-position-offset cost, and expensive per-pixel math.
-- For custom HLSL, keep inputs explicit and document assumptions near the node or helper code.
+## 工作流程
 
-## Niagara
+1. 确认目标平台、渲染管线、地图、光照方案和性能预算。
+2. 识别资产：Material、Material Instance、Texture、Niagara System/Emitter、Mesh、Post Process。
+3. 设计参数：Scalar/Vector/Texture、User Parameter、Dynamic Material、Gameplay 触发。
+4. 检查性能：材质复杂度、overdraw、bounds、tick、GPU/CPU sim、LOD 和 scalability。
+5. 验证 Editor viewport、PIE、目标平台和 packaged build。
 
-- Define whether simulation is CPU or GPU and why.
-- Set fixed bounds when GPU emitters or culling make effects disappear.
-- Keep spawn/update scripts lean; move shared logic into modules when reused.
-- Use user parameters for gameplay-driven values instead of duplicating systems.
-- Validate LOD/scalability behavior for effects that appear often or persist.
+## 输出
 
-## Verification
+- 资产设计：命名、路径、参数、实例化策略。
+- 渲染/VFX 流程：触发方、生命周期、LOD、scalability。
+- 性能风险：指令数、overdraw、shader permutation、Niagara tick/bounds。
+- 验证：视觉检查、stat/profile、平台或 packaged build。
 
-- Use a viewport/PIE visual pass for framing, culling, bounds, material parameter changes, and effect timing.
-- Use shader compile output, material stats, Niagara debug tools, or Unreal Insights when performance is part of the task.
-- Mention asset-side work that cannot be fully represented in text/code.
+## 参考
 
-## References
-
-- Read `references/rendering-checklist.md` for material, shader, and renderer review.
-- Read `references/niagara-checklist.md` for Niagara authoring and debugging.
+- Niagara 清单读取 `references/niagara-checklist.md`。
+- 渲染清单读取 `references/rendering-checklist.md`。

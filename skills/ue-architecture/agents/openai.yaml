@@ -1,4 +1,4 @@
 interface:
   display_name: "UE Architecture"
-  short_description: "Plan Unreal modules, Build.cs dependencies, and APIs."
-  default_prompt: "Use $ue-architecture to plan this Unreal module and system boundary."
+  short_description: "规划 UE 模块、Build.cs 依赖和系统边界。"
+  default_prompt: "使用 $ue-architecture 规划这个 Unreal 模块和系统边界。"

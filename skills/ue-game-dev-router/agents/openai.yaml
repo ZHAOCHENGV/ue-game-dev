@@ -1,4 +1,4 @@
 interface:
   display_name: "UE Game Dev Router"
-  short_description: "Route Unreal Engine development tasks."
-  default_prompt: "Use $ue-game-dev-router to choose the right Unreal Engine development workflow."
+  short_description: "为 Unreal Engine 开发请求选择最合适的工作流。"
+  default_prompt: "使用 $ue-game-dev-router 为这个 Unreal Engine 任务选择正确工作流。"

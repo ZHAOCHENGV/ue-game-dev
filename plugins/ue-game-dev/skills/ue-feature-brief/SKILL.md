@@ -1,50 +1,43 @@
 ---
 name: ue-feature-brief
-description: Use when an Unreal Engine feature idea, gameplay request, editor tool request, UI change, Blueprint/C++ hybrid task, or plugin/module request needs to be clarified into a scoped implementation brief before coding or planning.
+description: 当 Unreal Engine 功能想法、玩法请求、编辑器工具、UI 改动、Blueprint/C++ 混合任务或插件/模块需求需要在编码或计划前澄清为有边界的需求简报时使用。
 ---
 
 # UE Feature Brief
 
-## Overview
+## 概览
 
-Use this skill to turn a rough UE request into a scoped feature brief. The brief should be specific enough that implementation can proceed without guessing about ownership, assets, networking, Blueprint handoff, or validation.
+这个技能把模糊想法整理成可实施的 UE 功能简报。重点是目标、非目标、玩家/设计师体验、技术边界、资产需求、验证标准和开放问题。
 
-## Brief Workflow
+## 使用场景
 
-1. Read local project context first when available: `.uproject`, module files, nearest similar classes, Blueprint asset names, input assets, and relevant config.
-2. State the player/designer/editor outcome in one sentence.
-3. Define ownership: C++, Blueprint, asset/data, UI, networking/GAS, editor module, or hybrid.
-4. Capture required assets: Blueprint classes, widgets, input actions, data assets, maps, animations, materials, Niagara systems, sounds, or tests.
-5. Capture constraints: UE version, platform, multiplayer authority, save/load, performance, packaging, and editor/runtime split.
-6. Identify unknowns that block implementation; ask concise questions only when local inspection cannot answer them.
-7. Produce a brief, then route to `$ue-implementation-plan` or the most specific domain skill.
+- “我想做一个背包/技能/交互/编辑器工具”但细节还不够。
+- 功能跨 C++、Blueprint、UI、资产、网络、存档或测试。
+- 用户需要先把需求想清楚，再进入 `$ue-implementation-plan`。
 
-## Brief Output
+## 工作流程
 
-Use this shape:
+1. 用最少问题补齐目标、使用者、触发场景、成功标准和限制。
+2. 拆分范围：必须有、可以后续做、明确不做。
+3. 标记技术域：C++、Blueprint、UI、资产、网络、存档、性能、打包。
+4. 识别项目约束：UE 版本、平台、现有模块、资产命名、设计师工作流。
+5. 输出 brief，并说明下一步应进入哪个技能。
 
-```text
-UE Feature Brief
-- Goal:
-- User-facing behavior:
-- Owning system/module:
-- C++ responsibilities:
-- Blueprint/asset responsibilities:
-- Data/config needed:
-- Network/save/performance concerns:
-- Validation path:
-- Open questions:
-- Recommended next skill:
-```
+## 规则
 
-## Quality Rules
+- 不在 brief 阶段承诺具体实现文件，除非项目结构已确认。
+- 对模糊需求只问会改变方案的问题，避免把用户拉进长问卷。
+- 把验收标准写成可观察行为，而不是“体验更好”。
+- 明确 Blueprint/C++ 交接点和设计师可调参数。
 
-- Do not propose new architecture before checking existing project patterns.
-- Do not hide Blueprint work behind "implement in BP"; list exact graph or asset responsibilities.
-- For C++ APIs exposed to Blueprint, require a later Blueprint handoff section.
-- For networked features, name the authority owner and replication path.
-- For production features, include at least one test, PIE, editor smoke, or package-risk validation path.
+## 输出
 
-## References
+- 功能目标：玩家或开发者能做什么。
+- 范围：In Scope、Out of Scope、后续可扩展项。
+- 技术边界：模块、Blueprint、UI、资产、网络、存档、性能。
+- 验收标准：PIE 场景、日志、自动化测试或人工检查。
+- 开放问题：只列真正阻塞实施计划的问题。
 
-- Read `references/feature-brief-template.md` when producing a brief for the user.
+## 参考
+
+- 简报模板读取 `references/feature-brief-template.md`。

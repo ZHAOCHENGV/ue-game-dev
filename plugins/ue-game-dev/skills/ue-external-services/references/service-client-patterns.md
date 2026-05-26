@@ -1,99 +1,47 @@
-# UE External Service Client Patterns
+# UE 外部服务客户端模式
 
-## Ownership Choices
+## 服务层结构
 
-| Client type | Good owner | Notes |
-|-------------|------------|-------|
-| Account/session API | `UGameInstanceSubsystem` | Survives map transitions and owns auth/session state |
-| World-scoped service | `UWorldSubsystem` | Use when service state belongs to a world/session |
-| Per-player backend state | `ULocalPlayerSubsystem` | Good for local user settings, presence, or UI-facing user data |
-| Editor-only tool service | `UEditorSubsystem` or editor module singleton | Keep dependencies out of runtime modules |
-| Reusable actor-specific endpoint | `UActorComponent` | Use only when lifetime truly follows an actor |
+推荐把 HTTP/WebSocket/TCP 集成放在 Subsystem 或 service UObject 中，而不是散落到 Widget 或 Actor。
 
-Avoid putting service clients directly in widgets. Widgets should subscribe to subsystem events or view models.
-
-## Build.cs Dependencies
-
-Common runtime dependencies:
-
-```csharp
-PrivateDependencyModuleNames.AddRange(new string[]
-{
-    "HTTP",
-    "Json",
-    "JsonUtilities",
-    "WebSockets",
-    "Sockets",
-    "Networking"
-});
+```text
+GameInstanceSubsystem / LocalPlayerSubsystem
+  -> Request builder
+  -> Transport client (HTTP/WebSocket/TCP)
+  -> Typed response parser
+  -> Delegate / async node / event queue
+  -> Gameplay or UI consumer
 ```
 
-Add only the modules needed by the protocol. Keep editor-only dependencies in editor modules.
+## HTTP JSON
 
-## HTTP Request Flow
+- endpoint、method、headers、body schema 和 response schema 要写清楚。
+- 响应解析成 typed struct，不把裸 JSON 字符串扩散到 UI/Gameplay。
+- 设置 timeout、retry、错误码映射和日志 request id。
+- 认证 token 从安全配置或运行时登录结果取得，不硬编码在源码中。
 
-Recommended flow:
+## WebSocket
 
-1. Build URL, verb, headers, body.
-2. Start request through `FHttpModule`.
-3. In completion callback, validate owner and response.
-4. Parse JSON into a typed DTO or narrow struct.
-5. Return to game-thread owned state and broadcast a typed result.
+- 定义连接状态：Disconnected、Connecting、Connected、Reconnecting、Closing。
+- 心跳要有 interval、timeout、missed count 和关闭策略。
+- 重连使用 backoff，避免断线后高频重连。
+- 消息要包含 type/version/request id，便于向后兼容和分发。
 
-Failure cases to model:
+## TCP/外部进程
 
-- Request not started.
-- Timeout or connection failure.
-- Non-2xx response code.
-- Empty response body when body is required.
-- Invalid JSON.
-- Valid JSON with application-level error.
-- Owner destroyed before callback.
+- 明确二进制协议或文本协议、分包、粘包和编码。
+- worker thread 只处理 socket IO 和字节解析，Gameplay 回调回到 GameThread。
+- 外部进程路径、权限、端口占用和生命周期要可诊断。
+- 退出 PIE 和 Editor 时关闭 socket/进程，避免残留连接。
 
-## JSON Contracts
+## Blueprint Async Node
 
-- Keep wire DTOs separate from authoritative gameplay state.
-- Validate required fields before applying data.
-- Keep schema version or response type checks when backend contracts can evolve.
-- Log enough context to debug the endpoint and response code without printing secrets.
+- 对用户操作型请求可提供 `UBlueprintAsyncActionBase`。
+- 输出 Success、Failure、Timeout、Cancelled，并包含错误码和错误文本。
+- 节点不应长期持有 UI Widget；用弱引用和 owner 生命周期管理。
 
-## WebSocket Flow
+## 验证
 
-Recommended flow:
-
-1. Create socket in a subsystem or service object.
-2. Bind connected, message, error, and closed delegates.
-3. Send an auth or hello message after connection if required.
-4. Parse incoming messages by type.
-5. Dispatch typed events to listeners on the game thread.
-6. Heartbeat with ping or app-level message if the protocol needs it.
-7. Reconnect with bounded backoff when disconnection is recoverable.
-
-Reconnect rules:
-
-- Do not reconnect after intentional shutdown.
-- Limit retry rate and expose state to UI.
-- Clear timers and unbind delegates on shutdown.
-- Make duplicate `Connect()` calls idempotent.
-
-## TCP Socket Rules
-
-- Define framing before parsing: fixed size, delimiter, length prefix, or protocol-specific packet header.
-- Run blocking receive loops off the game thread.
-- Marshal parsed messages back to the game thread.
-- Stop and close sockets during owner teardown.
-- Prefer WebSocket or HTTP when the service protocol allows it; raw TCP increases responsibility for framing, reconnect, and partial reads.
-
-## UI And Gameplay Handoff
-
-- Service result objects should be typed and small.
-- UI should observe service state rather than own network requests.
-- Gameplay state that matters in multiplayer should still be validated or owned by the authoritative server.
-- For backend-driven gameplay data, define trust boundaries: cached display data, server-authoritative state, client prediction, or editor-only tooling.
-
-## Verification
-
-- Build the owning module after dependency changes.
-- Add a fake endpoint, mocked local service, or controlled test server when possible.
-- Test success, malformed JSON, timeout/failure, owner destruction before callback, reconnect, and intentional disconnect.
-- Verify packaged build behavior when the service is runtime-facing.
+- 成功响应、4xx/5xx、超时、断网、坏 JSON、认证过期、重复请求。
+- 地图切换、PIE 停止、退出 Editor、packaged build。
+- 如果结果驱动 UI，验证焦点、刷新和失败提示。

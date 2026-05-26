@@ -1,47 +1,34 @@
-# UE Networking Rules
+# UE Networking 规则
 
-## Authority
+## 权威与所有权
 
-- Server owns gameplay-critical state.
-- Define authority path before implementation: local input, server RPC, replicated property, RepNotify, or GAS activation.
-- Validate ownership before accepting client RPCs.
-- Never trust client-provided targets, damage, inventory counts, currency, or cooldown state without server-side checks.
+- 先回答“哪台机器拥有状态”：server、owning client、simulated proxy 或 standalone。
+- Gameplay-critical 状态默认由服务器权威修改，客户端只发意图或做可回滚预测。
+- RPC 前确认 Actor ownership、relevance、lifetime 和调用方向。
+- RepNotify 只处理状态到达后的反应，不应隐藏核心业务决策。
 
 ## Replication
 
-- Replicate server-owned observable state, not client intent.
-- Use `DOREPLIFETIME` and replication conditions intentionally.
-- Use `RepNotify` for client presentation updates that must react to state changes.
-- State relevancy, dormancy, and initial replication assumptions when they affect the feature.
+- `DOREPLIFETIME` 必须与 `UPROPERTY(Replicated)` 或 `ReplicatedUsing` 配套。
+- 不要复制高频、可推导或纯表现数据；复制最小状态，客户端本地表现。
+- 大数组或频繁变化集合优先考虑 Fast Array Serializer、差量事件或服务器查询。
+- 新增复制字段后验证 initial replication、late join、reconnect 和 actor dormancy。
 
-### Common Mistakes
+## RPC
 
-- Forgetting `bReplicates = true` or component replication when the owning Actor is replicated.
-- Adding `DOREPLIFETIME` but never mutating the property on the server.
-- Mutating replicated state in `OnRep` instead of using it for presentation or cache repair.
-- Replicating cosmetic noise instead of routing cosmetics through cues, events, or client-side prediction when safe.
+- RPC 参数保持小而稳定，避免传大 struct、资产对象或频繁逐帧调用。
+- `Server` RPC 需要验证输入合法性；不要信任客户端提交的结果。
+- `NetMulticast` 只用于确实需要广播的短表现事件，不替代状态复制。
+- 可靠 RPC 不是“更好”，大量 reliable 会造成队列堆积。
 
-## RPCs
+## GAS 与多人
 
-- Use RPCs sparingly and keep payloads small.
-- Rate-limit high-frequency client actions and prefer compressed intent over large structs.
-- Use reliable RPCs only for events that must arrive; unreliable is often correct for frequent transient input or effects.
-- Never send asset payloads, large arrays, or repeated JSON blobs through gameplay RPCs without a clear bandwidth budget.
+- GAS 任务使用 ASC replication mode、prediction key、Gameplay Cue 和 Ability Task 生命周期来表达同步。
+- 属性变化走 GameplayEffect/AttributeSet，不要绕过 GAS 直接写 replicated 字段。
+- Ability 激活失败要能区分 tag 阻塞、cooldown、cost、authority 或 prediction rollback。
 
-## GAS Handoff
+## 验证
 
-- For Gameplay Ability System work, define ASC owner/avatar, replication mode, prediction key path, and GameplayCue ownership.
-- Route ability activation through GAS APIs instead of custom RPCs when prediction, costs, cooldowns, or cancellation matter.
-- Replicate attributes through AttributeSets and use gameplay effects for state changes that need network semantics.
-
-## Listen Server And Dedicated Server
-
-- Test listen server behavior separately when the host is also a player; local authority can hide ownership mistakes.
-- Dedicated server validation must not rely on viewport, local player controller, or client-only assets.
-- Multiplayer validation must name the minimum PIE or dedicated server scenario and client count.
-
-## Validation
-
-- Capture expected server log, client log, replicated property value, and visible client result.
-- Test late join, reconnect, or respawn when persistent replicated state is part of the feature.
-- Keep packaging and network validation separate unless the request explicitly asks for release readiness.
+- 至少说明 Listen Server、Dedicated Server 或多 PIE 的最小测试场景。
+- 检查 server/client 日志、ownership、authority、relevance、packet loss/latency。
+- 明确 Editor PIE 与 packaged multiplayer 的差异风险。

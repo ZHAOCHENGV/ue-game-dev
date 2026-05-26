@@ -1,51 +1,45 @@
-# UE Agent Conflict Resolution
+# UE Agent 冲突处理
 
-Use this file when two or more UE roles disagree, need the same file, or produce incompatible next steps. For simple single-domain tasks, do not load this file; keep the focused workflow light.
+## 冲突类型
 
-## Conflict Types
+- 文件冲突：两个角色建议修改同一 C++、Blueprint、资产或配置文件。
+- ownership 冲突：C++、Blueprint、UI、网络或存档都声称拥有同一状态。
+- 顺序冲突：某角色建议先实现，另一个角色指出需要先完成架构或验证。
+- packaging 冲突：风险审查被误解为允许打包自动化。
+- 证据冲突：日志、项目结构或资产状态给出相反结论。
 
-| Type | Example | Resolver |
-|------|---------|----------|
-| File ownership | C++ and Architecture both want to edit `.Build.cs`. | Coordinator assigns one owner and serializes changes. |
-| Runtime/Editor boundary | C++ role adds editor dependency to runtime module. | Architecture Reviewer advises; Coordinator decides or asks user. |
-| Blueprint/C++ handoff | C++ exposes an API but Blueprint Integrator needs different pins/defaults. | C++ Implementer and Blueprint Integrator reconcile through Coordinator. |
-| Packaging boundary | Packaging/Release wants to run automation from a readiness review. | Coordinator blocks automation unless user explicitly asked. |
-| Evidence conflict | Verifier cannot reproduce a role's COMPLETE claim. | Verifier marks `CONCERNS` or `BLOCKED`; Coordinator updates synthesis. |
+## 处理规则
 
-## Resolution Protocol
+1. Coordinator 先记录冲突，不立即选边。
+2. 要求每个角色给出证据来源：文件、日志、命令、资产路径或观察结果。
+3. 优先使用项目现有约定，其次使用 UE 模块/反射/资产规则。
+4. 如果冲突影响实现安全，状态标记为 `BLOCKED`，并提出一个最小澄清问题。
+5. 如果只是偏好差异，Coordinator 选择较小影响面并记录 tradeoff。
 
-1. Name the conflict and affected files/assets.
-2. Identify the owning role for each file or decision.
-3. Prefer the project's existing convention over a new abstraction.
-4. If one role's change affects another domain, require Coordinator approval before implementation.
-5. If the conflict changes user-visible behavior, module architecture, packaging automation, or asset authoring burden, ask the user before proceeding.
-6. If required evidence is missing, mark `BLOCKED` instead of guessing.
+## Blueprint/C++ 交接冲突
 
-## Escalation Rules
+- C++ 拥有稳定 API、authority、replication、save/load 和性能敏感逻辑。
+- Blueprint 拥有表现、调参、默认资产、简单组合和设计师工作流。
+- UI 不拥有 gameplay authority，只发出用户意图并订阅状态。
+- 冲突无法解决时，先定义接口，再分别实现 C++ 和 Blueprint 侧。
 
-- Coordinator is the final synthesizer inside the multi-agent workflow.
-- Architecture Reviewer has priority for module boundaries, Runtime/Editor split, and dependency direction.
-- Verifier has priority for whether something can be called `COMPLETE`.
-- Blueprint Integrator has priority for designer-facing handoff clarity.
-- Packaging/Release cannot override the explicit packaging boundary.
+## 打包边界冲突
 
-## Blocking Conditions
+- packaging readiness review 不等于运行打包。
+- multi-agent request 本身不授权 `$ue-build-release-automation`。
+- simple 单域任务不应因为有 packaging 关键词就升级成多 Agent 或打包自动化。
+- 用户明确说“运行打包”“生成 BuildCookRun”“创建 CI 发版流水线”时，才进入显式自动化。
+- 否则输出 `Packaging boundary: review only`。
 
-Mark `BLOCKED` when:
-
-- A role would need to edit outside its ownership boundary.
-- `.uasset` internals are required but only filenames are available.
-- Build, editor, or logs are required but inaccessible.
-- The user has not explicitly approved packaging automation.
-- Two implementation options have different product or design consequences.
-
-## Output Snippet
+## 输出要求
 
 ```text
-Conflict And Blocker Log
-- Status: BLOCKED
-- Conflict: Runtime module dependency would pull editor-only code into packaged build.
-- Roles: UE Architecture Reviewer, C++ Implementer, Packaging/Release
-- Affected files: Source/<Module>/<Module>.Build.cs
-- Coordinator decision: stop implementation and ask user to choose runtime-safe design or editor-only module split.
+Conflict:
+Evidence:
+Decision:
+Owner:
+Risk carried forward:
+Next skill:
 ```
+
+如果缺少必要证据，使用 `BLOCKED`，不要伪装成确定结论。

@@ -1,4 +1,4 @@
 interface:
   display_name: "UE Log Crash Triage"
-  short_description: "Triage Unreal build, editor, Blueprint, UAT, and crash logs."
-  default_prompt: "Use $ue-log-crash-triage to analyze this Unreal log, compile error, or crash."
+  short_description: "分诊 UE 构建、Editor、Blueprint、UAT 和崩溃日志。"
+  default_prompt: "使用 $ue-log-crash-triage 分析这个 Unreal 日志、编译错误或崩溃。"

@@ -1,66 +1,48 @@
 ---
 name: ue-project-onboarding
-description: Use when a request asks Codex to understand, audit, take over, inherit, familiarize itself with, or prepare secondary development for an existing Unreal Engine project before making changes, including old projects, legacy projects, unfamiliar UE codebases, and project handoff analysis.
+description: 当请求要求 Codex 了解、审查、接手、继承、熟悉或为现有 Unreal Engine 项目二次开发做准备，且在改动前需要只读项目梳理时使用。
 ---
 
 # UE Project Onboarding
 
-Use this skill before implementation when the user wants Codex to learn an existing UE project first. The goal is to build project understanding, identify safe extension points, and produce a handoff report before changing code or assets.
+## 概览
 
-## Core Rule
+这个技能用于旧项目或现有项目接手。第一轮保持只读，目标是形成项目地图、模块/插件理解、资产命名、风险和后续工作流建议。
 
-Stay read-only until the user approves a concrete follow-up task. Do not edit C++, Blueprint assets, config files, plugins, or generated files during onboarding.
+## 使用场景
 
-## Discovery Order
+- “先熟悉这个旧 UE 项目，后面我要二开”。
+- 审查项目结构、模块、插件、资产、配置、Build 文件和已知风险。
+- 为后续需求简报、实施计划、调试或多 Agent 协作建立上下文。
 
-1. Locate the `.uproject` and read engine association, project modules, enabled plugins, and target type.
-2. Map `Source/`, `Plugins/`, `Config/`, `Content/`, `Build.cs`, `.Target.cs`, `.uplugin`, and plugin module descriptors.
-3. Identify primary entry points: GameMode, GameInstance, PlayerController, Character/Pawn, PlayerState, HUD, Subsystems, Components, AbilitySystem setup, and editor modules.
-4. Discover assets by filename only unless deeper inspection is needed: Blueprints, Widget Blueprints, Input Actions, Input Mapping Contexts, Gameplay Tags, DataAssets, Animation Blueprints, Behavior Trees, Niagara systems, materials, maps.
-5. Read nearest representative code before drawing architecture conclusions. Prefer small high-signal files over bulk reading.
+## 工作流程
 
-## Analysis Passes
+1. 定位 `.uproject`，读取引擎版本、模块、插件和目标平台。
+2. 扫描 `Source/`、`Plugins/`、`Config/`、`Content/` 文件名、target 和 `.Build.cs`。
+3. 识别主要系统：Gameplay、UI、Input、GAS、AI、Animation、SaveGame、Services、Editor tools。
+4. 记录风险：循环依赖、Editor-only 泄漏、命名混乱、资产缺失、测试缺口、打包风险。
+5. 输出 onboarding report，并建议下一步技能。
 
-- Architecture: module boundaries, Runtime vs Editor split, Public/Private exposure, dependency direction, subsystem ownership.
-- Gameplay: actor lifecycle, input flow, possession, interaction, save/load, ability activation, replication authority.
-- Blueprint/C++ split: which behavior is designer-authored, which APIs are exposed from C++, and where hidden asset dependencies may live.
-- Production health: build risks, plugin dependencies, naming consistency, redirectors, hard-coded paths, editor-only dependencies in runtime code, missing validation or test seams.
-- Extension planning: safe extension points, files that should not be touched casually, likely smoke tests, and the smallest next task.
+## 工具
 
-## Output Format
+- 可用只读脚本 `skills/ue-project-onboarding/scripts/ue_project_scan.py` 快速扫描项目结构。
+- 工具只读取 `.uproject`、模块、插件、源码文件、Build 文件和常见资产文件名，不编辑 `.uasset` 或项目文件。
 
-Produce a concise "UE Project Onboarding Report" with:
+## 规则
 
-- Project snapshot: path, UE version, project name, modules, enabled plugins.
-- Code structure: key modules, important classes, plugin layout, config files.
-- Asset structure: important Content folders and discovered asset categories.
-- Main flows: startup, input, gameplay, UI, save/load, networking/GAS/AI/rendering if present.
-- Blueprint/C++ boundary: what appears to live where, plus unknowns that require editor inspection.
-- Risk list: build, module boundary, asset reference, networking, editor/runtime, naming, or packaging risks.
-- Safe next steps: recommended follow-up skill and the smallest implementation/debug task to do next.
+- 接手阶段不要修改代码、资产或配置，除非用户明确要求进入实现。
+- 不要假设 Content 资产内容；只能基于文件名、路径和可读文本推断。
+- 对不确定结论标注“推断”，并说明依据。
+- 输出要帮助下一轮二开，而不是堆文件列表。
 
-Use `references/onboarding-report-template.md` when a structured report helps. Use `references/project-audit-checklist.md` for a deeper audit.
+## 输出
 
-## Tooling
+- 项目概览：路径、UE 版本、模块、插件、平台。
+- 系统地图：主要目录、类、资产命名和职责。
+- 风险与缺口：构建、架构、资产、测试、打包、文档。
+- 建议下一步：`$ue-workflow-state`、`$ue-feature-brief`、`$ue-implementation-plan` 或领域技能。
 
-- Use `scripts/ue_project_scan.py --project <path> --format json` for a read-only structure scan before writing an onboarding report or refreshing workflow state.
-- The tool reads `.uproject`, `Source/`, `Plugins/`, `Config/`, and `Content` filenames only. It does not edit project files and does not inspect binary `.uasset` internals.
-- Treat the tool output as a starting index; still read high-signal source files before making architecture conclusions.
+## 参考
 
-## Routing After Onboarding
-
-After the report, route the next task to the most specific sibling skill:
-
-- `$ue-architecture` for module boundaries or refactor strategy.
-- `$ue-plugin-module-dev` for plugin/module structure.
-- `$ue-cpp-gameplay` for runtime gameplay C++.
-- `$ue-blueprint-workflow` for Blueprint graph work.
-- `$ue-debug-validation` for broken behavior or uncertain symptoms.
-- `$ue-testing-automation` for regression, smoke, PIE, or asset validation.
-
-## Common Mistakes
-
-- Starting implementation before reading `.uproject`, `Build.cs`, and the nearest existing class.
-- Treating `.uasset` files as text source of truth. Use filenames for discovery and ask for editor/Blueprint details when needed.
-- Assuming a standard template project layout. UE projects often move input, UI, GAS, and editor tooling into custom modules.
-- Reporting every file instead of explaining the project shape and the safest next move.
+- 审查清单读取 `references/project-audit-checklist.md`。
+- 报告模板读取 `references/onboarding-report-template.md`。

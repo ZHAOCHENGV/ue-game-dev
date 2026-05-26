@@ -1,37 +1,31 @@
-# Rendering And Material Checklist
+# UE Rendering 检查清单
 
-## Renderer Context
+## 材质
 
-- Confirm target platform, renderer path, scalability level, and project renderer settings.
-- Check whether Nanite, Lumen, VSM, forward shading, MSAA, translucency, or mobile constraints apply.
-- Record viewport/editor vs packaged runtime differences before judging a visual bug.
-- Check whether the issue appears at all scalability levels or only a specific profile.
+- 检查材质域、blend mode、shading model、two-sided、translucency 和 usage flags。
+- 优先通过 Material Instance 暴露参数，不复制大量 Material。
+- 控制 shader permutation：static switch、quality switch、feature level 分支要有必要性。
+- 材质复杂度、overdraw、texture sample、custom HLSL 都要按平台预算评估。
 
-## Materials
+## 纹理与资源
 
-- Review instruction count, texture samples, overdraw, static switches, and WPO cost.
-- Prefer instances for tuning and material functions for shared logic.
-- Keep parameter defaults safe and names clear.
-- Watch for unsupported nodes on mobile or feature-level-limited targets.
-- Treat high instruction count, many texture samples, expensive translucency, and WPO on dense meshes as review triggers.
-- Prefer scalar/vector parameters in instances for tuning instead of duplicating master materials.
+- 验证纹理尺寸、压缩格式、mip、sRGB、normal map 设置和 streaming。
+- UI、mask、normal、HDR、virtual texture 使用各自合适设置。
+- 运行时动态材质要有 owner 和释放策略，避免无限创建 MID。
 
-## Shaders And Permutations
+## 光照与后处理
 
-- Avoid unnecessary static switches and feature flags.
-- Keep custom HLSL inputs explicit.
-- Check shader compile output when adding permutations.
-- Minimize static switch combinations that multiply permutations across platforms, quality levels, and material instances.
-- Check derived data cache and shader compile noise when a change appears to stall editor iteration.
+- 明确 Lumen、Nanite、Virtual Shadow Map、baked lighting 或 mobile renderer 目标。
+- Post Process Volume、camera override 和 project setting 之间要避免互相覆盖。
+- 视觉问题要区分 Editor viewport、PIE、Standalone 和 packaged build。
 
-## Visual Debugging
+## 性能
 
-- Test bounds/culling, LODs, post process volumes, lighting channels, exposure, and scalability changes.
-- Use view modes such as shader complexity, quad overdraw, light complexity, Nanite visualization, and Lumen visualization when relevant.
-- Capture asset path, material instance, renderer settings, scalability bucket, camera angle, and expected visual delta.
+- 使用 `stat gpu`、GPU Visualizer、Unreal Insights、Shader Complexity、Quad Overdraw。
+- 检查 draw call、material instruction、overdraw、shadow、translucency 和 Niagara tick。
+- 目标平台验证 scalability、device profile、resolution scale 和 fallback。
 
-## VFX Integration
+## 交接
 
-- For Niagara, validate fixed bounds, renderer count, translucent overdraw, collision mode, and scalability rules.
-- For post process, validate volume priority, blend weight, unbound state, camera overrides, and platform support.
-- For lighting changes, validate exposure, shadow method, virtual shadow maps, Lumen/Nanite assumptions, and mobile fallback.
+- 记录资产路径、材质参数、触发条件、预期视觉和首个异常症状。
+- 给出最小复现场景和截图/视频需求。

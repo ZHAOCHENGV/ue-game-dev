@@ -1,4 +1,4 @@
 interface:
   display_name: "UE Testing Automation"
-  short_description: "Plan Unreal automation, functional, plugin, and smoke tests."
-  default_prompt: "Use $ue-testing-automation to add tests for this Unreal plugin feature."
+  short_description: "规划 UE 自动化、功能、插件和烟测验证。"
+  default_prompt: "使用 $ue-testing-automation 为这个 Unreal 功能设计测试。"

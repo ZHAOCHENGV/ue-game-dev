@@ -1,6 +1,4 @@
-# UE Workflow State Templates
-
-Create only the files that match the user's request. Keep every section short, factual, and source-linked.
+# CodexWorkflow 文件模板
 
 ## project-context.md
 
@@ -8,17 +6,11 @@ Create only the files that match the user's request. Keep every section short, f
 # Project Context
 
 - Project:
-- Path:
-- UE version or EngineAssociation:
-- Primary modules:
-- Enabled plugins:
-- Main maps:
-- Startup flow:
-- Input flow:
-- UI flow:
-- Networking/GAS/AI/rendering notes:
-- Last refreshed:
-- Evidence:
+- UE version:
+- Platforms:
+- Main modules:
+- Main plugins:
+- Notes:
 ```
 
 ## module-map.md
@@ -26,14 +18,8 @@ Create only the files that match the user's request. Keep every section short, f
 ```markdown
 # Module Map
 
-| Module | Type | Dependencies | Key classes | Notes |
-|--------|------|--------------|-------------|-------|
-
-## Boundaries
-- Runtime modules:
-- Editor modules:
-- Public headers that are stable APIs:
-- Private implementation areas:
+| Module | Type | Owns | Depends on | Risks |
+|--------|------|------|------------|-------|
 ```
 
 ## asset-index.md
@@ -41,11 +27,8 @@ Create only the files that match the user's request. Keep every section short, f
 ```markdown
 # Asset Index
 
-| Asset or folder | Type inferred from name/path | Used by | Notes |
-|-----------------|------------------------------|---------|-------|
-
-## Unknowns
-- Assets that require editor inspection:
+| Path | Type guess | Owner/System | Notes |
+|------|------------|--------------|-------|
 ```
 
 ## decisions.md
@@ -53,8 +36,11 @@ Create only the files that match the user's request. Keep every section short, f
 ```markdown
 # Decisions
 
-| Date | Decision | Reason | Approved by | Evidence |
-|------|----------|--------|-------------|----------|
+## YYYY-MM-DD
+
+- Decision:
+- Context:
+- Consequence:
 ```
 
 ## known-risks.md
@@ -62,8 +48,8 @@ Create only the files that match the user's request. Keep every section short, f
 ```markdown
 # Known Risks
 
-| Risk | Area | Evidence | Mitigation | Status |
-|------|------|----------|------------|--------|
+| Risk | Evidence | Impact | Next action |
+|------|----------|--------|-------------|
 ```
 
 ## active-task.md
@@ -73,9 +59,7 @@ Create only the files that match the user's request. Keep every section short, f
 
 - Goal:
 - Scope:
-- Out of scope:
-- Planned files/assets:
-- Validation path:
 - Current status:
-- Handoff notes:
+- Next step:
+- Verification:
 ```

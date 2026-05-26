@@ -1,4 +1,4 @@
 interface:
   display_name: "UE Performance Packaging"
-  short_description: "Check Unreal performance, packaging, and release readiness."
-  default_prompt: "Use $ue-performance-packaging to prepare this Unreal build for release."
+  short_description: "检查 UE 性能、打包问题和发布准备度。"
+  default_prompt: "使用 $ue-performance-packaging 检查这个 Unreal 构建的发布准备情况。"

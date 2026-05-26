@@ -1,135 +1,53 @@
-# Editor Tooling Code Templates
+# 编辑器工具代码模板
 
-## ToolMenus Registration
+## 模块注册
 
 ```cpp
-// 在 StartupModule 中注册菜单
 void FMyEditorModule::StartupModule()
 {
-    // 注册菜单扩展
-    UToolMenus::RegisterStartupCallback(
-        FSimpleMulticastDelegate::FDelegate::CreateRaw(
-            this, &FMyEditorModule::RegisterMenus));
+    RegisterMenus();
+    RegisterCommands();
 }
 
-void FMyEditorModule::RegisterMenus()
-{
-    // 扩展主菜单栏
-    UToolMenu* Menu = UToolMenus::Get()->ExtendMenu(
-        "LevelEditor.MainMenu.Tools");
-
-    FToolMenuSection& Section = Menu->AddSection(
-        "MyToolsSection",
-        LOCTEXT("MyToolsSectionLabel", "我的工具"));
-
-    Section.AddMenuEntry(FMyEditorCommands::Get().OpenMyTool);
-}
-
-// 在 ShutdownModule 中注销
 void FMyEditorModule::ShutdownModule()
 {
-    UToolMenus::UnRegisterStartupCallback(this);
-    UToolMenus::UnregisterOwner(this);
-    FMyEditorCommands::Unregister();
+    UnregisterMenus();
+    UnregisterCommands();
 }
 ```
 
-## UICommands Definition
+## ToolMenus
 
 ```cpp
-// MyEditorCommands.h
-class FMyEditorCommands : public TCommands<FMyEditorCommands>
-{
-public:
-    FMyEditorCommands()
-        : TCommands<FMyEditorCommands>(
-            TEXT("MyEditor"),
-            LOCTEXT("MyEditorCommands", "我的编辑器命令"),
-            NAME_None,
-            FMyEditorStyle::GetStyleSetName())
-    {}
-
-    virtual void RegisterCommands() override;
-
-    TSharedPtr<FUICommandInfo> OpenMyTool;
-};
-
-// MyEditorCommands.cpp
-void FMyEditorCommands::RegisterCommands()
-{
-    UI_COMMAND(OpenMyTool,
-        "Open My Tool",
-        "Opens the custom editor tool panel",
-        EUserInterfaceActionType::Button,
-        FInputChord());
-}
+UToolMenus::RegisterStartupCallback(
+    FSimpleMulticastDelegate::FDelegate::CreateRaw(this, &FMyEditorModule::RegisterMenus));
 ```
 
-## Nomad Tab Spawner
+注销：
 
 ```cpp
-// 注册
+UToolMenus::UnRegisterStartupCallback(this);
+UToolMenus::UnregisterOwner(this);
+```
+
+## Tab Spawner
+
+```cpp
 FGlobalTabmanager::Get()->RegisterNomadTabSpawner(
     MyTabName,
-    FOnSpawnTab::CreateRaw(this, &FMyEditorModule::SpawnMyTab))
-    .SetDisplayName(LOCTEXT("MyTabTitle", "我的工具面板"))
-    .SetMenuType(ETabSpawnerMenuType::Hidden);
-
-// 生成
-TSharedRef<SDockTab> FMyEditorModule::SpawnMyTab(
-    const FSpawnTabArgs& Args)
-{
-    return SNew(SDockTab)
-        .TabRole(ETabRole::NomadTab)
-        [
-            SNew(SMyToolWidget)
-        ];
-}
-
-// 注销
-FGlobalTabmanager::Get()->UnregisterNomadTabSpawner(MyTabName);
+    FOnSpawnTab::CreateRaw(this, &FMyEditorModule::SpawnTab));
 ```
 
-## Detail Customization
+## Details Customization
 
 ```cpp
-// MyClassCustomization.h
-class FMyClassCustomization : public IDetailCustomization
-{
-public:
-    static TSharedRef<IDetailCustomization> MakeInstance();
-    virtual void CustomizeDetails(IDetailLayoutBuilder& DetailBuilder) override;
-};
-
-// Registration in module startup
-FPropertyEditorModule& PropertyModule =
-    FModuleManager::LoadModuleChecked<FPropertyEditorModule>("PropertyEditor");
-PropertyModule.RegisterCustomClassLayout(
-    UMyClass::StaticClass()->GetFName(),
-    FOnGetDetailCustomizationInstance::CreateStatic(
-        &FMyClassCustomization::MakeInstance));
-
-// Unregistration in module shutdown
-PropertyModule.UnregisterCustomClassLayout(
-    UMyClass::StaticClass()->GetFName());
+PropertyEditorModule.RegisterCustomClassLayout(
+    "MyObject",
+    FOnGetDetailCustomizationInstance::CreateStatic(&FMyDetails::MakeInstance));
 ```
 
-## Asset Type Actions
+## 注意
 
-```cpp
-// Register
-IAssetTools& AssetTools =
-    FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools")
-    .Get();
-MyAssetTypeActions = MakeShared<FMyAssetTypeActions>();
-AssetTools.RegisterAssetTypeActions(MyAssetTypeActions.ToSharedRef());
-
-// Unregister
-if (MyAssetTypeActions.IsValid())
-{
-    IAssetTools& AssetTools =
-        FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools")
-        .Get();
-    AssetTools.UnregisterAssetTypeActions(MyAssetTypeActions.ToSharedRef());
-}
-```
+- 注册和注销必须对称。
+- Editor-only 代码不要进入 Runtime 模块。
+- 修改资产时使用 transaction 和 dirty 标记。

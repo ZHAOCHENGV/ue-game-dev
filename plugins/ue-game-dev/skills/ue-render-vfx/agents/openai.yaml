@@ -1,4 +1,4 @@
 interface:
   display_name: "UE Render VFX"
-  short_description: "Work on UE rendering, materials, shaders, and Niagara effects."
-  default_prompt: "Use $ue-render-vfx to diagnose or build this rendering and VFX feature."
+  short_description: "处理 UE 渲染、材质、Shader 和 Niagara 特效。"
+  default_prompt: "使用 $ue-render-vfx 诊断或实现这个渲染/VFX 功能。"

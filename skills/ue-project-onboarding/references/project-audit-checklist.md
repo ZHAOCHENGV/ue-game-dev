@@ -1,71 +1,31 @@
-# UE Project Audit Checklist
+# UE 项目接手审查清单
 
-Use this checklist when onboarding an existing UE project before secondary development.
+## 项目入口
 
-## Project Identity
+- 找到 `.uproject`，记录项目名、EngineAssociation、模块和启用插件。
+- 读取 `Source/`、`Plugins/`、`Config/`、target 文件和 `.Build.cs`。
+- 标记目标平台、默认地图、GameMode、输入系统和核心插件。
 
-- `.uproject` path, project name, `EngineAssociation`
-- Modules in `.uproject`
-- Enabled plugins and any plugin marked beta/experimental
-- Source control state, branch, and dirty files
+## 源码结构
 
-## Code Layout
+- 按模块列出 Public/Private、Runtime/Editor、Subsystem、Actor、Component、UI、Service。
+- 检查明显循环依赖、Editor 依赖泄漏、Public 头过重和命名不一致。
+- 找出主要 gameplay、UI、input、save、network、AI、animation、render/VFX 系统。
 
-- `Source/<Project>/Public` and `Private`
-- `<Module>.Build.cs` dependencies
-- `.Target.cs` editor/game targets
-- Project plugins under `Plugins/`
-- Runtime modules vs Editor modules
-- API macros and exported public headers
+## 资产与内容
 
-## Runtime Entry Points
+- 只能基于文件名和路径推断 `.uasset` 内容，避免把推断写成事实。
+- 记录 Blueprint、Widget、Input Action、Mapping Context、DataAsset、Niagara、Material、Map。
+- 检查命名前缀、目录归属、可能的 redirector 或缺失资产风险。
 
-- GameMode / GameState
-- GameInstance / LocalPlayer / Subsystems
-- PlayerController / PlayerState
-- Character / Pawn / Components
-- HUD / UI managers / CommonUI setup
-- SaveGame classes and persistence managers
-- AbilitySystemComponent, AttributeSets, GameplayAbilities
-- AIController, Behavior Tree, Blackboard, EQS, StateTree
+## 配置与构建
 
-## Asset Discovery
+- 读取 `DefaultGame.ini`、`DefaultEngine.ini`、`DefaultInput.ini` 和平台配置。
+- 检查插件启用、地图设置、packaging settings、Online/Network、input settings。
+- 记录可用测试、CI、脚本、README 和最近日志。
 
-Prefer filename discovery before reading binary asset contents.
+## 输出重点
 
-- Maps: `*.umap`
-- Blueprints: `BP_*.uasset`, `BPI_*`, `BPC_*`
-- Widgets: `WBP_*`, `WB_*`
-- Input: `IA_*`, `IMC_*`
-- GAS: `GA_*`, `GE_*`, `GC_*`, Gameplay Tags config
-- Animation: `ABP_*`, `AM_*`, `BS_*`, `CR_*`
-- Data: `DA_*`, `DT_*`, `Curve*`
-- Rendering/VFX: `M_*`, `MI_*`, `MF_*`, `NS_*`
-
-## Config Review
-
-- `Config/DefaultEngine.ini`
-- `Config/DefaultGame.ini`
-- `Config/DefaultInput.ini`
-- `Config/DefaultEditor.ini`
-- Collision channels, asset manager settings, gameplay tags, maps and modes, input settings
-
-## Risk Signals
-
-- Runtime module depending on editor-only modules
-- Public headers exposing unnecessary dependencies
-- Circular module dependencies
-- Hard-coded asset paths without validation
-- Missing `UPROPERTY` for UObject references that need GC tracking
-- Replicated state without clear authority owner
-- Blueprint APIs renamed without migration notes
-- Plugin copied into UE project `Plugins/` when it is not a `.uplugin`
-- Old engine version or migrated assets without redirector cleanup
-
-## Suggested Validation
-
-- Targeted editor build for touched modules
-- Blueprint compile check for touched assets
-- PIE smoke test for startup, possession, input, and UI
-- Multiplayer PIE scenario for replicated state
-- Asset validation or redirector cleanup before packaging
+- 项目地图，不是文件清单堆砌。
+- 已确认事实与推断分开。
+- 给后续二开最有价值的风险、约定和下一步技能。

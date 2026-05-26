@@ -1,82 +1,36 @@
-# Enhanced Input Checklist
+# Enhanced Input 检查清单
 
-## Asset Setup
+## 资产
 
-```text
-[ ] Input Actions use project naming, usually IA_<ActionName>.
-[ ] Action value type matches usage: Digital, Axis1D, Axis2D, or Axis3D.
-[ ] Triggers are intentional: Started, Triggered, Completed, Canceled, Ongoing.
-[ ] Modifiers are documented: dead zone, negate, swizzle, scalar, smoothing.
-[ ] Input Mapping Contexts use project naming, usually IMC_<ModeOrPawn>.
-[ ] Mapping context priority is explicit when multiple contexts can be active.
-[ ] Device-specific mappings are separated when keyboard/gamepad/touch differ.
-```
+- `IA_` 命名清晰，Value Type 与用途一致：Boolean、Axis1D、Axis2D、Axis3D。
+- `IMC_` 按模式组织：Gameplay、Vehicle、Menu、Debug、PhotoMode 等。
+- Modifier 和 Trigger 必须有明确目的，避免叠加后难以解释。
+- 默认键位、手柄、鼠标、触屏和平台差异要记录。
 
-## C++ Binding Pattern
+## 添加 Mapping Context
 
-```cpp
-#include "EnhancedInputComponent.h"
-#include "EnhancedInputSubsystems.h"
+- 通过 `ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>()` 添加/移除。
+- 添加时记录 priority，UI、菜单、Debug、Gameplay 的优先级要明确。
+- Pawn possession、respawn、map travel、local multiplayer 都要重新确认 context。
+- 不要在多个地方重复添加同一个 context 而不移除。
 
-void AMyCharacter::BeginPlay()
-{
-    Super::BeginPlay();
+## 绑定
 
-    if (const APlayerController* PC = Cast<APlayerController>(GetController()))
-    {
-        if (const ULocalPlayer* LocalPlayer = PC->GetLocalPlayer())
-        {
-            if (UEnhancedInputLocalPlayerSubsystem* Subsystem =
-                LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
-            {
-                Subsystem->AddMappingContext(DefaultMappingContext, 0);
-            }
-        }
-    }
-}
+- 在 `SetupPlayerInputComponent` 或项目约定位置绑定。
+- 确认 `EnhancedInputComponent` cast 成功。
+- `BindAction` 的 trigger event 要符合行为：Started、Triggered、Completed、Canceled。
+- 函数签名与 `FInputActionValue` 或具体输入值匹配。
 
-void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-    Super::SetupPlayerInputComponent(PlayerInputComponent);
+## 输入不触发排查
 
-    if (UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(PlayerInputComponent))
-    {
-        EnhancedInput->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyCharacter::HandleMove);
-    }
-}
-```
+- Pawn 是否被正确 Possess。
+- PlayerController 是否有 LocalPlayer。
+- Mapping Context 是否已添加且 priority 正确。
+- UI 是否抢焦点或 Input Mode 阻断。
+- Trigger 条件是否满足，Value Type 是否匹配。
+- 输入设备是否映射到当前平台。
 
-## Build.cs
+## 验证
 
-Add the module where the C++ code references Enhanced Input types:
-
-```csharp
-PrivateDependencyModuleNames.AddRange(new string[]
-{
-    "EnhancedInput"
-});
-```
-
-Use `PublicDependencyModuleNames` only if public headers expose Enhanced Input types.
-
-## Validation
-
-```text
-[ ] The pawn/controller is possessed by the expected local player.
-[ ] Mapping context is added once and not repeatedly every tick.
-[ ] Input action event fires in PIE.
-[ ] Correct trigger pin is used for the intended behavior.
-[ ] Axis values are normalized or clamped where gameplay expects it.
-[ ] Multiplayer commands do not mutate authoritative state only on the client.
-[ ] Blueprint graphs compile with no duplicate input event conflicts.
-```
-
-## Common Failure Sources
-
-| Symptom | First Check |
-|---------|-------------|
-| Event never fires | Mapping context was not added to `UEnhancedInputLocalPlayerSubsystem`. |
-| Works before respawn only | Mapping context or bindings are not restored after possession changes. |
-| Wrong axis direction | Modifier order, negate, or swizzle is wrong. |
-| Gamepad ignored | Mapping missing, device assigned to another local player, or action type mismatch. |
-| UI blocks action | Focus/input mode/CommonUI consumed the action. |
+- PIE 单人、多 PIE、本地多人、手柄/键鼠切换、暂停/恢复、UI 打开/关闭。
+- 使用 `showdebug enhancedinput` 或项目可用日志观察 action 状态。

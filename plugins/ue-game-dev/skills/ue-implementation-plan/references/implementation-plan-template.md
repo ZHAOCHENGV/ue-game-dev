@@ -1,52 +1,43 @@
-# UE Implementation Plan Template
+# UE 实施计划模板
 
-```text
-UE Implementation Plan
+## 目标
 
-1. Discovery and constraints
-- Inspect:
-- Confirm:
-- Risk:
-- Next skill:
+- 需求：
+- 假设：
+- 非目标：
 
-2. C++/module changes
-- Files:
-- Change:
-- Blueprint API exposed:
-- Validation:
-- Next skill:
+## 影响面
 
-3. Blueprint/asset changes
-- Assets:
-- Nodes/graph:
-- Data/config:
-- Validation:
-- Next skill:
+- C++：
+- Blueprint：
+- 资产：
+- 配置：
+- UI：
+- 网络/存档：
 
-4. Data/config changes
-- Files/assets:
-- Change:
-- Validation:
+## 步骤
 
-5. Test and validation path
-- Automated:
-- PIE/editor:
-- Multiplayer:
-- Package/performance risk:
+1. 发现与读取：
+2. API/架构：
+3. 实现：
+4. Blueprint/资产接线：
+5. 配置：
+6. 测试：
+7. 验证：
 
-6. Handoff notes
-- What the user edits in editor:
-- What remains manual:
-- Follow-up skill:
-```
+## 风险
 
-## Step Detail Pattern
+- 技术风险：
+- 资产风险：
+- 打包风险：
+- 回滚：
 
-```text
-Step N: <name>
-- Owner: C++ / Blueprint / asset / config / test
-- Files/assets: <exact names or discovery target>
-- Action: <specific change>
-- Validation: <command or editor path>
-- Risk: <shared system, migration, asset dependency, network authority>
-```
+## 验证矩阵
+
+| 验证项 | 方法 | 预期 |
+|--------|------|------|
+
+## 计划原则
+
+- 每个步骤都应能对应到文件、资产、配置或验证行为。
+- 对尚未确认的路径和类名，先写发现动作，不编造不存在的文件。

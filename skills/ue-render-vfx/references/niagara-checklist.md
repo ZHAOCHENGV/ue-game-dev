@@ -1,33 +1,30 @@
-# Niagara Checklist
+# Niagara 检查清单
 
-## System Design
+## 系统选择
 
-- Choose CPU simulation for gameplay-facing collision/events that need CPU data.
-- Choose GPU simulation for high-count visual particles when CPU readback is not needed.
-- Use user parameters for gameplay-driven values.
-- Keep shared logic in modules when reused.
-- Decide whether the system is one-shot, looped, pooled, attached, or world-placed.
-- Keep spawn ownership clear: Blueprint, C++, Anim Notify, GameplayCue, or placed actor.
+- CPU emitter 适合需要碰撞事件、Gameplay 回调或少量精确粒子。
+- GPU emitter 适合大量视觉粒子，但不要依赖 CPU 事件。
+- 明确 System、Emitter、User Parameter 和触发方的生命周期。
 
-## Reliability
+## Bounds 与裁剪
 
-- Set fixed bounds for GPU emitters or effects that disappear unexpectedly.
-- Confirm auto-activation, pooling, warmup, and reset behavior.
-- Check local/world space assumptions and attachment behavior.
-- Validate User Parameter names, default values, and update frequency.
-- Check emitter reset behavior when reused by pooled components.
+- 粒子消失先检查 fixed bounds、camera culling、scalability 和 LOD。
+- 大范围特效需要合理 bounds，避免过大导致一直渲染。
+- 附着 Actor 或移动源时，确认 bounds 是否随 owner 更新。
 
-## Performance
+## 参数与触发
 
-- Review spawn rate, update scripts, collision, events, renderer count, translucent overdraw, and tick behavior.
-- Add LOD/scalability rules for frequent or persistent effects.
-- Validate effect lifetime and cleanup for pooled actors/components.
-- Prefer GPU emitters for high particle counts only when collision/readback constraints allow it.
-- Keep bounds tight enough for culling but large enough to avoid popping.
-- Watch translucent material overdraw, light usage, ribbon/trail count, and distance field collisions.
+- User Parameter 按 gameplay 含义命名，例如 `ImpactNormal`、`Intensity`、`SurfaceType`。
+- 不要每帧写入无变化参数；优先事件触发或低频更新。
+- Spawn burst、loop、deactivate、destroy 要和 owner 生命周期一致。
 
-## Debugging
+## 性能
 
-- Use Niagara Debugger to inspect active systems, parameter values, emitter state, and tick cost.
-- Toggle solo emitters to isolate which emitter causes a visual or performance issue.
-- Capture system asset path, owner, activation path, platform/scalability level, and reproduction camera angle.
+- 检查 tick cost、particle count、overdraw、material complexity、collision、lights。
+- 使用 scalability 限制低端平台数量、距离、LOD 和透明特效。
+- GPU sim、ribbon、mesh renderer、collision 和 light renderer 要分别评估成本。
+
+## 验证
+
+- Editor viewport、PIE、packaged build、目标平台都要看一次高风险特效。
+- 记录资产路径、触发事件、预期视觉、实际症状和性能指标。

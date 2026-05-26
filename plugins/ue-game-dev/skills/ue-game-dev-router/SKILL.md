@@ -1,123 +1,106 @@
 ---
 name: ue-game-dev-router
-description: Route Unreal Engine game and client development requests to the most specific UE workflow skill. Use as the entry point when the domain or best skill is unclear, or when the request spans project intake, stage detection, gate checks, workflow state, log/crash triage, feature brief, implementation planning, completion handoff, onboarding, multi-agent coordination, Blueprint, C++, plugins, modules, editor tooling, GAS, networking, input, AI, animation, rendering, UI, testing, debugging, performance, or packaging.
+description: 当 Unreal Engine 游戏或客户端开发请求需要路由到最具体的 UE 工作流技能，或请求横跨项目入口、阶段检测、门检、项目记忆、日志/崩溃、需求简报、实施计划、完成交接、旧项目接手、多 Agent、Blueprint、C++、插件、模块、编辑器工具、GAS、网络、输入、AI、动画、渲染、UI、测试、调试、性能或打包时使用。
 ---
 
 # UE Game Dev Router
 
-Use this skill first when the request spans multiple Unreal Engine areas or the right workflow is unclear. Treat it as the UE production workflow entry point: classify stage first, then route to the most specific sibling skill.
+当请求横跨多个 Unreal Engine 领域，或最合适的工作流不明确时，先使用本技能。先判断阶段，再路由到最具体的同级技能。
 
-## Route The Stage
+## 阶段路由
 
-- Use `$ue-start` when the user begins a UE task and scope, project stage, or next workflow is unclear.
-- Use `$ue-stage-detect` when the user asks what stage an Unreal project is in, what is missing, or wants a read-only workflow gap report.
-- Use `$ue-gate-check` when the user asks whether the project or feature is ready to move to implementation, validation, packaging readiness, or explicit release packaging.
-- Use `$ue-feature-brief` when the user has a rough feature idea that needs a scoped UE brief before implementation.
-- Use `$ue-implementation-plan` when requirements are clear enough to plan code, Blueprint, assets, config, tests, and verification before changes.
-- Use `$ue-feature-done` when work is ready for closeout, handoff, commit, or "is this done?" verification.
-- Use `$ue-project-onboarding` when the user asks to understand, audit, take over, inherit, familiarize itself with, or prepare secondary development for an existing Unreal Engine project before changing code or assets.
-- Use `$ue-workflow-state` when the user asks to create, refresh, read, or use persistent project memory such as `Saved/CodexWorkflow/`, project context, module maps, asset indexes, decisions, known risks, or active task notes.
-- Use `$ue-multi-agent-workflow` when the user explicitly asks for multi-agent, multi-expert, team-style, parallel specialist, `lean`, or `full` mode coordination, or when a complex request spans old-project onboarding, architecture review, C++/Blueprint/UI/assets/tests, and release/log risk analysis. Do not use it for narrow single-domain tasks.
+- 用 `$ue-start` 处理范围、项目阶段或下一步流程不清的 UE 任务入口。
+- 用 `$ue-stage-detect` 处理项目处于什么阶段、缺什么、下一步是什么的只读分析。
+- 用 `$ue-gate-check` 处理是否能进入实现、验证、打包准备或显式发版打包的门检。
+- 用 `$ue-feature-brief` 处理需要先整理成 UE 功能简报的粗略想法。
+- 用 `$ue-implementation-plan` 处理需求已足够清晰、需要拆解 C++/Blueprint/资产/配置/测试/验证的任务。
+- 用 `$ue-feature-done` 处理完成验收、交接、提交前确认或“是否做完”。
+- 用 `$ue-project-onboarding` 处理旧项目接手、熟悉、审查、二开前分析，第一轮保持只读。
+- 用 `$ue-workflow-state` 处理 `Saved/CodexWorkflow/` 项目记忆、模块地图、资产索引、决策、风险和当前任务状态。
+- 用 `$ue-multi-agent-workflow` 处理用户明确要求 multi-agent、多专家、团队协作、并行专家、`lean` 或 `full` 模式，或复杂请求横跨旧项目接手、架构、C++/Blueprint/UI/资产/测试和发布/日志风险。
 
-## Route The Request
+## 领域路由
 
-- Use `$ue-cpp-gameplay` for Actors, Components, UObject ownership, DataAssets, Subsystems, input-driven gameplay handlers, world interaction, save/load hooks, and general gameplay C++.
-- Use `$ue-blueprint-workflow` for Blueprint graph logic, Event Graph changes, function graphs, input events, node/pin wiring, Widget Blueprint logic, and Blueprint compile validation.
-- Use `$ue-plugin-module-dev` for UE plugin structure, `.uplugin`, module descriptors, Runtime/Editor module split, `.Build.cs`, export API macros, Public/Private folders, plugin content/config/resources, and UE asset/code naming conventions.
-- Use `$ue-editor-tooling-slate` for editor plugins, Slate editor UI, ToolMenus, UICommands, toolbar/menu extensions, custom details panels, asset type actions, factories, tab spawners, and editor subsystems.
-- Use `$ue-architecture` for module layout, `.Build.cs` dependencies, Public/Private boundaries, reflection exposure strategy, plugin boundaries, and large refactors.
-- Use `$ue-gas-networking` for GAS abilities, attributes, effects, cues, prediction, replication, RPCs, authority flow, multiplayer debugging, and network relevance.
-- Use `$ue-input-enhanced` for Enhanced Input, Input Actions, Input Mapping Contexts, input modifiers/triggers, pawn/controller binding, runtime mapping changes, key rebinding, local multiplayer input, UI focus/input mode conflicts, and input events that do not fire.
-- Use `$ue-async-systems` for `AsyncTask`, `Async()`, `UE::Tasks`, `FRunnable`, `ParallelFor`, `UBlueprintAsyncActionBase`, game-thread handoff, cancellation, async lifetime, and non-blocking gameplay/client operations.
-- Use `$ue-external-services` for HTTP, REST, JSON, WebSocket, TCP sockets, backend API clients, streaming responses, heartbeats, reconnects, request queues, auth headers, and external process or service integration.
-- Use `$ue-audio` for MetaSound, Sound Cues, AudioComponents, Sound Classes, Sound Mixes, Sound Concurrency, Quartz timing, spatialization, attenuation, and audio performance.
-- Use `$ue-world-streaming` for World Partition, Data Layers, HLOD, Level Streaming, Level Streaming Volumes, Large World Coordinates, runtime grid setup, and actor loading/unloading.
-- Use `$ue-save-load-sync` for SaveGame schemas, serialization, restore flows, RepNotify, RPC entry points, and persistent state that intersects with network state.
-- Use `$ue-world-interaction` for pickups, spawners, overlap/trace interactions, interaction radius checks, world actor lifecycle, and success/failure feedback.
-- Use `$ue-render-vfx` for renderer settings, materials, material functions, shader code, post process, Niagara systems, particles, GPU simulation, LODs, and visual performance.
-- Use `$ue-client-ui` for client architecture, UMG widgets, Slate, HUDs, CommonUI, view models, Enhanced Input UI flows, loading screens, localization, and UI performance.
-- Use `$ue-log-crash-triage` when the user provides or asks to analyze logs, UBT/UHT compile errors, linker errors, Blueprint compile errors, Editor crashes, callstacks, ensures/asserts, UAT packaging failures, Cook errors, or `Saved/Logs` output.
-- Use `$ue-debug-validation` when behavior is broken or unproven and the task is to diagnose runtime behavior, assets, Blueprints, C++, networking, or editor configuration after evidence is collected.
-- Use `$ue-build-release-automation` only when the current user explicitly asks to package a project, create or run one-click packaging, generate `RunUAT`/`BuildCookRun` commands, configure Project Launcher, or create CI release build automation. Do not route here for passive readiness checks.
-- Use `$ue-performance-packaging` for profiling, stat review, packaging failures, build configuration sanity, release readiness, packaging smoke checks, and go/no-go checklists.
-- Use `$ue-ai-navigation` for Behavior Trees, Blackboards, EQS, NavMesh, AI Controllers, AI Perception, StateTree, crowd AI, and autonomous agent behavior.
-- Use `$ue-animation` for Animation Blueprints, Montages, Blend Spaces, state machines, IK, Control Rig, Motion Matching, root motion, Anim Notifies, and animation performance.
-- Use `$ue-testing-automation` for AutomationSpec, `FAutomationTestBase`, Functional Tests, editor tool smoke tests, PIE/multiplayer scenarios, asset validation, packaging smoke checks, and regression planning.
+- 用 `$ue-cpp-gameplay` 处理 Actor、Component、UObject、DataAsset、Subsystem、输入驱动玩法、世界交互、存档 hook 和通用 Gameplay C++。
+- 用 `$ue-blueprint-workflow` 处理 Blueprint 图逻辑、Event Graph、函数图、输入事件、节点/Pin 连线、Widget Blueprint 和蓝图编译验证。
+- 用 `$ue-plugin-module-dev` 处理 UE 插件结构、`.uplugin`、模块描述、Runtime/Editor 拆分、`.Build.cs`、API macro、Public/Private 和命名规范。
+- 用 `$ue-editor-tooling-slate` 处理编辑器插件、Slate UI、ToolMenus、UICommands、工具栏/菜单扩展、Details 自定义、资产操作和 Editor Subsystem。
+- 用 `$ue-architecture` 处理模块布局、`.Build.cs` 依赖、Public/Private 边界、反射暴露策略、插件边界和大型重构。
+- 用 `$ue-gas-networking` 处理 GAS abilities、attributes、effects、cues、prediction、replication、RPC、authority flow 和多人调试。
+- 用 `$ue-input-enhanced` 处理 Enhanced Input、Input Actions、Input Mapping Contexts、Modifiers/Triggers、Pawn/Controller 绑定、运行时映射、按键重绑、本地多人输入和 UI 焦点冲突。
+- 用 `$ue-async-systems` 处理 `AsyncTask`、`Async()`、`UE::Tasks`、`FRunnable`、`ParallelFor`、`UBlueprintAsyncActionBase`、GameThread 回切、取消和生命周期。
+- 用 `$ue-external-services` 处理 HTTP、REST、JSON、WebSocket、TCP、后端 API、流式响应、心跳、重连、请求队列、认证头和外部服务集成。
+- 用 `$ue-audio` 处理 MetaSound、Sound Cue、AudioComponent、Sound Class/Mix、Concurrency、Quartz、空间化、衰减和音频性能。
+- 用 `$ue-world-streaming` 处理 World Partition、Data Layers、HLOD、Level Streaming、Streaming Volume、Large World Coordinates、Runtime Grid 和 Actor 加载/卸载。
+- 用 `$ue-save-load-sync` 处理 SaveGame schema、序列化、恢复流程、RepNotify、RPC 入口和持久状态/网络状态交叉。
+- 用 `$ue-world-interaction` 处理拾取、生成器、Overlap/Trace 交互、交互半径、世界 Actor 生命周期和成功/失败反馈。
+- 用 `$ue-render-vfx` 处理 renderer settings、材质、Material Function、shader、post process、Niagara、粒子、GPU simulation、LOD 和视觉性能。
+- 用 `$ue-client-ui` 处理 UMG、HUD、CommonUI、ViewModel、Enhanced Input UI 流程、加载界面、本地化、DPI 和 UI 性能。
+- 用 `$ue-log-crash-triage` 处理日志、UBT/UHT 编译错误、链接错误、Blueprint 编译错误、Editor 崩溃、callstack、ensure/assert、UAT/Cook/打包失败或 `Saved/Logs`。
+- 用 `$ue-debug-validation` 处理行为异常或尚未验证的运行时、资产、Blueprint、C++、网络或编辑器配置诊断。
+- 用 `$ue-build-release-automation` 只处理用户当前明确要求打包、创建/运行一键打包、生成 `RunUAT`/`BuildCookRun`、配置 Project Launcher 或 CI 发版自动化的请求。Do not route here for passive readiness checks.
+- 用 `$ue-performance-packaging` 处理 profiling、stat review、打包失败诊断、构建配置、发布准备、打包烟测和 go/no-go 清单。
+- 用 `$ue-ai-navigation` 处理 Behavior Tree、Blackboard、EQS、NavMesh、AI Controller、AI Perception、StateTree、群体 AI 和自主行为。
+- 用 `$ue-animation` 处理 Animation Blueprint、Montage、Blend Space、状态机、IK、Control Rig、Motion Matching、root motion、Anim Notify 和动画性能。
+- 用 `$ue-testing-automation` 处理 AutomationSpec、`FAutomationTestBase`、Functional Test、编辑器工具烟测、PIE/多人场景、资产验证、打包烟测和回归计划。
 
-If a task crosses domains, start with the skill that owns the first failing or user-facing behavior, then bring in the others as needed.
+跨域任务先进入“第一个失败点或用户可见行为”的拥有技能，再按需引入其他技能。用户明确要求多 Agent 时，先进入 `$ue-multi-agent-workflow` 定义角色、所有权边界、并行发现和后续技能。
 
-If the user explicitly asks for multi-agent coordination, route to `$ue-multi-agent-workflow` first so it can define roles, ownership boundaries, parallel discovery, dependent phases, and the focused follow-up skills.
+若请求涉及 physics、destruction 或其他尚无专属技能的领域，基于通用 UE 最佳实践处理，并明确告知当前插件暂无该领域专属技能。
 
-If the request involves physics, destruction, or another domain without a dedicated sibling skill, handle it directly within this router using general Unreal best practices and note the coverage gap.
+## 模糊请求处理
 
-## Production Workflow
+1. 阶段词优先于领域词，例如“需求简报”“实施计划”“验收”。
+2. 错误、日志、崩溃、不触发优先走 `$ue-log-crash-triage` 或 `$ue-debug-validation`。
+3. 性能、帧率、内存、Cook、package readiness 优先走 `$ue-performance-packaging`。
+4. 同时涉及 Blueprint 和 C++ 时，先判断用户要改图、暴露 API 还是实现运行时系统。
+5. 仍不明确时，只问一个会改变路由的问题。
 
-Use this sequence when the user wants broader help rather than one narrow fix:
+## 生产工作流
 
 ```text
 intake -> stage detect -> workflow state -> brief -> gate check -> implementation plan -> domain implementation -> log/debug triage -> feature done -> workflow state refresh
 ```
 
-- Insert `$ue-multi-agent-workflow` before onboarding, architecture review, implementation planning, or log/release risk review only when the request is explicit multi-agent or genuinely complex enough to need role coordination.
-- Keep onboarding read-only until the user approves implementation.
-- Use briefs to remove ambiguity before designing architecture.
-- Use stage detection to identify missing UE workflow artifacts without editing project files.
-- Use workflow state to preserve project understanding across sessions in `Saved/CodexWorkflow/`.
-- Use gate checks for PASS/CONCERNS/FAIL readiness decisions.
-- Use implementation plans to split C++, Blueprint, assets, config, and validation.
-- Use domain skills for actual UE implementation details.
-- Use log/crash triage before debugging from UBT, UHT, UAT, Blueprint, Editor, or crash output.
-- Use `$ue-feature-done` before claiming completion or handing work back.
+- 只有在用户明确要求多 Agent，或任务复杂到需要角色协调时，才在 onboarding、architecture review、implementation planning 或 log/release risk review 前插入 `$ue-multi-agent-workflow`。
+- 旧项目接手在用户批准实现前保持只读。
+- 用 brief 消除需求歧义，用 gate check 输出 PASS/CONCERNS/FAIL，用 implementation plan 拆 C++、Blueprint、资产、配置和验证。
+- 用 `Saved/CodexWorkflow/` 保存跨会话项目理解。
+- 声称完成或交接前使用 `$ue-feature-done`。
 
-## Explicit Packaging Boundary
+## 显式打包边界
 
-- Treat automatic packaging as an active operation, not a passive suggestion.
-- Do not invoke `$ue-build-release-automation` merely because a task touches release readiness, performance, testing, or package failure diagnosis.
-- Route to `$ue-build-release-automation` only when the user uses intent such as "打包", "一键打包", "自动打包", "生成打包脚本", "运行打包", "BuildCookRun", "RunUAT", "Project Launcher", "CI 打包", "发版流水线", or equivalent explicit packaging automation wording.
-- If the user asks whether a project is ready to package, route to `$ue-performance-packaging` until they explicitly ask to build/package.
+- 自动打包是主动操作，不是被动建议。
+- 不要仅因为任务涉及发布准备、性能、测试或打包失败诊断就调用 `$ue-build-release-automation`。
+- 只有用户使用“打包”“一键打包”“自动打包”“生成打包脚本”“运行打包”“BuildCookRun”“RunUAT”“Project Launcher”“CI 打包”“发版流水线”等明确自动化意图时才路由过去。
+- 如果用户只是问项目是否准备好打包，先路由到 `$ue-performance-packaging`。
 
-## Blueprint And C++ Split
+## Blueprint 与 C++ 分工
 
-- Treat Blueprint and C++ as peer workflows. Do not assume a UE task should be solved in C++ just because code edits are possible.
-- Use Blueprint when the request is graph-level, designer-authored, asset-tuned, input/event wiring, Widget Blueprint behavior, or quick gameplay composition.
-- Use C++ when the request needs reusable runtime systems, custom components/classes, performance-sensitive loops, advanced networking, custom async/latent behavior, engine API access, or stable APIs for many Blueprints.
-- For hybrid features, define the C++ base/API first, then describe the Blueprint extension points, default values, graph wiring, and validation steps.
+- Blueprint 和 C++ 是同级工作流，不因为能改代码就默认用 C++。
+- 图级逻辑、设计师调参、事件连线、Widget 行为和快速玩法组合优先 Blueprint。
+- 可复用运行时系统、性能敏感循环、高级网络、自定义异步、引擎 API 和稳定多蓝图 API 优先 C++。
+- 混合功能先定义 C++ 基类/API，再说明 Blueprint 扩展点、默认值、图连线和验证。
 
-## Pre-Flight Discovery
+## 预检发现
 
-- Locate and read the `.uproject` file for engine association, modules, enabled plugins, and project name.
-- Map `Source/`, `Content/`, `Config/`, `Plugins/`, target files, and module `.Build.cs` files before proposing changes.
-- Discover existing Blueprint assets, Input Actions, Input Mapping Contexts, Widget Blueprints, Gameplay Tags, and GAS assets by filename before naming new assets.
-- Read the nearest existing class, Blueprint naming pattern, or subsystem before introducing new architecture.
-- Before creating files/assets, apply UE naming conventions: C++ type prefixes (`U`, `A`, `F`, `E`, `I`, `S`), module API macros, and asset names like `[AssetTypePrefix]_[AssetName]_[Descriptor]_[Variant]`.
-- If the user wants Codex to first learn an old, unfamiliar, inherited, or existing project before implementation, keep the first pass read-only and route to `$ue-project-onboarding`; use `$ue-workflow-state` when the user wants that understanding saved or refreshed for future sessions.
+- 先定位 `.uproject`，读取引擎版本、模块、插件和项目名。
+- 在建议改动前映射 `Source/`、`Content/`、`Config/`、`Plugins/`、target 文件和模块 `.Build.cs`。
+- 新建资产或代码前检查现有 Blueprint、Input Action、Input Mapping Context、Widget、Gameplay Tag 和命名模式。
+- 遵循 UE 命名：C++ 前缀 `U`、`A`、`F`、`E`、`I`、`S`，模块 API macro，资产名 `[AssetTypePrefix]_[AssetName]_[Descriptor]_[Variant]`。
 
-## Working Rules
+## 工作规则
 
-- Inspect the local UE project before editing: `.uproject`, `Source/`, `Plugins/`, `Config/`, and module `.Build.cs` files.
-- Prefer existing project conventions, module boundaries, naming, and subsystem patterns.
-- For C++ edits, keep Unreal reflection hygiene: correct `UCLASS`/`USTRUCT`/`UFUNCTION`/`UPROPERTY`, no raw UObject ownership without GC awareness, and minimal public headers.
-- For Blueprint edits, describe graph-level flow first, then exact node/pin wiring; validate compile state and avoid duplicate input events.
-- For plugin/module edits, keep Runtime and Editor dependencies separate and verify `.uplugin`, `.uproject`, and `.Build.cs` descriptors before code changes.
-- For editor tooling, verify registration/unregistration symmetry and keep editor-only dependencies out of runtime modules.
-- For gameplay features, identify authority, lifetime, ownership, save/replication needs, and editor asset requirements before changing code.
-- For async work, separate off-thread computation or IO from game-thread UObject access, and define cancellation before starting work.
-- For external service work, keep backend clients in subsystems or service objects, parse typed results, and do not confuse HTTP/WebSocket/TCP service calls with Unreal gameplay replication.
-- For multiplayer work, define which machine owns the state, how it replicates, and what is predicted locally.
-- For rendering/VFX work, check scalability, platform, material instruction cost, Niagara bounds, tick cost, and shader permutations.
-- For UI work, separate presentation from gameplay state where the project already has view models, controllers, managers, or subsystems.
-- For production-facing features, include an appropriate test or smoke validation path unless the user explicitly asks for exploration only.
-- For feature lifecycle work, preserve the intake/brief/plan/done chain when it adds clarity, but do not force it on small direct fixes.
-- For multi-agent work, require a coordinator synthesis, role statuses, file ownership boundaries, and focused follow-up skills before implementation.
-- Use the shared `rules/` guidance when a task touches C++, Blueprint, networking, assets, or packaging.
+- 优先遵循项目已有约定、模块边界、命名和 subsystem 模式。
+- C++ 保持反射卫生：`UCLASS`、`USTRUCT`、`UFUNCTION`、`UPROPERTY` 正确，UObject 引用具备 GC 意识，Public 头最小化。
+- Blueprint 先描述图流，再给出节点/Pin 连线，验证编译并避免重复输入事件。
+- Runtime 与 Editor 依赖分离，编辑器工具注册/注销对称。
+- 多人任务必须说明 authority、ownership、replication、prediction 和验证场景。
+- 使用共享 `rules/` 处理 C++、Blueprint、网络、资产和打包规则。
 
-## Verification
+## 验证
 
-- Prefer a targeted Unreal build for touched modules.
-- For feature work, include a targeted `$ue-testing-automation` path when automated tests, editor smoke tests, Functional Tests, PIE scenarios, or asset validation can catch regressions.
-- When a full editor build is expensive, still run a syntax/build check that matches the available engine version.
-- For Blueprint work, validate graph compile status, event uniqueness, pin compatibility, and asset references.
-- For networking, state the minimum PIE or dedicated server scenario to validate.
-- For rendering, include an editor viewport/PIE visual check and a performance sanity check.
-- For UI, include at least one viewport-size or DPI sanity check when layout changes.
-- For packaging/performance, separate editor-only behavior from packaged runtime behavior.
+- 优先运行触及模块的 UE 构建或可用的语法/构建检查。
+- Blueprint 工作验证编译、事件唯一性、Pin 兼容和资产引用。
+- 网络工作给出最小 PIE 或 Dedicated Server 场景。
+- 渲染/UI/性能/打包工作要区分 Editor 行为和 packaged runtime 行为。

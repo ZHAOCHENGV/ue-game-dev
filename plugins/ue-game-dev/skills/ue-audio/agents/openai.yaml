@@ -1,4 +1,4 @@
 interface:
   display_name: "UE Audio"
-  short_description: "Plan and debug Unreal audio, MetaSound, and runtime audio systems."
-  default_prompt: "Use $ue-audio to design or debug Unreal MetaSound, Sound Cue, AudioComponent, or audio performance work."
+  short_description: "设计和排查 UE 音频、MetaSound 与运行时音频系统。"
+  default_prompt: "使用 $ue-audio 设计或排查 Unreal MetaSound、Sound Cue、AudioComponent 或音频性能问题。"

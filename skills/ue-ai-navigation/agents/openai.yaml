@@ -1,4 +1,4 @@
 interface:
   display_name: "UE AI Navigation"
-  short_description: "Build Unreal AI behavior, pathfinding, EQS, and perception systems."
-  default_prompt: "Use $ue-ai-navigation to implement this Unreal AI or navigation feature."
+  short_description: "设计和排查 UE AI 行为、寻路、EQS 与感知系统。"
+  default_prompt: "使用 $ue-ai-navigation 设计或排查这个 Unreal AI / Navigation 功能。"

@@ -1,79 +1,60 @@
-# UE Naming Conventions
+# UE 命名规范
 
-Reference basis: Epic's recommended asset naming convention uses `[AssetTypePrefix]_[AssetName]_[Descriptor]_[Variant]`.
+## C++ 类型前缀
 
-## Asset Name Shape
+| 类型 | 前缀 | 示例 |
+|------|------|------|
+| UObject 派生 | `U` | `UInventoryComponent` |
+| Actor 派生 | `A` | `AInteractableActor` |
+| Struct | `F` | `FInventoryEntry` |
+| Enum | `E` | `EItemRarity` |
+| Interface | `I` / `U` | `IInteractable` / `UInteractable` |
+| Slate Widget | `S` | `SInventoryPanel` |
 
-- Use `Prefix_Name_Descriptor_Variant`.
-- Keep the prefix short and type-specific.
-- Keep `Name` stable and searchable.
-- Use `Descriptor` for purpose, socket, state, team, material role, or style.
-- Use `Variant` for numbered or lettered alternatives such as `A`, `B`, `01`, or color/style variants.
+## 资产前缀
 
-## Common Asset Prefixes
+| 类型 | 前缀 |
+|------|------|
+| Blueprint | `BP_` |
+| Widget Blueprint | `WBP_` |
+| Animation Blueprint | `ABP_` |
+| Static Mesh | `SM_` |
+| Skeletal Mesh | `SK_` |
+| Material | `M_` |
+| Material Instance | `MI_` |
+| Texture | `T_` |
+| Niagara System | `NS_` |
+| Sound Cue | `SC_` |
+| Sound Wave | `SW_` |
+| Data Asset | `DA_` |
+| Input Action | `IA_` |
+| Input Mapping Context | `IMC_` |
 
-- `BP_`: Blueprint class.
-- `BI_` or project-standard `BPI_`: Blueprint Interface.
-- `WBP_`: Widget Blueprint.
-- `ABP_`: Animation Blueprint.
-- `BS_`: Blend Space.
-- `SM_`: Static Mesh.
-- `SK_`: Skeletal Mesh.
-- `SKEL_`: Skeleton.
-- `PA_`: Physics Asset.
-- `M_`: Material.
-- `MI_`: Material Instance.
-- `MF_`: Material Function.
-- `T_`: Texture.
-- `RT_`: Render Target.
-- `FXS_`: Niagara System.
-- `FXE_`: Niagara Emitter.
-- `FXF_`: Niagara Function.
-- `PS_`: Particle System.
-- `S_`: Sound.
-- `SC_`: Sound Cue.
-- `DT_`: Data Table.
-- `DA_`: Data Asset.
-- `E_`: Enum asset.
-- `LV_`: Level or map when the project uses that convention.
+## 命名形状
 
-Prefer the existing project prefix if it already differs consistently.
-When Epic's table and an established project convention differ, keep the project convention unless the task is explicitly standardizing names.
+```text
+[AssetTypePrefix]_[AssetName]_[Descriptor]_[Variant]
+```
 
-## C++ Type Names
+示例：
 
-- `AName`: Actor.
-- `UName`: UObject, ActorComponent, Subsystem, DataAsset, UserWidget.
-- `FName`: struct.
-- `EName`: enum.
-- `IName`: interface.
-- `SName`: Slate widget.
-- `TName`: template/container style.
-- Boolean members start with `b`.
+```text
+BP_InventoryPickup_Health_Small
+WBP_InventoryPanel_Default
+IA_Interact
+IMC_Gameplay_Default
+NS_HitImpact_Metal
+```
 
-## C++ Files
+## 模块与插件
 
-- Match file names to the primary type without the Unreal prefix when that is the project style, or with it when the project already does so. Be consistent.
-- Typical project style: `InventoryComponent.h` contains `UInventoryComponent`.
-- Keep `.h` and `.cpp` paired for normal classes.
-- Put public headers under `Public/` only when another module should include them.
-- Put implementation-only headers under `Private/`.
+- 模块名使用清晰 PascalCase，例如 `InventoryRuntime`、`InventoryEditor`。
+- API macro 与模块名一致，例如 `INVENTORYRUNTIME_API`。
+- Runtime 与 Editor 模块名要能看出职责。
+- 插件目录名、`.uplugin` name 和主模块名保持一致或有明确映射。
 
-## Plugin And Module Names
+## 规则
 
-- Plugin folder and `.uplugin` base name should match: `Plugins/MyFeature/MyFeature.uplugin`.
-- Module names should be PascalCase and stable.
-- Module API macro should match the module name uppercased with `_API`, such as `MYFEATURE_API`.
-- Editor module often appends `Editor`, such as `MyFeatureEditor`.
-
-## Reflected API Names
-
-- Keep `UCLASS`, `USTRUCT`, `UENUM`, `UFUNCTION`, and `UPROPERTY` names stable after Blueprint assets reference them.
-- Use clear Blueprint categories and display names only when they improve designer usability.
-- Plan redirectors before renaming assets or moving Blueprint class paths.
-
-## Avoid
-
-- Spaces, punctuation-heavy names, non-ASCII names, and vague names like `NewBlueprint`, `Test`, or `MyAsset`.
-- Renaming referenced assets without planning redirectors and reference fix-up.
-- Using asset prefixes for C++ module names or C++ prefixes for content assets.
+- 不为临时测试资产使用最终命名空间，避免后续误引用。
+- 不用 `NewBlueprint`、`Test2`、`Final_Final` 这类不可维护名称。
+- 重命名资产后处理 redirector 并验证引用。

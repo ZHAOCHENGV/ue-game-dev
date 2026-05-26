@@ -1,75 +1,53 @@
 ---
 name: ue-ai-navigation
-description: Unreal Engine AI and navigation workflow for Behavior Trees, Blackboards, EQS, NavMesh, AI Controllers, AI Perception, StateTree, Mass Entity, crowd simulation, and AI debugging. Use when requests involve NPC behavior, pathfinding, environmental queries, AI sensing, or autonomous agent logic.
+description: 当 Unreal Engine 任务涉及 NPC 行为、Behavior Tree、Blackboard、EQS、NavMesh、AI Controller、AI Perception、StateTree、Mass Entity、群体移动或 AI 调试时使用。
 ---
 
 # UE AI Navigation
 
-Use this skill for AI behavior, pathfinding, and autonomous agent systems. Keep AI logic authority-aware and data-driven where designers need iteration.
+## 概览
 
-## First Pass
+这个技能负责 UE AI 与导航工作流。先确认 AI 决策归属、导航数据、感知来源和调试证据，再设计或排查 Behavior Tree、StateTree、EQS、NavMesh 和 AI Controller。
 
-1. Read the `.uproject`, existing AI controllers, Behavior Trees, Blackboard assets, EQS queries, NavMesh configuration, and AI Perception setup.
-2. Identify the AI framework in use: Behavior Tree + Blackboard, StateTree, custom FSM, or hybrid.
-3. Map AI actor set: AI Controller, Pawn/Character, Blackboard, Behavior Tree, EQS, Perception Component, Navigation path, and gameplay subsystems.
-4. Determine whether the AI logic belongs in Blueprint, C++, or a data-driven hybrid.
-5. Check NavMesh generation settings, navigation bounds, agent profiles, and query filters before changing pathfinding behavior.
+## 使用场景
 
-## Behavior Tree Rules
+- 设计 NPC 巡逻、追击、搜索、战斗、撤退、交互等行为。
+- 排查 AI 不移动、路径失败、感知不触发、任务卡住或状态切换异常。
+- 搭建 Behavior Tree、Blackboard、EQS、AI Perception、NavLink、Smart Object 或 StateTree。
+- 做多人场景中的 AI 权威、复制和客户端表现边界。
 
-- Keep Behavior Tree structure shallow and readable; prefer subtrees for reusable branches.
-- Use Blackboard keys with clear types and names; avoid overloading a single key for multiple purposes.
-- Keep Blackboard key names stable after they are referenced by trees, decorators, and services.
-- Implement custom tasks, decorators, and services in C++ when they need reusable logic, performance, or engine API access; use Blueprint tasks for designer-authored one-off behavior.
-- End tasks explicitly with `FinishLatentTask` on all paths: success, failure, abort, and owner destruction.
-- Use decorators for condition checks and observation rather than polling in task Tick.
-- Use services for periodic Blackboard updates rather than per-frame polling.
+## 工作流程
 
-## StateTree Rules
+1. 确认 AI 拥有者：Pawn、AIController、Behavior Tree、StateTree、Mass processor 或 Gameplay Ability。
+2. 检查导航基础：NavMeshBoundsVolume、agent radius/height、Supported Agents、Runtime Generation、动态障碍和关卡流送。
+3. 定义 Blackboard key：目标 Actor、位置、状态枚举、感知时间戳、可达性和失败原因。
+4. 把高频感知、路径和查询结果缓存到服务或组件，避免每帧重复重算。
+5. 对行为切换写出可观察证据：Gameplay Debugger、`showdebug ai`、EQS 预览、Visual Logger 和 PIE 场景。
 
-- Use StateTree when the project prefers a hierarchical state machine over Behavior Trees.
-- Keep states focused; avoid monolithic state logic.
-- Use conditions and transitions explicitly instead of ad-hoc checks inside state logic.
-- Keep StateTree assets and evaluation schemas consistent with the project pattern.
+## 设计规则
 
-## Navigation Rules
+- Behavior Tree 适合清晰的任务树；StateTree 适合状态驱动、Gameplay State 或 UE5 项目。
+- EQS 用于可解释的环境查询，不要把复杂业务规则藏在单个 query 里。
+- 感知事件只负责记录事实，决策应放在 Controller、Tree/StateTree 或专门组件中。
+- 动态场景先确认 NavMesh 是否需要 runtime rebuild，再决定移动逻辑。
+- 多人 AI 通常由服务器拥有状态，客户端只表现复制结果或局部视觉反馈。
 
-- Confirm NavMesh agent radius, height, step height, and slope match the AI Pawn dimensions.
-- Use navigation query filters for terrain cost, area restrictions, and avoidance priorities.
-- Set supported agents and navigation bounds intentionally; avoid relying on unbounded auto-generation.
-- For dynamic obstacles, confirm dynamic modifier volumes or runtime NavMesh rebuilds are configured.
-- Use `MoveToLocation`/`MoveToActor` through AI Controller or pathfinding component; avoid manual path segment management unless required.
+## 调试清单
 
-## AI Perception Rules
+- 确认 AIController 是否 Possess 了 Pawn，BrainComponent 是否运行。
+- 检查 Behavior Tree task 是否返回 `Succeeded`、`Failed` 或仍在 `InProgress`。
+- 验证 Blackboard key 类型、名称和写入时机。
+- 检查 MoveTo 目标是否可达、是否被碰撞/agent 设置阻挡。
+- 用 Gameplay Debugger 查看感知、行为树、路径和当前目标。
 
-- Configure sight, hearing, damage, touch, and team senses with explicit ranges and parameters.
-- Use `OnPerceptionUpdated` or `OnTargetPerceptionUpdated` delegates instead of polling `GetCurrentlyPerceivedActors` every frame.
-- Keep perception source registration explicit; actors that should be sensed need a stimuli source component or compatible affiliation.
-- Validate perception in multiplayer: perception runs on the server for authoritative AI; keep client proxies cosmetic.
+## 输出
 
-## EQS Rules
+- AI 架构：Controller、Pawn、Behavior Tree/StateTree、Blackboard、感知和移动组件分工。
+- 关键资产：BT、BB、EQS、NavMesh、DataAsset、Gameplay Tag 或 StateTree 名称。
+- 实现步骤：C++/Blueprint/资产配置分开描述。
+- 验证方案：至少包含一个 PIE 场景和一条调试命令。
 
-- Keep EQS queries modular: generator -> tests -> scoring.
-- Prefer simple generators (grid, cone, actors) with focused tests over complex monolithic queries.
-- Watch query cost: limit item count, avoid expensive traces per item, and use distance culling.
-- Test EQS queries in the EQS Testing Pawn before relying on them in runtime Behavior Trees.
+## 参考
 
-## Common Patterns
-
-- Patrol: waypoint data asset or spline -> select next point via Blackboard/EQS -> MoveTo -> wait/observe -> repeat.
-- Combat: perception detect -> evaluate threat -> select ability/attack -> execute via GAS or direct action -> evaluate result -> re-evaluate state.
-- Cover: EQS query for cover points -> score by distance/exposure/threat direction -> MoveTo -> hold with decorator-gated observation.
-- Investigate: stimulus location in Blackboard -> MoveTo -> search pattern -> timeout or confirm -> return to previous behavior.
-
-## Debugging
-
-- Use `AI Debugging` viewport mode and `GameplayDebugger` for live Behavior Tree, Blackboard, EQS, Perception, and NavMesh visualization.
-- Log AI Controller name, Blackboard key values, current tree node, perception targets, and navigation request results near failing paths.
-- For NavMesh issues, use `Show Navigation` and inspect agent-specific nav data generation.
-
-## References
-
-- Read `references/ai-behavior-checklist.md` for Behavior Tree, EQS, and Perception validation.
-- Read `references/navigation-checklist.md` for NavMesh, pathfinding, and agent configuration review.
-- Use `$ue-cpp-gameplay` when AI needs custom components, subsystems, or gameplay C++ implementation.
-- Use `$ue-gas-networking` when AI abilities use GAS or need multiplayer authority handling.
+- 行为设计时读取 `references/ai-behavior-checklist.md`。
+- 导航、MoveTo 或 NavMesh 问题读取 `references/navigation-checklist.md`。

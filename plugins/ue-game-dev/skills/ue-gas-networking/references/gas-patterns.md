@@ -1,26 +1,27 @@
-# GAS Patterns
+# GAS 模式
 
-## ASC Initialization
+## ASC 位置
 
-- Confirm ASC owner and avatar are set on server and owning client.
-- Reinitialize after possession, respawn, pawn swap, or player state handoff.
-- Bind input after the ASC and ability specs are ready.
+- PlayerState：适合角色切换、重生后状态保留的多人项目。
+- Pawn/Character：适合简单项目或能力完全绑定当前 Pawn。
+- 组件封装：适合项目已有 gameplay 组件结构。
 
-## Abilities
+## Ability 生命周期
 
-- Use activation requirements and gameplay tags to gate behavior.
-- Keep authority-sensitive mutations on the server.
-- Predict only responsive actions that can be corrected cleanly.
-- End abilities on all paths: success, cancel, failure, montage interrupt, target loss, and owner destruction.
+- 输入触发。
+- `CanActivateAbility` 检查 tag、cost、cooldown、authority。
+- `CommitAbility` 提交 cost/cooldown。
+- Ability Task 等待事件、montage、target data 或延迟。
+- `EndAbility` / cancel 清理任务和状态。
 
-## Effects And Attributes
+## Effect 与 Attribute
 
-- Use gameplay effects for tunable attribute changes and duration policies.
-- Keep attribute clamping consistent, usually in attribute set hooks or project-standard aggregators.
-- Treat replicated attributes as gameplay state, not UI-only display values.
+- 持久属性变化用 GameplayEffect。
+- 临时 buff/debuff 用 duration/infinite GE。
+- UI 读取 Attribute change delegate，不直接轮询。
 
-## Gameplay Cues
+## Gameplay Cue
 
-- Use cues for cosmetics tied to gameplay events or effect state.
-- Do not store authoritative gameplay state only in cue notifies.
-- Validate cue execution paths for dedicated server, listen server, owning client, and simulated proxies.
+- 用于视觉、音频和表现。
+- 不承载权威 gameplay 逻辑。
+- Cue 参数要足够表达表现，但不要塞大量状态。

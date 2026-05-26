@@ -1,59 +1,28 @@
-# Rebinding And UI Input
+# 按键重绑与 UI
 
-## Runtime Rebinding
+## 重绑流程
 
-When the user asks for key rebinding, define four pieces explicitly:
+1. 列出可重绑的 `Input Action` 和默认键位。
+2. 打开重绑 UI 时切换到合适 Input Mode，并设置焦点。
+3. 捕获下一次键/轴输入，过滤 Escape、鼠标移动、保留键和平台不可用键。
+4. 检查冲突：同组 action、同设备、同 context。
+5. 保存用户映射，应用到 Enhanced Input Subsystem。
+6. 提供恢复默认和取消操作。
 
-1. Source asset: which `UInputMappingContext` or player mappable config is edited.
-2. Runtime owner: local player subsystem, settings object, or custom input settings manager.
-3. Persistence: SaveGame, config, platform user settings, or project-specific profile data.
-4. Rebuild timing: when mappings are cleared, re-added, and reflected in UI prompts.
+## UI 焦点
 
-## Rebinding Checklist
+- 打开菜单时记录之前焦点和 gameplay mapping context。
+- 关闭菜单时恢复输入模式、鼠标显示、焦点和 context。
+- CommonUI 项目要确认 action routing 和 back handler。
+- 本地多人要按 LocalPlayer 保存焦点和映射。
 
-```text
-[ ] Action is marked or represented as player-remappable where the project expects it.
-[ ] Conflicting bindings are detected before saving.
-[ ] Keyboard, mouse, gamepad, and touch mappings are handled separately when needed.
-[ ] Saved mappings are applied after local player creation and after profile changes.
-[ ] UI prompt text is updated after rebinding.
-[ ] Defaults can be restored.
-```
+## 保存
 
-## UI Focus And Gameplay Input
+- 键位设置可放 SaveGame、GameUserSettings 扩展或项目已有设置系统。
+- 保存内容包括 action、key、slot、device、context 和版本号。
+- 加载失败或版本不匹配时回退默认值。
 
-Before changing input code, identify the active mode:
+## 验证
 
-| Mode | Expected Behavior |
-|------|-------------------|
-| Game only | Gameplay receives input; UI should not consume gameplay actions. |
-| UI only | Focused widget receives input; gameplay mappings may be inactive. |
-| Game and UI | Both can receive input; conflict rules must be explicit. |
-| CommonUI active | Activatable widgets and input actions may consume or reroute input. |
-
-## UI Debug Steps
-
-1. Confirm the focused widget.
-2. Check `SetInputModeGameOnly`, `SetInputModeUIOnly`, or `SetInputModeGameAndUI` usage.
-3. Check whether mouse cursor, focus lock, and capture mode are intentional.
-4. If CommonUI is present, inspect activatable widget stack and UI action bindings.
-5. Temporarily print Enhanced Input action events and widget key events to see where input stops.
-
-## Blueprint Handoff Template
-
-```text
-Blueprint asset:
-- <BP_PlayerCharacter or WBP_Settings>
-
-Nodes:
-- Search: Enhanced Input Action <IA_Name>
-- Use trigger pin: <Started/Triggered/Completed>
-- Read value pin as: <bool/float/Vector2D>
-- Call: <FunctionName or event>
-- Update UI prompt: <TextBlock or CommonActionWidget>
-
-Validation:
-- Compile Blueprint.
-- PIE with keyboard and gamepad.
-- Rebind key, restart PIE, confirm saved mapping applies.
-```
+- 键鼠、手柄、冲突、取消、恢复默认、重启游戏、不同玩家。
+- UI 打开时 gameplay 不误触发，关闭后 gameplay 输入恢复。

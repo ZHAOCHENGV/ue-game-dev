@@ -1,33 +1,36 @@
-# UE Done Checklist
+# 完成验收清单
 
-## Scope
+## 范围
 
-```text
-[ ] Re-read the latest user request.
-[ ] Compare completed work against the brief or implementation plan.
-[ ] List changed files and user-facing asset/Blueprint instructions.
-```
+- 原始目标是否完成。
+- 非目标是否未被意外实现。
+- 文件、Blueprint、资产、配置是否符合预期。
 
-## Verification
+## 验证
 
-```text
-[ ] Run the smallest relevant build or validation command.
-[ ] Validate plugin JSON/YAML/skill files when changing the Codex plugin.
-[ ] For C++, run a targeted Unreal build when an engine/project is available.
-[ ] For Blueprint, provide exact compile and graph validation steps.
-[ ] For UI, include viewport/DPI or input focus sanity checks.
-[ ] For networking/GAS, include PIE client count and authority expectation.
-[ ] For packaging readiness, diagnose only unless the user explicitly requested packaging.
-```
+- 构建。
+- Blueprint compile。
+- PIE。
+- 多人。
+- 自动化测试。
+- 性能/打包烟测。
 
-## Final Handoff
+## 证据
 
-```text
-Scope completed:
-Changed:
-Verified:
-Not verified:
-Blueprint/editor steps:
-Risks:
-Next useful action:
-```
+- 命令。
+- 日志。
+- 场景。
+- 截图/视频（如适用）。
+- 未验证项和原因。
+
+## 交接
+
+- 如何测试。
+- 已知风险。
+- 后续建议。
+- 回滚点。
+
+## 记录原则
+
+- 没有执行的验证项必须写明“未验证”和原因。
+- 结论要能被下一位开发者复查，避免只写“看起来正常”。

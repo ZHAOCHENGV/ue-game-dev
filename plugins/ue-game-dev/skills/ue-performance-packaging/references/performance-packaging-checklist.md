@@ -1,23 +1,38 @@
-# Performance And Packaging Checklist
+# 性能与打包准备清单
 
-## Performance
+## 性能
 
-- Capture map, camera/player path, player count, scalability, renderer settings, and build config.
-- Compare frame time, game thread, render thread, GPU, RHI, memory, async loading, and hitches.
-- Inspect frequent Tick, timers, Blueprint bindings, Niagara systems, translucent overdraw, material cost, and streaming.
-- Record before/after measurements.
+- `stat unit`
+- `stat game`
+- `stat gpu`
+- `stat slate`
+- Unreal Insights
+- Shader Complexity / Quad Overdraw
 
-## Packaging
+## 构建配置
 
-- Confirm target platform, target file, configuration, maps, game mode, plugins, and project settings.
-- Check cook errors, missing assets, editor-only references, redirectors, and third-party plugin build failures.
-- Separate first blocking error from downstream noise.
-- Validate startup map, input config, localization, and required runtime assets.
+- Development / Shipping。
+- Client / Server target。
+- 默认地图和 GameMode。
+- 插件启用状态。
+- 平台 SDK。
 
-## Release Readiness
+## 资产
 
-- Known blockers.
-- Known warnings accepted.
-- Required smoke tests.
-- Packaging command/config used.
-- Runtime verification result.
+- 缺失引用。
+- Editor-only 资产。
+- 贴图、音频、shader 和 Niagara 平台风险。
+- Soft reference 是否纳入 Cook。
+
+## 打包准备
+
+- Cook 地图列表。
+- Packaging settings。
+- UAT/Cook 日志。
+- packaged build smoke。
+
+## 结论
+
+- Go / No-go。
+- 阻塞项。
+- 可接受风险。

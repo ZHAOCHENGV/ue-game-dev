@@ -1,4 +1,4 @@
 interface:
   display_name: "UE Project Onboarding"
-  short_description: "Understand existing Unreal projects before secondary development."
-  default_prompt: "Use $ue-project-onboarding to analyze this existing Unreal project before changes."
+  short_description: "在二次开发前只读理解现有 Unreal 项目。"
+  default_prompt: "使用 $ue-project-onboarding 在改动前分析这个现有 Unreal 项目。"

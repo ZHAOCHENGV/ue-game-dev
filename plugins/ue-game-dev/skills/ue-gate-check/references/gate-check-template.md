@@ -1,61 +1,34 @@
-# UE Gate Check Template
+# UE Gate Check 模板
 
 ```text
-UE Gate Check: <from stage> -> <to stage>
-
-Verdict:
-- <PASS | CONCERNS | FAIL>
-
-Evidence checked:
-- <file, asset name, command, log, or manual evidence>
-
-Required checks:
-- [PASS] <check>
-- [CONCERNS] <check>
-- [FAIL] <check>
-- [MANUAL] <check>
+Verdict: PASS | CONCERNS | FAIL
+Target phase:
+Evidence:
+- Requirements:
+- Build:
+- Blueprint:
+- PIE:
+- Tests:
+- Logs:
+- Performance/Packaging:
 
 Blockers:
-- <Only items that make the next stage unsafe>
+-
 
-Advisory concerns:
-- <Items that should be handled soon but do not necessarily block>
+Risks:
+-
 
-Recommended next skill:
-- $<skill-name> — <why>
-
-Optional state update:
-- If the user wants persistent state, update Saved/CodexWorkflow/ue-stage.md to <stage>.
+Next action:
+Recommended skill:
 ```
 
-## UE Gate Checklist
+## 判定说明
 
-### Brief -> Plan
+- `PASS`：证据足够进入下一阶段。
+- `CONCERNS`：可进入，但风险需要带着走。
+- `FAIL`：存在阻塞，下一阶段会无效或高风险。
 
-```text
-[ ] Goal is one sentence and testable.
-[ ] Owning module/system is known.
-[ ] Blueprint/C++/asset responsibilities are split.
-[ ] Network/save/performance/platform constraints are named.
-[ ] Validation path exists.
-```
+## 注意
 
-### Plan -> Implementation
-
-```text
-[ ] Files/assets to inspect or change are named.
-[ ] Module dependencies are known.
-[ ] Blueprint handoff is planned for exposed C++ APIs.
-[ ] Tests or editor/PIE smoke checks are planned.
-[ ] Explicit packaging is absent unless requested by the user.
-```
-
-### Validation -> Packaging Readiness
-
-```text
-[ ] Targeted build or syntax check result exists, or limitation is stated.
-[ ] Blueprint compile and graph checks are described.
-[ ] Runtime/editor module split is reviewed.
-[ ] Asset references, maps, plugins, and platform settings are reviewed.
-[ ] Package automation is not run unless explicitly requested.
-```
+- 没跑过的验证写“未验证”，不要写通过。
+- 打包准备检查不等于允许自动打包。

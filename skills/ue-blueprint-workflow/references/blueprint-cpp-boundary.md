@@ -1,39 +1,41 @@
-# Blueprint And C++ Boundary
+# Blueprint / C++ 边界
 
-## Prefer Blueprint When
+## C++ 适合拥有
 
-- Designers need to tune values or compose behavior.
-- The change is simple event wiring, UI behavior, animation, timeline, VFX/audio hook, or content-driven logic.
-- Iteration speed matters more than reusable runtime architecture.
-- The behavior is local presentation and failure cost is low.
-- The graph depends on assets that designers are expected to swap or tune.
+- 稳定运行时 API。
+- 权威 gameplay 状态。
+- Replication、RPC、prediction。
+- Save/load schema 和迁移。
+- 性能敏感循环、复杂数据结构、异步和线程边界。
+- 多个 Blueprint 复用的组件、Subsystem 和接口。
 
-## Prefer C++ When
+## Blueprint 适合拥有
 
-- Behavior is reused across many Blueprints.
-- Logic is performance-sensitive or runs often.
-- Network authority, prediction, save/load, or replication correctness matters.
-- The feature needs custom components, subsystems, latent actions, async work, or low-level engine APIs.
-- The API must stay stable across multiple teams, modules, or plugin boundaries.
-- The task needs automated tests around pure gameplay logic.
+- 设计师调参和默认资产。
+- 视觉、音频、UI、动画、Timeline 等表现逻辑。
+- 简单事件响应和图级编排。
+- Widget Blueprint、Anim Blueprint 和关卡特定组合。
 
-## Prefer Hybrid When
+## 交接格式
 
-- C++ should own state and validation while Blueprint owns presentation and tuning.
-- A system needs stable APIs but designers still need extension points.
-- The task combines gameplay, UI, VFX, and data assets.
-- Blueprint should call narrow C++ commands and respond to delegates/events.
+```text
+C++ provides:
+- Function/event/property:
+- Inputs:
+- Outputs:
+- Failure behavior:
 
-## Decision Questions
+Blueprint implements:
+- Asset:
+- Graph:
+- Nodes:
+- Defaults:
+- Validation:
+```
 
-1. Who owns durable state: server, component, subsystem, save slot, or widget?
-2. How often does the logic run: once, on input, on event, on tick, or per particle/actor?
-3. Who must iterate on it: programmer, designer, UI artist, animator, or technical artist?
-4. What must be validated: build, Blueprint compile, PIE, multiplayer, save/load, or packaged runtime?
+## 边界案例
 
-## Boundary Examples
-
-- Inventory count: C++ component owns data; Blueprint widget listens to change event and refreshes text.
-- Door interaction: Blueprint can own simple animation; C++ or component owns locked/unlocked state if reused or replicated.
-- Ability activation: GAS/C++ owns authority and prediction; Blueprint owns montage, cue, and UI presentation hooks.
-- UI button: Widget Blueprint owns visual click flow; PlayerController/subsystem handles gameplay command.
+- 如果 Blueprint 需要改权威状态，优先提供 C++ command，而不是暴露可写字段。
+- 如果 C++ 需要触发表现，优先提供 BlueprintImplementableEvent 或 delegate。
+- 如果 UI 需要 gameplay 数据，使用 ViewModel、Subsystem 或只读 API。
+- 如果逻辑每帧运行或会复制到多人，优先考虑 C++。

@@ -1,4 +1,4 @@
 interface:
   display_name: "UE Implementation Plan"
-  short_description: "Plan Unreal C++, Blueprint, asset, and test work."
-  default_prompt: "Use $ue-implementation-plan to plan this Unreal implementation."
+  short_description: "规划 UE C++、Blueprint、资产和测试实施工作。"
+  default_prompt: "使用 $ue-implementation-plan 为这个 Unreal 任务制定实施计划。"

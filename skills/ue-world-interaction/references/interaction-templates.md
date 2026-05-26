@@ -1,10 +1,9 @@
-# World Interaction Code Templates
+# 世界交互模板
 
-## Interactable Interface
+## C++ 接口示例
 
 ```cpp
-// IInteractable.h
-UINTERFACE(MinimalAPI, BlueprintType)
+UINTERFACE(BlueprintType)
 class UInteractable : public UInterface
 {
     GENERATED_BODY()
@@ -15,128 +14,56 @@ class IInteractable
     GENERATED_BODY()
 
 public:
-    // 是否可以交互（距离、状态、权限检查）
-    UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
-    bool CanInteract(AActor* Interactor) const;
+    UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Interaction")
+    bool CanInteract(AActor* InstigatorActor) const;
 
-    // 执行交互
-    UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
-    void OnInteract(AActor* Interactor);
+    UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Interaction")
+    FText GetInteractionPrompt(AActor* InstigatorActor) const;
 
-    // 获取交互提示文本
-    UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Interaction")
-    FText GetInteractionPrompt() const;
+    UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category="Interaction")
+    void Interact(AActor* InstigatorActor);
 };
 ```
 
-## Trace-Based Interaction Component
+## 组件职责
+
+```text
+Interactor Component
+- Trace/Overlap 查找候选目标
+- 维护当前 focused target
+- 通知 UI prompt
+- 向 server 提交交互意图
+
+Interactable Component / Interface
+- 判断 CanInteract
+- 提供 prompt
+- 执行 Interact
+- 播放或触发表现反馈
+```
+
+## Blueprint 接法
+
+```text
+1. 在可交互 Actor 上实现 IInteractable 或添加 Interactable Component。
+2. 实现 CanInteract，返回是否满足距离、状态、权限或资源条件。
+3. 实现 GetInteractionPrompt，返回玩家可见文本。
+4. 实现 Interact，执行拾取、开门、生成、播放反馈等逻辑。
+5. 在 Player/Pawn 上添加 Interactor Component，绑定 IA_Interact。
+6. PIE 中验证焦点、提示、执行、失败和目标销毁路径。
+```
+
+## 失败结果结构
 
 ```cpp
-// InteractionComponent.h
-UCLASS(ClassGroup=(Interaction), meta=(BlueprintSpawnableComponent))
-class MYGAME_API UInteractionComponent : public UActorComponent
+UENUM(BlueprintType)
+enum class EInteractResult : uint8
 {
-    GENERATED_BODY()
-
-public:
-    UInteractionComponent();
-
-    // 执行交互检测（由 PlayerController 或 Pawn 调用）
-    UFUNCTION(BlueprintCallable, Category = "Interaction")
-    void PerformInteractionTrace();
-
-    // 尝试与当前目标交互
-    UFUNCTION(BlueprintCallable, Category = "Interaction")
-    void TryInteract();
-
-    // 当前交互目标变化时通知 UI
-    UPROPERTY(BlueprintAssignable, Category = "Interaction")
-    FOnInteractionTargetChanged OnTargetChanged;
-
-protected:
-    // 交互检测距离
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction",
-        meta = (DisplayName = "交互距离"))
-    float InteractionDistance = 300.0f;
-
-    // 交互检测通道
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction",
-        meta = (DisplayName = "检测通道"))
-    TEnumAsByte<ECollisionChannel> TraceChannel = ECC_Visibility;
-
-private:
-    // 弱引用当前目标，防止悬挂指针
-    TWeakObjectPtr<AActor> CurrentTarget;
+    Success,
+    OutOfRange,
+    Blocked,
+    MissingRequirement,
+    InvalidTarget
 };
 ```
 
-## Pickup Actor Pattern
-
-```cpp
-// PickupActor.h
-UCLASS()
-class MYGAME_API APickupActor : public AActor, public IInteractable
-{
-    GENERATED_BODY()
-
-public:
-    APickupActor();
-
-    // IInteractable
-    virtual bool CanInteract_Implementation(AActor* Interactor) const override;
-    virtual void OnInteract_Implementation(AActor* Interactor) override;
-    virtual FText GetInteractionPrompt_Implementation() const override;
-
-protected:
-    // 拾取物数据（数据驱动）
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pickup",
-        meta = (DisplayName = "拾取物数据"))
-    TObjectPtr<UPickupDataAsset> PickupData;
-
-    // 拾取后的处理：销毁、隐藏、禁用碰撞、进入对象池
-    UPROPERTY(EditAnywhere, Category = "Pickup",
-        meta = (DisplayName = "拾取后行为"))
-    EPickupPostAction PostPickupAction = EPickupPostAction::Destroy;
-
-    // 冷却时间（用于可重复拾取的物品）
-    UPROPERTY(EditAnywhere, Category = "Pickup",
-        meta = (DisplayName = "冷却时间", EditCondition = "PostPickupAction == EPickupPostAction::Cooldown"))
-    float CooldownDuration = 5.0f;
-
-private:
-    // 防止重复拾取
-    bool bIsConsumed = false;
-};
-```
-
-## Overlap-Based Trigger Zone
-
-```cpp
-// Setup in constructor
-TriggerVolume = CreateDefaultSubobject<USphereComponent>(TEXT("TriggerVolume"));
-TriggerVolume->SetSphereRadius(200.0f);
-TriggerVolume->SetCollisionProfileName(TEXT("Trigger"));
-TriggerVolume->SetGenerateOverlapEvents(true);
-
-// Bind overlap events
-TriggerVolume->OnComponentBeginOverlap.AddDynamic(
-    this, &AMyActor::OnTriggerBeginOverlap);
-TriggerVolume->OnComponentEndOverlap.AddDynamic(
-    this, &AMyActor::OnTriggerEndOverlap);
-
-// Handler with validation
-void AMyActor::OnTriggerBeginOverlap(
-    UPrimitiveComponent* OverlappedComponent,
-    AActor* OtherActor,
-    UPrimitiveComponent* OtherComp,
-    int32 OtherBodyIndex,
-    bool bFromSweep,
-    const FHitResult& SweepResult)
-{
-    if (!IsValid(OtherActor)) return;
-    if (!OtherActor->Implements<UInteractable>()) return;
-    if (bIsConsumed) return;  // 防止重复触发
-
-    // 执行交互逻辑...
-}
-```
+用明确结果替代静默失败，UI 和日志才能给出正确反馈。

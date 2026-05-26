@@ -1,37 +1,28 @@
-# Navigation Checklist
+# Navigation 检查清单
 
-## NavMesh Configuration
+## NavMesh
 
-- Confirm Nav Mesh Bounds Volume covers all navigable areas.
-- Match agent radius, height, max step height, and walkable slope to the AI Pawn capsule.
-- Configure multiple supported agents when different AI types have different sizes.
-- Check tile size and cell size for resolution vs. performance tradeoffs.
-- Rebuild navigation after level geometry or settings changes.
+- 地图中存在 `NavMeshBoundsVolume`，范围覆盖 AI 活动区域。
+- Supported Agents 的 radius、height、step height、slope 与 Pawn 碰撞匹配。
+- Runtime Generation 与动态障碍需求一致。
+- 关卡流送或 World Partition 场景确认 nav data 加载时机。
 
-## Dynamic Navigation
+## MoveTo
 
-- Use Nav Modifier Volumes for runtime area cost changes.
-- Use Nav Link Proxies for jumps, drops, ladders, and custom traversal.
-- Confirm dynamic obstacles update NavMesh or use avoidance rather than blocking silently.
-- Validate that runtime NavMesh regeneration is enabled when level geometry changes at runtime.
+- 目标 Actor/Location 有效且可达。
+- AIController 已 Possess Pawn，BrainComponent 正在运行。
+- Pawn 有 MovementComponent，collision channel 不阻挡自身移动。
+- Acceptance Radius、Use Pathfinding、Allow Partial Path 设置符合需求。
 
-## Pathfinding
+## 动态障碍
 
-- Use AI Controller `MoveToLocation`/`MoveToActor` for standard path requests.
-- Set acceptance radius appropriate for the gameplay action at the destination.
-- Handle path failure: no path found, partial path, path invalidated mid-move.
-- Use path following events or delegates to trigger gameplay at waypoints.
-- For crowd movement, configure RVO avoidance with appropriate radius and priority.
+- 门、移动平台、临时阻挡物需要 nav modifier、dynamic obstacle 或 smart link。
+- 不要让大量动态物体持续重建 NavMesh。
+- 对跳跃、攀爬、传送使用 Smart Nav Link 或自定义移动逻辑。
 
-## Query Filters
+## 调试
 
-- Use custom navigation query filters to prefer or avoid specific area classes.
-- Set area costs intentionally: roads cheaper, rough terrain expensive, restricted areas excluded.
-- Apply filters per-query when different AI types should navigate differently.
-
-## Debugging
-
-- Use `Show Navigation` to visualize NavMesh in editor and PIE.
-- Check `RecastNavMesh` properties for generation diagnostics.
-- Use `AI Debugging` and `GameplayDebugger` for live path and avoidance visualization.
-- Log path request results, remaining path points, and move status near failing AI movement.
+- `show Navigation`
+- `showdebug ai`
+- Gameplay Debugger 的 NavMesh、Path、Behavior Tree 页面。
+- Visual Logger 记录路径请求和失败原因。

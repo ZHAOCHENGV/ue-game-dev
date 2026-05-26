@@ -1,41 +1,44 @@
 ---
 name: ue-external-services
-description: Unreal Engine external service integration workflow for HTTP, REST, JSON, WebSocket clients or servers, TCP sockets, backend API clients, streaming responses, heartbeats, reconnect logic, request queues, auth headers, async callbacks, Blueprint handoff, and UI/gameplay event distribution. Use for non-GAS communication with web services or external processes; use ue-gas-networking for Unreal gameplay replication and ability prediction.
+description: 当 Unreal Engine 任务涉及 HTTP、REST、JSON、WebSocket 客户端或服务端、TCP socket、后端 API 客户端、流式响应、心跳、重连、请求队列、认证头、异步取消或外部进程/服务集成时使用。
 ---
 
 # UE External Services
 
-Use this skill for Unreal projects that talk to services outside Unreal networking: REST APIs, JSON backends, WebSocket streams, TCP sockets, telemetry services, local companion apps, or tool servers. Keep service clients separate from gameplay authority and UI presentation.
+## 概览
 
-## First Pass
+这个技能处理 UE 与外部服务通信。它不等同于 UE gameplay replication；HTTP/WebSocket/TCP 是服务通信层，GAS/RPC/复制仍由 `$ue-gas-networking` 处理。
 
-1. Identify protocol and ownership: HTTP request, REST client, WebSocket stream, TCP socket, local process, editor-only service, runtime service, or dedicated server service.
-2. Read the owning module `.Build.cs` and confirm dependencies such as `HTTP`, `Json`, `JsonUtilities`, `WebSockets`, `Sockets`, or `Networking`.
-3. Decide where the client lives: GameInstance subsystem, World subsystem, LocalPlayer subsystem, Editor subsystem, module service, or actor component.
-4. Define message contracts: request structs, response structs, error shape, retry rules, auth headers, and versioning.
-5. Define callback flow: service callback -> parse/validate -> game-thread handoff -> subsystem delegate -> UI/gameplay listener.
+## 使用场景
 
-## Implementation Rules
+- 接入 HTTP JSON 接口、登录、配置拉取、排行榜、聊天、支付状态或遥测。
+- 实现 WebSocket 长连接、心跳、重连、消息分发和断线恢复。
+- 使用 TCP/UDP/外部进程桥接 SDK、工具或本地服务。
+- 排查请求超时、JSON 解析、认证、线程回调和 UI 分发问题。
 
-- Keep external service code out of GAS replication logic. Backend APIs do not replace server authority for gameplay state.
-- Prefer subsystem-owned clients over scattering HTTP/WebSocket code across widgets or actors.
-- Add module dependencies intentionally and keep editor-only service clients out of runtime modules when they are tool-only.
-- Parse JSON into typed structs or narrow DTOs before updating gameplay/UI state.
-- Treat network errors, invalid JSON, timeout, auth failure, and server error as first-class results.
-- Use weak owner captures for async callbacks. Validate owner and world before broadcasting.
-- Broadcast to UI/gameplay on the game thread through delegates, events, or view models already used by the project.
-- Do not block the game thread on socket reads, HTTP completion, or reconnect delays.
+## 工作流程
 
-## Protocol Guidance
+1. 定义服务边界：协议、URL、认证、请求/响应 schema、超时、重试和错误码。
+2. 选择拥有者：GameInstance Subsystem、LocalPlayer Subsystem、World Subsystem、Service UObject 或插件模块。
+3. 设计异步结果：delegate、promise、Blueprint async node、队列或状态机。
+4. 解析 typed result，避免把裸 JSON 字符串扩散到玩法层。
+5. 验证网络失败、重试、取消、地图切换、退出 PIE 和 packaged build。
 
-- Use HTTP for request/response APIs, login, inventory queries, telemetry submission, or one-shot backend calls.
-- Use WebSocket for persistent bidirectional streams, chat, live notifications, tool events, or streaming service state.
-- Use TCP sockets only when the service protocol requires raw sockets or a local tool has a custom framing protocol.
-- Use `$ue-async-systems` when CPU work, blocking IO, or Blueprint async node shape dominates the design.
+## 规则
 
-## References
+- 不要在 UI Widget 中直接散落 HTTP 请求；用服务层统一管理。
+- 回调进入 Gameplay 或 UI 前确认线程、World 和对象生命周期。
+- WebSocket 要定义 heartbeat、reconnect backoff、消息版本和关闭原因。
+- 认证头、token 和敏感配置不要硬编码进公开源码。
+- 外部服务状态与 UE 多人复制要分层，不要把二者混为一个系统。
 
-- Read `references/service-client-patterns.md` for HTTP, JSON, WebSocket, TCP, retries, heartbeat, reconnect, and subsystem ownership patterns.
-- Use `$ue-client-ui` when the remaining task is UI presentation or widget state.
-- Use `$ue-save-load-sync` when external service responses must persist locally or reconcile with durable saved state.
-- Use `$ue-gas-networking` only when the question is Unreal gameplay replication, GAS prediction, RPC authority, or replicated ability state.
+## 输出
+
+- 服务契约：endpoint、method、headers、schema、错误码。
+- UE 结构：Subsystem/Service、请求对象、响应类型、事件分发。
+- 失败策略：超时、重试、取消、断线、降级和日志。
+- 验证：mock、真实服务、PIE、packaged build 和网络异常。
+
+## 参考
+
+- 服务客户端模式读取 `references/service-client-patterns.md`。

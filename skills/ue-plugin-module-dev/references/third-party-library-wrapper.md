@@ -1,46 +1,41 @@
-# Third-Party Library Wrapper Patterns
+# 第三方库封装为 UE 模块
 
-## Boundary Shape
+## 目录建议
 
-- Put vendor binaries, headers, and platform glue behind a plugin or module boundary.
-- Expose Unreal-friendly wrapper types to the rest of the project instead of leaking vendor types into gameplay modules.
-- Keep public headers small. Prefer wrapper interfaces, `USTRUCT` DTOs, or subsystem APIs over direct vendor includes.
-- Add platform-specific library paths and delay-load settings in `.Build.cs` only where the vendor library is used.
+```text
+Plugins/MyPlugin/
+  Source/
+    MyPluginRuntime/
+    MyThirdParty/
+      MyThirdParty.Build.cs
+      Include/
+      Lib/
+      Bin/
+```
 
-## Module Layout
+## Build.cs 要点
 
-Common options:
+- 头文件路径放 `PublicIncludePaths` 或更窄的 include 设置。
+- 静态库按平台加入 `PublicAdditionalLibraries`。
+- 动态库加入 `PublicDelayLoadDLLs` 和 `RuntimeDependencies`。
+- 用 `Target.Platform` 区分 Win64、Android、iOS、Linux、Mac。
+- 不要让 Runtime 模块直接包含 SDK 的大量私有头；封装成薄 C++ wrapper。
 
-- Runtime plugin module: wraps a library used in packaged builds.
-- Editor plugin module: wraps an SDK used only by editor tools.
-- ThirdParty folder: stores vendor headers/libs under the plugin when redistribution is allowed.
-- Separate shared contracts module: exposes only DTOs/interfaces when multiple feature modules consume the wrapper.
+## DLL / so / dylib
 
-## Build.cs Review
+- Win64 DLL 需要复制到 packaged build 可加载位置。
+- Android `.so` 要匹配 ABI，并处理 Gradle/UPL。
+- iOS 静态库或 framework 要处理签名、bitcode/架构和 bundle。
+- packaged build 中验证库加载失败日志，而不是只测 Editor。
 
-- Add include paths only for the wrapper module when possible.
-- Link only platform-compatible `.lib`, `.a`, `.dll`, `.dylib`, or framework files.
-- Keep runtime DLL staging explicit when packaged builds need vendor binaries.
-- Avoid adding vendor include paths to broad project modules.
-- Gate platform-specific settings with `Target.Platform`.
+## API 边界
 
-## Runtime Safety
+- 对上层 UE 代码暴露稳定 UObject/struct API。
+- 第三方类型不要泄漏到 Blueprint 或大量 Public 头中。
+- 错误码转换成 UE 可读 enum、log category 或 result struct。
+- 异步 SDK 回调回到 GameThread 后再触发 UObject/Blueprint。
 
-- Convert vendor callbacks to Unreal delegates or subsystem events on the game thread.
-- Convert vendor strings, arrays, errors, and handles into Unreal types at the boundary.
-- Own vendor handles with deterministic cleanup in subsystem deinitialize, module shutdown, or wrapper destructors.
-- Do not call blocking vendor APIs from the game thread unless the vendor guarantees they are non-blocking.
+## 许可证与发布
 
-## Packaging Risks
-
-- Missing staged DLLs or dynamic libraries.
-- Editor-only SDK linked from a runtime module.
-- Vendor headers leaking into public headers and forcing broad dependency churn.
-- Platform-specific binaries checked into the wrong path.
-- License or redistribution restrictions on bundled binaries.
-
-## Handoff
-
-- Use `$ue-external-services` if the library primarily talks to HTTP, WebSocket, TCP, or backend services.
-- Use `$ue-async-systems` if the wrapper needs worker threads, callback handoff, cancellation, or async Blueprint nodes.
-- Use `$ue-performance-packaging` when the wrapper works in editor but fails cook/package/stage.
+- 记录第三方库版本、许可证、二进制来源和平台限制。
+- CI/打包脚本要能找到库文件，不依赖开发者本机绝对路径。

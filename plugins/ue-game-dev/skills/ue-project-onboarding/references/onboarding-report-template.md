@@ -1,71 +1,50 @@
-# UE Project Onboarding Report Template
+# UE 项目接手报告模板
 
-```text
-# UE Project Onboarding Report
+## 项目概览
 
-## Project Snapshot
-- Path:
-- Project:
-- Engine:
-- Modules:
-- Enabled plugins:
-- Target platforms:
-- Source control/worktree state:
+- 路径：
+- `.uproject`：
+- UE 版本：
+- 目标平台：
+- 主要模块：
+- 主要插件：
 
-## Code Structure
-- Runtime modules:
-- Editor modules:
-- Important classes:
-- Important config:
-- Build targets:
-- Third-party dependencies:
-- Generated or external code:
+## 系统地图
 
-## Asset Structure
-- Maps:
-- Blueprints:
-- UI:
-- Input:
-- Data:
-- GAS / AI / Animation / Rendering:
-- Audio / world streaming:
-- Naming conventions observed:
+- Gameplay：
+- UI：
+- Input：
+- Save/Load：
+- Networking/GAS：
+- AI/Animation：
+- Rendering/VFX：
+- Editor tools：
 
-## Main Flows
-- Startup:
-- Input:
-- Gameplay:
-- UI:
-- Save/load:
-- Networking/GAS:
-- Async/external services:
-- Packaging/release:
+## 目录与资产
 
-## Blueprint/C++ Boundary
-- C++ owns:
-- Blueprint owns:
-- Unknowns requiring editor inspection:
+- Source：
+- Plugins：
+- Config：
+- Content 命名：
+- 重要 Blueprint/Widget/DataAsset：
 
-## Risks
-- Build/module:
-- Asset references:
-- Runtime/editor boundary:
-- Networking/authority:
-- Packaging/performance:
-- Missing editor-only evidence:
-- High-risk unknowns:
+## 风险与缺口
 
-## Safe Next Steps
-- Recommended next skill:
-- Smallest next task:
-- Suggested validation:
-- Files/assets to inspect next:
-```
+- 架构：
+- 构建：
+- Blueprint/资产：
+- 测试：
+- 性能/打包：
+- 文档：
 
-## Filling Guidance
+## 推断与证据
 
-- Keep this report read-only: summarize what was found, not what should be changed immediately.
-- Use exact file paths for modules, config, and representative assets.
-- Separate confirmed facts from hypotheses and unknowns.
-- Prefer "not found in scan" over "does not exist" when editor-only asset inspection was unavailable.
-- Recommend one smallest next task so secondary development can start without re-auditing the whole project.
+- 已确认事实：
+- 基于文件名/路径的推断：
+- 需要用户或 Editor 验证：
+
+## 下一步
+
+- 建议技能：
+- 最小下一步：
+- 是否需要写入 `Saved/CodexWorkflow/`：

@@ -1,26 +1,27 @@
-# Blueprint Graph Checklist
+# Blueprint 图检查清单
 
-## Before Editing
+## 图结构
 
-- Confirm target asset path, parent class, graph name, and whether the graph is event/function/macro/widget/animation.
-- Discover existing variables, functions, events, components, Input Actions, and Mapping Contexts.
-- Check whether a C++ parent already exposes the needed API.
+- Event Graph 入口清晰，不承载超长业务逻辑。
+- 函数名、变量名和 comment 表达意图。
+- 节点链过长时拆函数或组件。
+- 避免深层宏和隐藏副作用。
 
-## Input Events
+## 输入和事件
 
-- Reuse existing input/key/action events when present.
-- Avoid duplicate input events that compete in the same graph.
-- For Enhanced Input, verify action asset names and mapping context setup before binding graph behavior.
+- 输入事件只在拥有输入的 Pawn/Controller/UI 中绑定。
+- Delegate 绑定和解绑成对。
+- Timer、Delay、Async 回调在 owner 销毁后安全。
 
-## Node And Pin Wiring
+## 性能
 
-- Build event -> guard -> action -> feedback flow.
-- Inspect node pins when names or types may differ by node variant.
-- Keep data pins type-compatible; add conversions intentionally.
-- Avoid hidden side effects in pure functions.
+- 避免 Tick 中 Cast、Get All Actors、创建 Widget、遍历大数组。
+- UI Binding 谨慎使用，优先事件刷新。
+- 大量 Actor/Widget 使用池化或降频。
 
-## Validation
+## 验证
 
-- Compile the Blueprint.
-- Check broken pins, missing variables, stale references, latent action context, and parent class API changes.
-- Validate runtime ownership, especially player controller, pawn, widget, and actor component references.
+- Blueprint compile 无错误。
+- Pin 类型兼容。
+- 默认值和实例覆写正确。
+- PIE 覆盖成功、失败和重复触发。

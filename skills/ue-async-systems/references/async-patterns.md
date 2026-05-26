@@ -1,51 +1,27 @@
-# UE Async Pattern Guide
+# UE 异步模式
 
-## Pattern Selection
+## GameThread 回切
 
-| Need | Prefer | Avoid |
-|------|--------|-------|
-| Delay or periodic game-thread work | `FTimerManager`, delegates, tick only when necessary | Worker thread for simple timing |
-| Return from a worker callback to gameplay/UI | `AsyncTask(ENamedThreads::GameThread, ...)` | Touching UObjects off-thread |
-| Short CPU/background job | `Async(EAsyncExecution::ThreadPool, ...)` or `UE::Tasks` | Custom `FRunnable` |
-| Many independent CPU items | `ParallelFor` | Shared mutable UObject state inside loop |
-| Long-lived blocking worker | `FRunnable` plus explicit stop/join | Detached threads with no owner |
-| Blueprint-facing async operation | `UBlueprintAsyncActionBase` | Latent hidden state without cleanup |
-| External HTTP/WebSocket/TCP | `$ue-external-services` patterns | Mixing backend client state into gameplay actors |
-
-## Game-Thread Handoff
-
-- Gather raw values off-thread; apply them to UObjects on the game thread.
-- Capture weak owners:
+后台线程只处理可复制的数据、纯计算或 IO。修改 UObject、广播 Blueprint delegate、触发 Gameplay 状态前，回到 GameThread。
 
 ```cpp
-TWeakObjectPtr<UMySubsystem> WeakOwner = this;
-Async(EAsyncExecution::ThreadPool, [WeakOwner]()
+Async(EAsyncExecution::ThreadPool, [WeakThis = TWeakObjectPtr<UMyService>(this), Input]()
 {
-    FMyResult Result = DoSlowWorkWithoutUObjects();
-    AsyncTask(ENamedThreads::GameThread, [WeakOwner, Result = MoveTemp(Result)]()
+    FMyResult Result = DoBlockingWork(Input);
+
+    AsyncTask(ENamedThreads::GameThread, [WeakThis, Result]()
     {
-        if (!WeakOwner.IsValid())
+        if (!WeakThis.IsValid())
         {
             return;
         }
-        WeakOwner->HandleResult(Result);
+
+        WeakThis->HandleResult(Result);
     });
 });
 ```
 
-- Do not capture raw `this` when a callback can outlive the owner.
-- Keep results copyable or movable without referencing thread-unsafe engine objects.
-
-## Cancellation And Teardown
-
-- Define the owner that cancels work: Actor `EndPlay`, Component `EndPlay`, Subsystem `Deinitialize`, async action `SetReadyToDestroy`, or module `ShutdownModule`.
-- Store request handles, future handles, thread objects, or cancellation tokens where the owner can reach them.
-- Treat cancellation as a state transition. Late callbacks should check the state and return.
-- Stop long-lived `FRunnable` workers before module unload or owner destruction.
-
-## Blueprint Async Action Shape
-
-Use a small UObject task object when Blueprint needs explicit completion pins:
+## Blueprint Async Action 骨架
 
 ```cpp
 UCLASS()
@@ -55,41 +31,47 @@ class UMyAsyncAction : public UBlueprintAsyncActionBase
 
 public:
     UPROPERTY(BlueprintAssignable)
-    FMyAsyncResultDelegate OnSuccess;
+    FMyAsyncOutput OnSuccess;
 
     UPROPERTY(BlueprintAssignable)
-    FMyAsyncResultDelegate OnFailure;
+    FMyAsyncOutput OnFailure;
 
     UFUNCTION(BlueprintCallable, meta=(BlueprintInternalUseOnly="true", WorldContext="WorldContextObject"))
-    static UMyAsyncAction* RunMyAsyncTask(UObject* WorldContextObject, FName RequestId);
+    static UMyAsyncAction* RunAsync(UObject* WorldContextObject);
 
     virtual void Activate() override;
 
 private:
-    TWeakObjectPtr<UObject> WeakWorldContext;
-    FName RequestId;
+    TWeakObjectPtr<UObject> WorldContext;
     bool bCancelled = false;
 };
 ```
 
-Implementation rules:
+实现要求：
 
-- Validate inputs before starting work.
-- Broadcast failure for invalid input instead of silently doing nothing.
-- Broadcast delegates on the game thread.
-- Call `SetReadyToDestroy()` after terminal success/failure when no longer needed.
-- If cancellation is supported, expose it intentionally and make repeated cancellation safe.
+- `Activate()` 中启动工作前检查 World 和输入参数。
+- 完成、失败、取消都要走同一套收尾逻辑。
+- 回调到 Blueprint 前检查 node、World、owner 是否仍有效。
+- 如果任务可取消，暴露取消函数或在 owner 销毁时自动取消。
 
-## Parallel Work Rules
+## FRunnable 适用场景
 
-- Use `ParallelFor` only when each item is independent.
-- Use thread-safe containers or pre-sized result arrays with one writer per index.
-- Do not spawn actors, update components, broadcast Blueprint events, or mutate UObjects inside the parallel body.
-- Merge and apply results on the game thread after the loop.
+- 长生命周期后台线程。
+- 需要显式启动/停止/等待。
+- 有持续队列、socket、外部 SDK polling 或专用 worker。
 
-## Verification
+避免为短小异步工作直接使用 `FRunnable`；优先 `UE::Tasks`、`Async()`、TaskGraph 或线程池。
 
-- Run a targeted build for the owning module.
-- Add a PIE smoke check that starts the async operation, destroys or unloads the owner early, and confirms late callbacks do not crash.
-- For Blueprint async nodes, compile the target Blueprint and validate success and failure pins.
-- For long workers, test shutdown while work is active.
+## ParallelFor 注意事项
+
+- 输入数组不可在循环中改变长度。
+- 每个迭代写入独立索引或使用线程安全同步。
+- 不要在循环体直接访问非线程安全 UObject。
+- 数据量太小时 `ParallelFor` 的调度成本可能高于收益。
+
+## 取消与生命周期
+
+- 保存 `TWeakObjectPtr`，不要把 UObject 强捕获进后台 lambda。
+- 地图切换、PIE 停止、owner 销毁和重复触发都要能安全退出。
+- 长任务要有 timeout、cancel flag 或队列清理策略。
+- 日志中区分 `cancelled`、`failed` 和 `owner invalid`，便于排查。

@@ -1,45 +1,29 @@
-# UE Plugin And Module Checklist
+# 插件与模块检查清单
 
-## Descriptor Files
+## 描述文件
 
-- `.uplugin` belongs at `Plugins/<PluginName>/<PluginName>.uplugin`.
-- `.uproject` and `.uplugin` module entries should list module `Name`, `Type`, and `LoadingPhase`.
-- Keep Runtime and Editor modules separate when editor dependencies are involved.
-- Keep plugin version, friendly name, description, category, and enabled-by-default policy intentional when shipping outside one project.
+- `.uplugin` 中 `FileVersion`、`VersionName`、`FriendlyName`、`Category`、`CanContainContent` 正确。
+- 模块 Type 与职责一致：Runtime、Editor、Developer、Program。
+- LoadingPhase 合理，不依赖尚未初始化的系统。
+- 平台 allow/deny list 与第三方库和目标平台一致。
 
-## Module Layout
+## Build.cs
 
-- `Source/<ModuleName>/<ModuleName>.Build.cs`
-- `Source/<ModuleName>/Public`
-- `Source/<ModuleName>/Private`
-- Optional editor module: `Source/<ModuleName>Editor/`
+- Public/PrivateDependencyModuleNames 最小化。
+- Runtime 模块不依赖 `UnrealEd`、`AssetTools`、`Blutility` 等 Editor 模块。
+- Include path、third-party lib、runtime dependency 按平台配置。
+- API macro 与模块名一致。
 
-## Module Type Decisions
+## 目录
 
-- Runtime: code required in packaged builds.
-- Editor: editor-only tools, Slate panels, detail customizations, factories, asset actions, editor commands.
-- Developer/tooling: development-time helpers not required in packaged runtime.
-- Content-only plugin: assets only, no C++ module.
+- Public 只放跨模块 API。
+- Private 放实现、注册、helper 和 editor-only 细节。
+- Resources、Content、Config、Shaders 是否需要随插件分发。
+- 插件 Content 需要 `.uplugin` 启用 `CanContainContent`。
 
-## Build.cs Review
+## 验证
 
-- Public dependencies are required by public headers.
-- Private dependencies are required only by `.cpp` or private headers.
-- Do not add `UnrealEd`, `Blutility`, editor style, asset tools, or details modules to runtime modules.
-- If a public header exposes a type from another module, that dependency usually must be public.
-- If only implementation uses a type, keep it private.
-
-## Startup And Shutdown
-
-- Keep module `StartupModule` and `ShutdownModule` narrow.
-- Register editor extensions only in editor modules.
-- For concrete menu/command/tab/detail/action registration patterns, use `$ue-editor-tooling-slate`.
-- Avoid loading heavy assets in module startup.
-
-## Packaging Risks
-
-- Editor-only references in runtime module.
-- Missing runtime dependencies.
-- Plugin content not included or referenced incorrectly.
-- Reflected class rename without redirectors.
-- Asset paths moved after Blueprint references exist.
+- Editor 启动、插件启用/禁用、热重载或重启。
+- 目标模块编译、Blueprint compile、PIE。
+- packaged build 中 Runtime 模块不拉 Editor 依赖。
+- 第三方 DLL/so/dylib 能在打包后加载。

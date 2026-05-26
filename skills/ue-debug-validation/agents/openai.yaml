@@ -1,4 +1,4 @@
 interface:
   display_name: "UE Debug Validation"
-  short_description: "Debug Unreal logs, assets, regressions, and repros."
-  default_prompt: "Use $ue-debug-validation to diagnose this Unreal issue with evidence."
+  short_description: "基于证据调试 UE 行为、资产、回归和复现问题。"
+  default_prompt: "使用 $ue-debug-validation 基于证据诊断这个 Unreal 问题。"

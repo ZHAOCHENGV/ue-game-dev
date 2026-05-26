@@ -1,49 +1,36 @@
-# UE Asset Rules
+# UE Assets 规则
 
-## Naming
+## 命名前缀速查
 
-- Follow project asset naming conventions before adding new assets.
-- Use established local prefixes when they differ from the table below.
+| 类型 | 常用前缀 |
+|------|----------|
+| Blueprint | `BP_` |
+| Widget Blueprint | `WBP_` |
+| Static Mesh | `SM_` |
+| Skeletal Mesh | `SK_` |
+| Material | `M_` |
+| Material Instance | `MI_` |
+| Texture | `T_` |
+| Niagara System | `NS_` 或 `FXS_` |
+| Sound Cue / Sound Wave | `SC_` / `SW_` |
+| Input Action / Mapping Context | `IA_` / `IMC_` |
+| Data Asset / Primary Data Asset | `DA_` / `PDA_` |
 
-| Prefix | Asset Type |
-|--------|------------|
-| `BP_` | Blueprint Actor/Object |
-| `BPI_` | Blueprint Interface |
-| `WBP_` | Widget Blueprint |
-| `ABP_` | Animation Blueprint |
-| `SM_` | Static Mesh |
-| `SK_` | Skeletal Mesh |
-| `M_` / `MI_` | Material / Material Instance |
-| `T_` | Texture |
-| `FXS_` / `NS_` | Niagara System |
-| `IA_` | Input Action |
-| `IMC_` | Input Mapping Context |
-| `DA_` / `PDA_` | Data Asset / Primary Data Asset |
-| `L_` | Level/Map |
+## 引用规则
 
-## Reference Safety
+- 运行时可选资产优先用 soft reference，避免硬引用把大量资产拉进内存或 Cook。
+- 不要硬编码长资产路径；用 DataAsset、配置、Primary Asset 或集中表管理。
+- Editor-only 资产和类型不要泄漏到 Runtime 或 packaged build。
+- 移动/重命名资产后处理 redirector，并验证引用链。
 
-- Prefer soft references or Primary Asset rules for optional content.
-- Avoid hard-coded content paths in gameplay code unless there is a documented load boundary.
-- Check redirectors, missing references, hard-coded paths, and editor-only asset references before packaging readiness.
-- Keep runtime assets out of editor-only plugin/module dependencies.
-- Do not reference editor utility widgets, factories, or preview-only assets from runtime assets.
+## 目录与归属
 
-## Asset Scope
+- 资产目录应按功能、系统或插件归属组织，不要把所有内容堆进 `Content/Blueprints`。
+- 插件资产放在插件 Content 下，并确认 `.uplugin` 是否启用 `CanContainContent`。
+- 共享资产要有明确 owner，避免多个系统随意修改同一 DataAsset。
 
-- For UI/input/animation/VFX assets, list exact asset names and expected compile/runtime validation.
-- Avoid broad Content scans unless the task is an asset audit; use targeted filename discovery first.
-- When adding assets, name the owner folder, dependency direction, and whether the asset is runtime, editor-only, or test-only.
+## 验证
 
-## Common Problems
-
-- A Blueprint references a renamed or moved asset through a stale redirector.
-- A runtime map depends on an Editor module class through a placed Actor or component.
-- A soft reference is never registered with Primary Asset rules and fails to cook.
-- A material instance or Niagara system works in editor because of uncooked preview-only dependencies.
-
-## Validation
-
-- Validate asset load in PIE and, when packaging is relevant, in a cooked build or cook smoke test.
-- For Primary Assets, confirm type, scan path, cook rule, and asset ID.
-- For `.uasset` analysis, use editor-visible metadata and filenames; do not treat binary assets as source text.
+- 检查资产引用、缺失贴图、材质编译、蓝图编译和 Cook。
+- 目标平台验证压缩、LOD、贴图尺寸、音频格式和 shader permutation。
+- 对运行时加载的 soft reference，验证加载失败和异步时序。

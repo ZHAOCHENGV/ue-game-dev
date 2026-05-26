@@ -1,72 +1,49 @@
 ---
 name: ue-log-crash-triage
-description: Use when a user provides or asks to analyze Unreal Engine logs, UBT compile errors, UHT reflection errors, linker errors, Blueprint compile errors, Editor crashes, callstacks, ensure/assert failures, UAT packaging failures, Cook errors, or Saved/Logs output before proposing fixes.
+description: 当用户提供或要求分析 Unreal Engine 日志、UBT 编译错误、UHT 反射错误、链接错误、Blueprint 编译错误、Editor 崩溃、callstack、ensure/assert、UAT 打包失败、Cook 错误或 Saved/Logs 输出时使用。
 ---
 
 # UE Log Crash Triage
 
-## Overview
+## 概览
 
-Use this skill to diagnose Unreal logs and crashes from evidence before changing code. Find the first actionable failure, classify the subsystem, and produce fix or verification steps.
+这个技能用于日志和崩溃分诊。目标是找到第一个可行动错误、失败阶段、证据和下一步技能，而不是摘录整段日志。
 
-## Evidence Order
+## 使用场景
 
-1. Prefer pasted error text, explicit log file paths, or the newest relevant file under `Saved/Logs/`.
-2. For build failures, inspect UBT/UHT output from the first `error:` or `Error:` line upward for context.
-3. For crashes, inspect the fatal line, callstack top frames, module names, and the last gameplay/editor actions before crash.
-4. For packaging failures, separate Build, Cook, Stage, Pak/IoStore, Archive, and Deploy phases.
-5. For Blueprint failures, identify the asset path, parent class, missing variable/function, broken pin, duplicate event, or invalid latent context.
+- 分析 `Saved/Logs`、UAT、UBT、UHT、Cook、PackagingResults、Editor crash 或 callstack。
+- 排查 C++ 编译、UHT 反射、链接、Blueprint compile、资产 Cook、插件加载失败。
+- 从大量日志中找第一个真正原因，而非后续连锁错误。
 
-## Classification
+## 工作流程
 
-| Signal | Likely route |
-|--------|--------------|
-| `UnrealHeaderTool`, `UCLASS`, `UPROPERTY`, generated header | `$ue-cpp-gameplay` or `$ue-plugin-module-dev` |
-| `LNK`, unresolved external, module dependency | `$ue-architecture` or `$ue-plugin-module-dev` |
-| `Blueprint Runtime Error`, compile failed, broken pin | `$ue-blueprint-workflow` |
-| `PackagingResults`, `Cook failed`, `RunUAT`, `BuildCookRun` | `$ue-performance-packaging`; explicit packaging remains `$ue-build-release-automation` only when requested |
-| `Fatal error`, `Assertion failed`, `ensure`, access violation | `$ue-debug-validation` after triage |
-| RPC, NetDriver, prediction, authority, replicated property | `$ue-gas-networking` or `$ue-save-load-sync` |
-| Slate, ToolMenus, editor module startup/shutdown | `$ue-editor-tooling-slate` |
+1. 确认日志来源：Editor、UBT、UHT、UAT、Cook、PIE、Crash Reporter 或 platform log。
+2. 定位失败阶段和第一个可行动错误。
+3. 收集证据：错误行、文件路径、模块、资产、callstack 顶部、相关前文。
+4. 分类：编译、反射、链接、资产、配置、网络、运行时崩溃、打包。
+5. 路由下一步：C++、Blueprint、资产、打包性能、debug validation 或 build automation。
 
-## Triage Workflow
+## 工具
 
-1. State the exact log source and timestamp if known.
-2. Extract the first actionable error, not just the final summary.
-3. Explain the probable root cause and why downstream errors are secondary.
-4. List the minimum files/assets/config to inspect next.
-5. Provide a narrow fix plan and a verification command or editor check.
-6. If the issue is recurring or project-specific, suggest recording it with `$ue-workflow-state` in `known-risks.md`.
+- 可用只读脚本 `skills/ue-log-crash-triage/scripts/ue_log_triage.py` 快速提取日志首个可行动错误。
+- 工具读取日志并输出失败阶段、证据和建议技能，不修改项目，也不执行打包。
 
-## Tooling
+## 规则
 
-- Use `scripts/ue_log_triage.py --log <path> --format json` when a log file path is available and a quick first-failure extraction will help.
-- The tool is read-only and returns the first actionable failure, phase classification, short evidence, probable root cause, and recommended next skill.
-- For packaging failures, the tool keeps `packaging_boundary` as `review only`; it must not trigger `$ue-build-release-automation`.
+- 优先报告第一个 actionable error，不要被最后的 summary 误导。
+- UHT 错误通常要检查宏、反射类型、generated header 和头文件包含顺序。
+- Cook 错误要查资产路径、redirector、编辑器专用资产、平台不支持格式。
+- 崩溃要区分 assertion、ensure、access violation、null UObject 和线程问题。
+- 打包失败诊断不等于自动打包；显式打包才进入 `$ue-build-release-automation`。
 
-## Output
+## 输出
 
-```text
-UE Log/Crash Triage
-- Log source:
-- First actionable failure:
-- Failure phase:
-- Probable root cause:
-- Evidence:
-- Next files/assets to inspect:
-- Recommended fix path:
-- Verification:
-- Recommended next skill:
-```
+- Failure stage：UBT/UHT/Link/Cook/UAT/Editor/PIE/Runtime。
+- First actionable error：最小可行动错误。
+- Evidence：关键日志行和文件/资产路径。
+- Likely cause：推断原因，标明推断依据。
+- Next skill：后续具体 UE 技能名和建议验证。
 
-## Boundaries
+## 参考
 
-- Do not guess from the last line if an earlier error explains it.
-- Do not run packaging automation unless the user explicitly asks to package or run BuildCookRun.
-- Do not edit code during triage unless the user asks for a fix after the diagnosis.
-- Preserve uncertainty when logs are truncated; ask for the missing section around the first error.
-
-## References
-
-- Use `references/triage-report-template.md` for structured reports.
-- Use `$ue-debug-validation` when logs point to runtime behavior that needs reproduction.
+- 分诊报告模板读取 `references/triage-report-template.md`。

@@ -1,44 +1,37 @@
-# UE Packaging Rules
+# UE Packaging 规则
 
-## Explicit Boundary
+## 边界
 
-- Automatic packaging is explicit-only: do not run or generate package automation unless the user asks for packaging, `RunUAT`, `BuildCookRun`, Project Launcher, or CI build.
-- Readiness checks belong to `$ue-performance-packaging`; build automation belongs to `$ue-build-release-automation`.
-- Do not delete previous artifacts, clean intermediates, sign, upload, or publish unless the user explicitly requests that step.
+- 打包准备检查和打包自动化是两件事。
+- 用户明确要求运行或生成 `RunUAT` / `BuildCookRun` / CI 打包时，才进入显式自动化流程。
+- 只问“是否准备好打包”时，先做 readiness、日志和风险检查。
 
-## Preflight Checklist
+## 平台差异
 
-- Verify maps, default game mode, platform settings, plugin availability, runtime/editor split, asset references, and target configuration before packaging.
-- Confirm required maps are included by maps-to-cook, Project Settings, or Primary Asset rules.
-- Confirm Runtime modules do not depend on Editor modules.
-- Confirm enabled plugins are available for the target platform.
-- Use `-utf8output` on Windows `RunUAT` commands.
+| 平台 | 常见风险 |
+|------|----------|
+| Win64 | Editor-only 依赖、缺 DLL、路径过长、Visual C++ runtime |
+| Android | SDK/NDK/JDK 版本、签名、texture format、权限、ABI |
+| iOS | 证书、provisioning profile、Xcode、Metal、bundle id |
+| Dedicated Server | Client-only/UI 依赖、地图列表、server target、Online 配置 |
 
-## Platform Notes
+## Cook 失败常见原因
 
-- Win64: check redistributables, target configuration, console/windowed expectations, and shipping log policy.
-- Android: check SDK/NDK/JDK versions, texture format, package name, signing, and storage permissions.
-- iOS: check provisioning profile, bundle identifier, signing team, Metal settings, and remote build requirements on Windows.
-- Dedicated server: confirm server target, cooked maps, no client-only UI assumptions, and correct config files.
+- 缺失资产、redirector、硬编码路径或 soft reference 未纳入 Cook。
+- Blueprint 编译错误或 nativization/反射问题。
+- Runtime 模块引用 Editor-only 类型或插件。
+- 平台不支持的纹理、音频、shader 或第三方库。
+- `DefaultGame.ini` / `DefaultEngine.ini` 中地图、插件、平台设置不一致。
 
-## Cook Failure Patterns
+## 配置检查
 
-- Missing or moved assets referenced by maps or Blueprints.
-- Editor-only classes referenced from runtime assets.
-- Runtime module depending on editor-only modules.
-- Required maps not included by maps-to-cook or Primary Asset rules.
-- Blueprint compile errors hidden until cook.
-- Plugin content not enabled, not mounted, or not marked for cooking.
+- `[/Script/EngineSettings.GameMapsSettings]` 中默认地图和 GameMode。
+- Packaging Settings 中 Maps to Cook、Use Pak、Full Rebuild、Build Configuration。
+- 插件启用状态、platform allow/deny list 和 content inclusion。
+- 第三方 DLL/so/dylib 的 RuntimeDependencies。
 
-## Config Checklist
+## 验证
 
-- `DefaultGame.ini`: maps, GameMode, Primary Asset rules, and project-specific cook settings.
-- `DefaultEngine.ini`: platform settings, rendering/RHI choices, network settings, and plugin subsystem config.
-- `DefaultInput.ini`: legacy input only; Enhanced Input assets still need runtime mapping setup.
-- Project Launcher or CI configs: archive path, staging directory, target platform, and build configuration.
-
-## Reporting
-
-- Report artifact directory, UAT log path, exit code, and first blocking error when packaging is executed.
-- Separate first actionable error from follow-on noise.
-- If only a readiness review was requested, do not synthesize packaging commands as if they were run.
+- 保存 UAT log、Cook log、首个可行动错误和输出目录。
+- 区分 Editor、Standalone、Development packaged 和 Shipping packaged 行为。
+- 打包失败先走 `$ue-log-crash-triage` 找第一错误，再决定是否调整配置或进入显式自动化。

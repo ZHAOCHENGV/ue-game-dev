@@ -1,12 +1,10 @@
-# BuildCookRun Command Reference
+# BuildCookRun 命令模板
 
-## Windows Local Package
-
-Use this shape when the user asks for a local Windows package:
+## Win64 Development
 
 ```powershell
-& "D:\UE_5.6\Engine\Build\BatchFiles\RunUAT.bat" BuildCookRun `
-  -project="F:\UEObject\ProjectName\ProjectName.uproject" `
+& "C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles\RunUAT.bat" BuildCookRun `
+  -project="C:\Path\To\Project\MyGame.uproject" `
   -noP4 `
   -platform=Win64 `
   -clientconfig=Development `
@@ -15,17 +13,14 @@ Use this shape when the user asks for a local Windows package:
   -stage `
   -pak `
   -archive `
-  -archivedirectory="F:\Builds\ProjectName\Win64-Development" `
-  -utf8output
+  -archivedirectory="C:\Builds\MyGame-Win64-Development"
 ```
 
-## Shipping Package
-
-Use `Shipping` only when the user asks for release, QA, store submission, or a final distributable:
+## Win64 Shipping
 
 ```powershell
-& "<EngineRoot>\Engine\Build\BatchFiles\RunUAT.bat" BuildCookRun `
-  -project="<Project.uproject>" `
+& "C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles\RunUAT.bat" BuildCookRun `
+  -project="C:\Path\To\Project\MyGame.uproject" `
   -noP4 `
   -platform=Win64 `
   -clientconfig=Shipping `
@@ -34,50 +29,37 @@ Use `Shipping` only when the user asks for release, QA, store submission, or a f
   -stage `
   -pak `
   -archive `
-  -archivedirectory="<ArchiveDir>" `
-  -utf8output
+  -archivedirectory="C:\Builds\MyGame-Win64-Shipping"
 ```
 
-## Common Flags
+## Dedicated Server
 
-| Flag | Use |
-|------|-----|
-| `-build` | Compile required targets before cooking. |
-| `-cook` | Cook assets for the target platform. |
-| `-stage` | Copy cooked content and binaries to staging. |
-| `-pak` | Package cooked files into pak containers. |
-| `-iostore` | Use IoStore containers when the project already uses them. |
-| `-archive` | Copy staged build to a durable artifact directory. |
-| `-archivedirectory=` | Final output directory for artifacts. |
-| `-clientconfig=` | `Development`, `Test`, or `Shipping`. |
-| `-serverconfig=` | Dedicated server configuration when packaging server targets. |
-| `-map=` | Cook a specific map list when project settings are insufficient. |
-| `-clean` | Remove previous intermediates; ask before using because it increases build time. |
-| `-utf8output` | Keep Windows logs readable. |
-
-## Platform Notes
-
-- `Win64`: Use for Windows desktop client packages.
-- `Android`: confirm SDK/NDK/JDK, signing, package name, texture format, and ABI before generating commands.
-- `Linux`: confirm installed cross-compile toolchain on Windows hosts.
-- Dedicated server: confirm a `Server.Target.cs` exists before using server flags.
-
-## Output Summary Template
-
-```text
-Packaging command:
-<exact command>
-
-Inputs:
-- Project: <path>
-- Engine: <path>
-- Platform/config: <platform>/<config>
-- Archive: <path>
-
-Result:
-- Ran command: yes/no
-- Exit code: <code>
-- UAT log: <path>
-- Artifact: <path>
-- First blocker: <error or none>
+```powershell
+& "C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles\RunUAT.bat" BuildCookRun `
+  -project="C:\Path\To\Project\MyGame.uproject" `
+  -noP4 `
+  -server `
+  -serverplatform=Win64 `
+  -serverconfig=Development `
+  -build `
+  -cook `
+  -stage `
+  -pak `
+  -archive `
+  -archivedirectory="C:\Builds\MyGame-Server"
 ```
+
+## 填写前确认
+
+- UE 安装路径。
+- `.uproject` 绝对路径。
+- 平台、配置、client/server target。
+- 需要 Cook 的地图。
+- Archive 输出目录。
+- 是否允许本次会话运行打包命令。
+
+## 失败后
+
+- 保存 UAT log 和 Cook log。
+- 找第一个 actionable error。
+- 需要分诊时进入 `$ue-log-crash-triage`。

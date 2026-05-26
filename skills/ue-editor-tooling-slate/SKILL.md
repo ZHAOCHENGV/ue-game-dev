@@ -1,44 +1,44 @@
 ---
 name: ue-editor-tooling-slate
-description: Unreal Engine editor tooling and Slate implementation workflow for Slate widgets, ToolMenus, UICommands, toolbar/menu extenders, details customizations, property type customizations, asset type actions, factories, editor subsystems, editor utility integration, selection tools, tab spawners, transactions, and registration/unregistration behavior. Use when creating, debugging, or reviewing concrete UE editor tools or plugin UI after the editor module boundary is known.
+description: 当 Unreal Engine 任务涉及编辑器插件、Slate 界面、ToolMenus、UICommands、工具栏/菜单扩展、Details 自定义、Property Type 自定义、Asset Type Actions、Factories、Tab Spawner 或 Editor Subsystem 时使用。
 ---
 
 # UE Editor Tooling Slate
 
-Use this skill for Unreal Editor extensions. Keep all editor-only code in editor modules and unregister everything registered at startup.
+## 概览
 
-## First Pass
+这个技能负责 UE 编辑器工具和 Slate。重点是 Runtime/Editor 模块分离、注册与注销对称、UI 命令绑定、编辑器生命周期和资产操作安全。
 
-1. Confirm the editor module boundary already exists or use `$ue-plugin-module-dev` to create it.
-2. Read the editor module `.Build.cs`, `StartupModule`, `ShutdownModule`, and any existing commands/style/menu registration.
-3. Identify tool surface: menu, toolbar, tab, details panel, asset context menu, factory/importer, editor subsystem, viewport overlay, or standalone Slate widget.
-4. Define state ownership: subsystem, module singleton, selected assets/actors, transient settings object, config UObject, or command context.
+## 使用场景
 
-## Editor Tool Rules
+- 创建编辑器面板、菜单、工具栏按钮、Details 面板或资产右键操作。
+- 实现 `FUICommandList`、`ToolMenus`、`SDockTab`、`SWidget`、`IDetailCustomization`。
+- 排查热重载后重复菜单、关闭 Editor 崩溃、Runtime 依赖 Editor 模块。
 
-- Register menus, commands, styles, tabs, asset actions, and custom layouts in startup or an explicit registration path.
-- Unregister every registration in shutdown.
-- Guard shutdown paths because modules may unload during editor exit.
-- Avoid loading heavy assets or scanning the whole project during module startup.
+## 工作流程
 
-## Slate And UI Rules
+1. 确认插件/模块拆分：Runtime、Editor、Developer 或 Program。
+2. 检查 `.uplugin`、`.Build.cs`、LoadingPhase、依赖和 API macro。
+3. 设计注册点：StartupModule 注册，ShutdownModule 注销。
+4. 实现 UI：Command、Style、Menu、Tab、Slate Widget、Details 或 Asset Action。
+5. 验证：Editor 重启、热重载、禁用插件、资产选择、Undo/Redo 和 packaged build 边界。
 
-- Use `SCompoundWidget` or focused Slate widgets for custom editor UI.
-- Use `TSharedRef`/`TSharedPtr` ownership correctly; avoid raw owning pointers for Slate objects.
-- Keep UI state refresh event-driven. Avoid expensive polling in active timers or Tick.
-- Keep long-running operations asynchronous or task-based and expose progress/cancel when practical.
-- Keep editor transactions, undo/redo, dirty packages, and selection changes explicit.
+## 规则
 
-## Common Tool Surfaces
+- Editor-only 类型不得进入 Runtime 模块。
+- 所有注册都要有对应注销，避免重复菜单和悬挂 delegate。
+- Slate UI 不要直接长期持有易销毁 UObject，使用弱引用并在使用前检查。
+- 修改资产要走 transaction、dirty 标记和保存提示。
+- 工具生成代码或资产前先检查命名、路径和冲突。
 
-- ToolMenus/UICommands: commands, shortcuts, toolbar buttons, and menu items.
-- Nomad tabs: persistent editor panels with registered tab spawners.
-- Details customization: `IDetailCustomization` and `IPropertyTypeCustomization`.
-- Asset tools: `IAssetTypeActions`, factories, reimport handlers, and context menu actions.
-- Editor subsystems: shared editor services that outlive individual widgets.
+## 输出
 
-## References
+- 模块设计：Editor 模块、依赖和加载时机。
+- UI 结构：菜单、命令、Tab、Widget、Details、Asset Action。
+- 代码位置：Public/Private、Style、Command、Subsystem。
+- 验证：重启 Editor、禁用插件、资产操作、Undo/Redo 和打包边界。
 
-- Read `references/editor-tooling-checklist.md` before implementing editor menus, commands, tabs, details panels, or asset tools.
-- Read `references/editor-code-templates.md` for ToolMenus registration, UICommands, tab spawner, detail customization, and asset type actions code templates.
-- Use `$ue-plugin-module-dev` for `.uplugin`, module split, and `.Build.cs` decisions.
+## 参考
+
+- 检查清单读取 `references/editor-tooling-checklist.md`。
+- 代码模板读取 `references/editor-code-templates.md`。

@@ -1,55 +1,43 @@
 ---
 name: ue-gate-check
-description: Use when a user asks whether an Unreal Engine project or feature is ready to move to implementation, validation, packaging readiness, or explicit release packaging, or wants a PASS/CONCERNS/FAIL gate verdict with blockers and evidence.
+description: 当用户询问 Unreal Engine 项目或功能是否可以进入实现、验证、打包准备、显式发版打包，或需要 PASS/CONCERNS/FAIL 门检结论、阻塞项和证据时使用。
 ---
 
 # UE Gate Check
 
-## Overview
+## 概览
 
-Use this skill for formal UE readiness checks between workflow stages. A gate verdict is advisory: report evidence and blockers, then let the user decide whether to proceed.
+这个技能输出阶段门结论：`PASS`、`CONCERNS` 或 `FAIL`。它用于判断是否可以进入下一阶段，不负责主动打包；明确打包自动化才进入 `$ue-build-release-automation`。
 
-## Gate Types
+## 使用场景
 
-| Gate | Checks |
-|------|--------|
-| Onboarding -> Brief | Project shape understood, safe extension points identified, no implementation before read-only report. |
-| Brief -> Plan | Goal, ownership, Blueprint/C++ split, assets, constraints, and validation path are clear. |
-| Plan -> Implementation | Files/assets, modules, dependencies, risks, and verification commands are identified. |
-| Implementation -> Validation | Changed surface has build/Blueprint/PIE/test path and handoff notes. |
-| Validation -> Packaging Readiness | Tests, asset references, module boundaries, runtime/editor split, and platform settings are reviewed. |
-| Packaging Readiness -> Explicit Packaging | User explicitly asks to run/generate packaging automation; otherwise do not advance to automatic packaging. |
+- “这个功能能进入实现了吗？”
+- “现在能做打包前验证了吗？”
+- “这个项目是否准备好发布/测试/验收？”
+- 需要列出阻塞项、风险、证据和下一步。
 
-## Gate Workflow
+## 工作流程
 
-1. Resolve requested gate or infer it from the user's wording.
-2. Read local evidence: `.uproject`, modules, plans/briefs, changed files, validation logs, tests, package logs, and `Saved/CodexWorkflow/` notes when present.
-3. For each required item, mark `PASS`, `CONCERNS`, `FAIL`, or `MANUAL`.
-4. Use `FAIL` for missing artifacts that make the next phase unsafe, such as no `.uproject`, no owning module, no validation path for C++ changes, or automatic packaging without explicit user intent.
-5. Use `CONCERNS` for gaps that can be addressed early in the next stage.
-6. Never create missing artifacts just to pass the gate.
+1. 确认目标阶段：implementation、validation、packaging readiness、release automation。
+2. 读取现有证据：需求简报、实施计划、构建结果、Blueprint 编译、PIE、测试、日志、性能。
+3. 判断阻塞：缺需求、缺资产、编译失败、网络未验证、性能/打包风险、用户授权缺失。
+4. 输出 `PASS`、`CONCERNS` 或 `FAIL`，并给出最小解除阻塞动作。
 
-## Output
+## 判定规则
 
-```text
-UE Gate Check: <from> -> <to>
-- Verdict: PASS / CONCERNS / FAIL
-- Evidence checked:
-- Required checks:
-- Blockers:
-- Advisory concerns:
-- Recommended next skill:
-- Optional state update:
-```
+- `PASS`：进入下一阶段所需证据充分，只有可接受的小风险。
+- `CONCERNS`：可以前进，但需要明确跟踪风险或补充验证。
+- `FAIL`：存在会导致下一阶段无效或高风险的阻塞项。
+- 没有跑过的验证不能写成通过，只能写“未验证”。
 
-## Required Boundaries
+## 输出
 
-- Automatic packaging remains explicit-only. "Ready to package?" can pass into `$ue-performance-packaging`, not `$ue-build-release-automation`.
-- Blueprint work must include compile and graph validation.
-- C++ Blueprint API changes must include Blueprint node/pin handoff.
-- Networking/GAS work must include authority and PIE/multiplayer validation.
+- Verdict：`PASS`、`CONCERNS` 或 `FAIL`。
+- Evidence：已确认的文件、命令、日志、PIE/测试结果。
+- Blockers：必须解决的问题。
+- Risks：可接受但需跟踪的风险。
+- Next action：下一步技能或最小操作。
 
-## References
+## 参考
 
-- Read `references/gate-check-template.md` for checklist output.
-- Use `$ue-stage-detect` first when the current stage is unclear.
+- 门检报告读取 `references/gate-check-template.md`。

@@ -1,103 +1,47 @@
-# Architecture Code Templates
+# UE 架构模板
 
-## Module Dependency Graph (Mermaid)
+## 模块图
 
-Use this template to visualize module relationships before refactoring:
-
-```
-[ProjectCore] Runtime
-  ├── PublicDependency: Core, CoreUObject, Engine
-  ├── Public surface: shared interfaces, data types, gameplay tags
-  └── No editor dependencies
-
-[ProjectGameplay] Runtime
-  ├── PublicDependency: ProjectCore
-  ├── PrivateDependency: GameplayAbilities, GameplayTags
-  ├── Public surface: gameplay components, subsystems
-  └── Depends on ProjectCore contracts
-
-[ProjectUI] Runtime
-  ├── PublicDependency: ProjectCore, UMG, CommonUI
-  ├── PrivateDependency: ProjectGameplay (for view models)
-  └── Public surface: widget base classes, UI subsystem
-
-[ProjectEditor] Editor
-  ├── PublicDependency: ProjectCore
-  ├── PrivateDependency: UnrealEd, PropertyEditor, AssetTools
-  └── Public surface: custom editors, detail panels, asset actions
+```text
+Module:
+- Type:
+- Depends on:
+- Public API:
+- Private implementation:
+- Blueprint exposure:
+- Assets owned:
+- Risks:
 ```
 
-## Game Feature Plugin Template
+## Ownership Boundaries
 
-```
-Plugins/GameFeatures/GF_MyFeature/
-├── GF_MyFeature.uplugin
-├── Source/
-│   ├── GF_MyFeatureRuntime/
-│   │   ├── GF_MyFeatureRuntime.Build.cs
-│   │   ├── Public/
-│   │   │   └── GF_MyFeatureRuntimeModule.h
-│   │   └── Private/
-│   │       └── GF_MyFeatureRuntimeModule.cpp
-│   └── GF_MyFeatureEditor/  (optional)
-├── Content/
-└── Config/
+```text
+System:
+- Owns state:
+- Reads state:
+- Sends commands:
+- Emits events:
+- Blueprint extension points:
+- Save/replication boundary:
 ```
 
-## Game Feature Plugin uplugin Template
+## 迁移计划
 
-```json
-{
-  "FileVersion": 3,
-  "Version": 1,
-  "VersionName": "1.0",
-  "FriendlyName": "My Feature",
-  "Description": "Feature description",
-  "Category": "Game Features",
-  "CreatedBy": "Team",
-  "Modules": [
-    {
-      "Name": "GF_MyFeatureRuntime",
-      "Type": "Runtime",
-      "LoadingPhase": "Default"
-    }
-  ],
-  "ExplicitlyLoaded": true,
-  "BuiltInInitialFeatureState": "Active",
-  "Plugins": [
-    {
-      "Name": "GameFeatures",
-      "Enabled": true
-    },
-    {
-      "Name": "ModularGameplay",
-      "Enabled": true
-    }
-  ]
-}
+```text
+Goal:
+Current coupling:
+Target boundary:
+Step 1:
+Step 2:
+Step 3:
+Validation:
+Rollback:
 ```
 
-## Shared Contracts Module Pattern
+## 架构审查输出
 
-When two modules need to reference each other, extract a thin shared contracts module:
-
-```
-ProjectContracts (Runtime, minimal)
-├── Interfaces: IInventoryProvider, ICombatTarget, IInteractable
-├── Structs: FItemHandle, FCombatResult
-├── Enums: EInteractionType, EItemRarity
-├── GameplayTags: shared tag constants
-└── No implementation, no assets, no heavy dependencies
-```
-
-Both modules depend on `ProjectContracts` instead of each other, breaking the cycle.
-
-## Reflection Exposure Decision Checklist
-
-Before adding `UCLASS`/`USTRUCT`/`UFUNCTION`/`UPROPERTY`:
-
-1. Does Blueprint need to see this? If no, keep it C++ only.
-2. Does serialization need this? If yes, add `UPROPERTY()`.
-3. Does replication need this? If yes, add `Replicated` or `ReplicatedUsing`.
-4. Does editor tooling need this? If yes, add `EditAnywhere`/`VisibleAnywhere`.
-5. Is this part of a stable public API? If yes, add careful metadata. If no, keep private.
+- 当前结构：模块、插件、目录和依赖。
+- 问题：循环依赖、Editor 泄漏、Public 头过重、ownership 不清。
+- 建议：目标模块图、API、迁移顺序。
+- 风险：Blueprint 兼容、资产引用、打包、测试缺口。
+- 验证：构建、Blueprint compile、PIE、packaged build。

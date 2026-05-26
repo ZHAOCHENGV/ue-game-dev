@@ -1,47 +1,49 @@
-# UE C++ Gameplay Patterns
+# UE C++ 玩法模式
 
-## Module And Class Placement
+## ActorComponent 模式
 
-- Put runtime gameplay classes in runtime modules; keep editor-only factories, detail customizations, and asset actions in editor modules.
-- Check `.Build.cs` dependencies before adding includes. Prefer adding the narrow module dependency that owns the type.
-- Keep public headers stable. Move helpers and private implementation details into `.cpp` or `Private/` headers.
+- 可复用行为优先放 `UActorComponent`，由 Actor 组合。
+- 组件负责自身状态、输入命令、事件和验证。
+- owner 只负责创建组件、转发高层事件或提供上下文。
 
-## UObject And Reflection
+```cpp
+UCLASS(ClassGroup=(Game), meta=(BlueprintSpawnableComponent))
+class UInventoryComponent : public UActorComponent
+{
+    GENERATED_BODY()
 
-- Use `TObjectPtr` for reflected UObject references owned or tracked by a UObject.
-- Use `TWeakObjectPtr` for cached references that may disappear.
-- Use soft references for assets/classes that should not force-load.
-- Use `UPROPERTY` for UObject references that must be visible to GC.
-- Prefer `BlueprintReadOnly` over `BlueprintReadWrite` unless designers must mutate the value.
-- Expose reflection only for a reason: Blueprint access, serialization, config, replication, editor editing, delegates, or asset references.
-- Keep `USTRUCT` data transfer types small and stable when they cross Blueprint or service boundaries.
+public:
+    UFUNCTION(BlueprintCallable, Category="Inventory")
+    bool TryAddItem(FName ItemId, int32 Count);
 
-## Subsystems And Settings
+private:
+    UPROPERTY()
+    TArray<FInventoryEntry> Items;
+};
+```
 
-- Use `UGameInstanceSubsystem` for runtime services that survive map transitions, such as account/session clients, inventory cache, matchmaking facades, or project-wide managers.
-- Use `UWorldSubsystem` for state scoped to a world or PIE instance.
-- Use `ULocalPlayerSubsystem` for per-local-player services such as input profile, user UI state, or local platform identity.
-- Use `UEditorSubsystem` for editor-only workflow services.
-- Use `UDeveloperSettings` for project-configurable defaults and read with `GetDefault<T>()`; use `GetMutableDefault<T>()` only in editor/tooling flows that intentionally edit config.
-- Avoid hiding gameplay state in global singletons when a subsystem lifetime would make ownership and teardown clearer.
+## Subsystem 模式
 
-## Actor And Component Lifecycle
+- `UGameInstanceSubsystem`：跨地图、账号、外部服务、全局配置。
+- `UWorldSubsystem`：世界级运行时系统、生成管理、关卡相关状态。
+- `ULocalPlayerSubsystem`：本地玩家输入、UI、设置和账号视角。
 
-- Constructor: create default subobjects and set defaults only.
-- `OnRegister` / `InitializeComponent`: component setup that depends on registration.
-- `BeginPlay`: world-ready runtime binding and initial state.
-- `EndPlay`: unbind delegates, clear timers, stop async work.
-- Avoid gameplay logic in construction scripts that must also run correctly at runtime.
+Subsystem 不应变成万能全局变量；只存放与生命周期匹配的服务。
 
-## Delegates And Timers
+## DataAsset 模式
 
-- Store delegate handles when the source can outlive the listener.
-- Guard duplicate binds when setup can run more than once.
-- Clear timers in `EndPlay` for Actor-owned behavior.
-- Prefer event-driven updates over polling.
+- 设计师可调的静态数据放 `UDataAsset` 或 `UPrimaryDataAsset`。
+- 运行时状态不要写回 DataAsset。
+- 需要异步加载、资产管理或大型表时考虑 Primary Asset。
 
-## Async And External Boundaries
+## UObject 生命周期
 
-- Use `$ue-async-systems` for background CPU work, game-thread handoff, `UBlueprintAsyncActionBase`, worker lifetime, and cancellation.
-- Use `$ue-external-services` for HTTP, JSON, WebSocket, TCP, backend clients, streaming services, heartbeat, and reconnect logic.
-- Keep service DTOs and async result structs separate from authoritative mutable gameplay state.
+- 明确 Outer，通常使用拥有它的 Actor、Component、Subsystem 或 Package。
+- 被 UObject 持有的 UObject 引用要通过 `UPROPERTY` 可见。
+- 后台任务和 delegate 使用 `TWeakObjectPtr` 防止 owner 销毁后回调。
+
+## Blueprint API
+
+- 用小函数表达命令：`TryAddItem`、`SetOutlineEnabled`、`CanInteract`。
+- 返回 bool、enum 或 result struct，避免失败静默。
+- 对设计师可调值提供 Category、Clamp、ToolTip 和默认值。

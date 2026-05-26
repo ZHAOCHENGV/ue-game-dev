@@ -1,72 +1,42 @@
-# UE Feature Brief Template
+# UE 功能简报模板
 
-```text
-UE Feature Brief
+## 功能目标
 
-Goal
-- <One sentence describing the player/designer/editor outcome.>
+- 用户/玩家要完成什么：
+- 开发者/设计师工作流：
+- 成功时的可观察行为：
 
-Project Context
-- Project:
-- UE version:
-- Target platform:
-- Existing systems/assets found:
+## 范围
 
-Ownership
-- C++:
-- Blueprint:
-- Assets/data:
-- UI:
-- Networking/GAS:
-- Editor/runtime module:
+- In Scope：
+- Out of Scope：
+- 后续可扩展：
 
-Behavior
-- Trigger:
-- Success result:
-- Failure/edge result:
-- Feedback to player/designer:
-- State changes:
-- Data/assets involved:
+## 技术域
 
-Constraints
-- Authority/replication:
-- Save/load:
-- Performance:
-- Packaging/platform:
-- Naming/module conventions:
-- Accessibility/localization:
-- Editor/runtime boundary:
+- C++：
+- Blueprint：
+- UI：
+- 资产：
+- 网络/GAS：
+- 存档：
+- 性能/打包：
 
-Validation
-- C++ build:
-- Blueprint compile:
-- PIE/editor smoke:
-- Automated test or asset validation:
-- Multiplayer/client count:
-- Cook/package smoke if relevant:
+## 数据与接口
 
-Open Questions
-- <Only blockers that cannot be answered from local inspection.>
+- 输入：
+- 输出：
+- 状态归属：
+- Blueprint/C++ 交接：
 
-Recommended Next Skill
-- $ue-implementation-plan or a domain skill:
-```
+## 验收标准
 
-## Example Snippet
+- PIE 场景：
+- Blueprint 编译：
+- 自动化/手工测试：
+- 日志/性能/打包检查：
 
-```text
-Goal
-- Let the player pick up nearby items and see inventory feedback immediately.
+## 开放问题
 
-Ownership
-- C++: inventory component owns durable item state and validation.
-- Blueprint: pickup actor handles prompt visibility and designer-authored feedback.
-- UI: inventory widget listens for inventory-changed events and refreshes manually.
-
-Validation
-- C++ build: touched game module.
-- Blueprint compile: pickup actor and inventory widget.
-- PIE/editor smoke: overlap prompt, use input, inventory count, full-inventory failure.
-```
-
-Use the brief to remove ambiguity. If the brief already requires concrete file changes, move to `$ue-implementation-plan` or the most specific domain skill.
+- 阻塞问题：
+- 非阻塞问题：

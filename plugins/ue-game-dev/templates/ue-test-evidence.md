@@ -1,52 +1,46 @@
-# UE Test Evidence
+# UE 测试证据模板
 
-## Summary
+## 摘要
 
-```text
-Feature:
-Project:
-UE Version:
-Target Platform:
-Date:
-Verifier:
-Verdict: PASS / CONCERNS / FAIL
-```
+- 任务：
+- 日期：
+- 验证人：
+- 项目/分支：
+- UE 版本：
 
-## Changed Surface
+## 变更范围
 
-- C++:
-- Blueprint:
-- Assets:
-- Config:
-- UI/Input:
-- Networking/GAS:
-- Packaging:
+- C++：
+- Blueprint：
+- 资产：
+- 配置：
+- UI：
+- 网络/存档：
 
-## Verification Evidence
+## 验证记录
 
-| Check | Evidence | Result |
-|-------|----------|--------|
-| Targeted build | `<command or reason not run>` | PASS / CONCERNS / FAIL |
-| Blueprint compile | `<asset/class and expected status>` | PASS / CONCERNS / FAIL |
-| PIE/editor smoke | `<scenario>` | PASS / CONCERNS / FAIL |
-| Automated test | `<test command/filter>` | PASS / CONCERNS / FAIL |
-| Multiplayer | `<client count / authority path>` | PASS / CONCERNS / FAIL / N/A |
-| Packaging risk | `<readiness check or explicit package command>` | PASS / CONCERNS / FAIL / N/A |
+| 类型 | 命令/场景 | 结果 | 证据 |
+|------|-----------|------|------|
+| 构建 |  |  |  |
+| Blueprint 编译 |  |  |  |
+| PIE |  |  |  |
+| 多人 |  |  |  |
+| 自动化测试 |  |  |  |
+| 性能/打包 |  |  |  |
 
-## Acceptance Criteria Trace
+## 日志与问题
 
-| Criterion | Verification | Status |
-|-----------|--------------|--------|
-|  |  | PASS / FAIL / MANUAL |
+- 首个可行动错误：
+- Warning：
+- 已确认非阻塞项：
 
-## Blueprint Handoff
+## 未验证项
 
-- Asset:
-- Node search:
-- Pins:
-- Compile:
-- Manual editor steps:
+- 未验证：
+- 原因：
+- 后续建议：
 
-## Risks And Follow-Ups
+## 结论
 
--
+- Verdict：`PASS` / `CONCERNS` / `FAIL`
+- 交接说明：

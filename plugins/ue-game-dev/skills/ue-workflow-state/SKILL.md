@@ -1,65 +1,51 @@
 ---
 name: ue-workflow-state
-description: Use when a user asks to create, refresh, read, or use persistent AI-readable memory for an Unreal Engine project, especially Saved/CodexWorkflow notes, project context, module maps, asset indexes, decisions, known risks, old project takeover, or continuing secondary development across sessions.
+description: 当用户要求创建、刷新、读取或使用 Unreal Engine 项目的持久 AI 可读记忆，尤其是 Saved/CodexWorkflow 项目上下文、模块地图、资产索引、决策、已知风险、旧项目接手记录或当前任务状态时使用。
 ---
 
 # UE Workflow State
 
-## Overview
+## 概览
 
-Use this skill to turn UE project understanding into small, durable markdown state files that future Codex sessions can read before changing code. Keep state factual, source-linked, and easy to refresh.
+这个技能负责 `Saved/CodexWorkflow/` 项目记忆。它把跨会话有用的信息写成 AI 可读 Markdown，帮助后续二开、计划、调试和验收不用从零开始。
 
-## State Location
+## 使用场景
 
-Default to `Saved/CodexWorkflow/` inside the UE project unless the user requests another location.
+- “为这个 UE 项目建立项目记忆”。
+- 旧项目接手后保存项目地图、模块、资产、风险和决策。
+- 新会话读取已有 CodexWorkflow 作为上下文。
+- 功能完成后刷新 active task、known risks、验证证据。
 
-| File | Purpose |
-|------|---------|
-| `project-context.md` | Project snapshot, UE version, modules, plugins, core gameplay/UI/input/networking flows. |
-| `module-map.md` | Runtime/editor modules, dependencies, Public/Private boundaries, key classes. |
-| `asset-index.md` | Important Content folders and discovered assets by filename, not binary inspection. |
-| `decisions.md` | User-approved architecture, naming, Blueprint/C++ split, and workflow decisions. |
-| `known-risks.md` | Build, asset, module, Blueprint, networking, packaging, and validation risks. |
-| `active-task.md` | Current task scope, touched files, validation path, and handoff notes when useful. |
+## 建议文件
 
-## Workflow
+- `Saved/CodexWorkflow/project-context.md`
+- `Saved/CodexWorkflow/module-map.md`
+- `Saved/CodexWorkflow/asset-index.md`
+- `Saved/CodexWorkflow/decisions.md`
+- `Saved/CodexWorkflow/known-risks.md`
+- `Saved/CodexWorkflow/active-task.md`
 
-1. Find the `.uproject`, then read nearby `Source/`, `Plugins/`, `Config/`, `.Build.cs`, `.Target.cs`, and `.uplugin` files.
-2. Read existing `Saved/CodexWorkflow/*.md` before creating or refreshing state.
-3. Preserve user-approved facts. Mark uncertain items as `Unknown` or `Needs editor inspection`; do not invent Blueprint asset internals.
-4. Update only the minimum state files needed for the request.
-5. Link each important fact to evidence: file path, class name, asset filename, config section, or log excerpt.
-6. After implementation, refresh `active-task.md`, `decisions.md`, and `known-risks.md` when the change affects future work.
+## 工作流程
 
-## Use With Other Skills
+1. 读取现有 `Saved/CodexWorkflow/`，避免覆盖用户已有记录。
+2. 从 `.uproject`、`Source/`、`Plugins/`、`Config/` 和文档中提取稳定事实。
+3. 将推断和事实分开标注，记录更新时间和证据来源。
+4. 更新当前任务时保留历史决策，不删除不相关风险。
+5. 输出本次写入/刷新内容和后续使用建议。
 
-- Use `$ue-project-onboarding` first when the project is unfamiliar and no state exists.
-- Use `$ue-stage-detect` to decide which workflow state is missing.
-- Use `$ue-implementation-plan` after state is current enough to plan changes.
-- Use `$ue-feature-done` to refresh state during closeout.
-- Use `$ue-log-crash-triage` to add recurring failures to `known-risks.md`.
+## 规则
 
-## Output
+- 不把临时猜测写成事实。
+- 不保存敏感 token、私钥或账号。
+- 记录应服务后续 Codex 阅读，避免长篇流水账。
+- 用户只要求读取时保持只读。
 
-When creating or refreshing state, report:
+## 输出
 
-```text
-UE Workflow State
-- State folder:
-- Files read:
-- Files created or updated:
-- Facts added:
-- Unknowns preserved:
-- Recommended next skill:
-```
+- 已读取或写入的 CodexWorkflow 文件。
+- 新增事实、决策、风险和当前任务状态。
+- 后续建议：进入 onboarding、brief、plan、debug 或 done。
 
-## Boundaries
+## 参考
 
-- Do not edit gameplay code, Blueprint assets, config, or plugins as part of state refresh.
-- Do not store secrets, tokens, local machine credentials, or private build service keys.
-- Do not treat generated `Intermediate/`, `Binaries/`, or volatile `Saved/Logs/` output as durable truth.
-- If state conflicts with source files, trust source files and note the stale state.
-
-## References
-
-- Use `references/state-file-templates.md` when creating the default markdown files.
+- 文件模板读取 `references/state-file-templates.md`。

@@ -1,44 +1,34 @@
-# UE C++ Coding Standard Checklist
+# UE C++ 编码规范
 
-## Naming
+## 反射
 
-- Use Unreal prefixes: `A`, `U`, `F`, `E`, `I`, `S`, `T`.
-- Prefix booleans with `b`.
-- Keep public API names descriptive and stable.
-- Keep module API macros correct for cross-module public types.
+- 每个反射类型包含正确的 `GENERATED_BODY()`。
+- `.generated.h` 必须是头文件最后一个 include。
+- `UCLASS`、`USTRUCT`、`UENUM`、`UINTERFACE` 的 specifier 要有明确目的。
+- Blueprint 暴露 API 要提供 Category、默认值、错误路径和验证。
 
-## Headers
+## 头文件
 
-- Include only what the header needs.
-- Prefer forward declarations in public headers.
-- Put implementation details in `.cpp` or private headers.
-- Keep generated header include last in reflected headers.
+- Public 头使用 forward declaration 降低耦合。
+- Private 头和 `.cpp` 才 include 大型引擎/项目头。
+- 不在 Public Runtime 头里 include Editor-only 类型。
+- 避免把第三方库类型泄漏到大量 Public API。
 
-## Reflection
+## UObject 引用
 
-- Use reflection macros only when needed by Blueprint, serialization, replication, config, editor tooling, or UHT.
-- Prefer narrow Blueprint exposure.
-- Avoid exposing mutable authoritative state as `BlueprintReadWrite`.
-- Keep metadata meaningful and sparse.
+- 需要 GC 可见的引用用 `UPROPERTY`。
+- UE5 反射 UObject 引用优先 `TObjectPtr`。
+- 临时观察引用用 `TWeakObjectPtr`，异步回调用弱引用。
+- 资产引用按加载需求选择 hard reference 或 soft reference。
 
-## UObject Safety
+## 日志与错误
 
-- Use `UPROPERTY` for UObject references that must be tracked by GC.
-- Use `TObjectPtr` in reflected object members for UE5 codebases where project style supports it.
-- Use `TWeakObjectPtr` for cached non-owning references.
-- Use soft references for assets/classes that should not force load.
-- Validate UObject lifetimes before async/delegate use.
+- 使用项目或模块 log category，不滥用 `LogTemp`。
+- 失败返回 bool、enum 或 result struct，并写清日志上下文。
+- `ensure` 用于可恢复异常，`check` 只用于不可继续的内部不变量。
 
-## Runtime Behavior
+## 构建
 
-- Disable Tick by default.
-- Prefer events, timers, delegates, and subsystems over polling.
-- Unbind delegates and clear timers when lifetimes differ.
-- Avoid hard asset loads in constructors and module startup.
-
-## Build Quality
-
-- Keep runtime and editor dependencies separate.
-- Keep warning-free builds.
-- Verify UHT after reflection changes.
-- Add target-specific validation for networking, assets, editor tools, and packaging.
+- `.Build.cs` 依赖保持最小。
+- Editor 模块依赖不要进入 Runtime。
+- 新增平台库要验证 Editor build 和 packaged build。

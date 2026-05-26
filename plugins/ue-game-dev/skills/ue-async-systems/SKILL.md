@@ -1,43 +1,43 @@
 ---
 name: ue-async-systems
-description: Unreal Engine asynchronous C++ workflow for AsyncTask, Async(), UE::Tasks, FRunnable, FQueuedThreadPool, ParallelFor, timers, latent or Blueprint async action nodes, game-thread handoff, cancellation, lifetime safety, and non-blocking gameplay/client operations. Use when requests involve background work, async Blueprint nodes, thread handoff, long-running CPU work, or avoiding game-thread stalls.
+description: 当 Unreal Engine 任务涉及 AsyncTask、Async()、UE::Tasks、FRunnable、FQueuedThreadPool、ParallelFor、Timer、Latent Action、Blueprint async action node、GameThread 回切、取消、生命周期安全或非阻塞客户端/玩法操作时使用。
 ---
 
 # UE Async Systems
 
-Use this skill for Unreal Engine asynchronous work that must stay responsive, game-thread safe, and Blueprint-friendly when needed. Keep async code narrow: isolate the slow work, define the owner lifetime, then hand results back to the game thread before touching UObjects or gameplay state.
+## 概览
 
-## First Pass
+这个技能处理 UE 异步与线程边界。核心原则是：离线计算或 IO 可以离开 GameThread，但 UObject 访问、组件修改、广播 Blueprint 事件和大多数 Gameplay 状态写入必须安全回到 GameThread。
 
-1. Identify the operation type: short game-thread deferral, CPU work, blocking IO, external service callback, tick/timer scheduling, latent action, or Blueprint async node.
-2. Find the owner and lifetime: Actor, Component, Subsystem, UObject task object, module singleton, or external client.
-3. Decide the callback surface: C++ delegate, multicast delegate, latent result, `UBlueprintAsyncActionBase`, promise/future, or subsystem event.
-4. Mark what can run off-thread and what must return to the game thread. Treat UObject access, Blueprint delegates, actor spawning, world state, and UI updates as game-thread work.
-5. Define cancellation and teardown before implementation: EndPlay, Deinitialize, module shutdown, HTTP/WebSocket disconnect, or async node activation cleanup.
+## 使用场景
 
-## Implementation Rules
+- 实现 `AsyncTask`、`Async()`、`UE::Tasks`、`FRunnable`、`ParallelFor` 或线程池任务。
+- 创建 `UBlueprintAsyncActionBase` 节点、Latent Action、Timer 驱动流程。
+- 排查后台线程访问 UObject、任务取消、地图切换后回调崩溃、PIE 退出卡住。
 
-- Use timers or delegates for scheduled game-thread work; do not create threads for simple delays.
-- Use `AsyncTask(ENamedThreads::GameThread, ...)` only to return to the game thread, not to hide slow work.
-- Use `Async(EAsyncExecution::ThreadPool, ...)`, `UE::Tasks`, or a queued thread pool for bounded CPU/background work.
-- Use `FRunnable` only for long-lived workers with clear startup, stop, and join semantics.
-- Use `ParallelFor` only for independent, CPU-bound loops with no UObject mutation inside the parallel body.
-- Use `TWeakObjectPtr` or a weak lambda capture when async callbacks may outlive the UObject owner.
-- Broadcast Blueprint delegates on the game thread and only after validating the async action object and world context are still valid.
-- Keep cancellation idempotent. A callback arriving after cancellation should become a no-op, not a crash.
-- Avoid blocking waits on the game thread. Do not call `Wait()`, socket receive loops, or file/network blocking calls from gameplay/UI paths.
+## 工作流程
 
-## Blueprint Async Nodes
+1. 划分工作类型：CPU 计算、磁盘/网络 IO、延迟等待、批量数据处理或 Gameplay 回调。
+2. 定义线程边界：哪些数据可复制到后台，哪些必须在 GameThread 读取或写入。
+3. 设计生命周期：owner、World、Subsystem、弱引用、取消信号、超时和 PIE/关卡切换。
+4. 定义结果交付：GameThread 回切、Delegate、Promise/Future、Blueprint 成功/失败 pin。
+5. 给出验证：取消、销毁、失败、重复触发、长耗时和 packaged build 行为。
 
-- Use `UBlueprintAsyncActionBase` when designers need a node with exec pins and async completion/failure delegates.
-- Store `WorldContextObject` or owner references safely, usually as weak references unless the async action intentionally owns a request object.
-- Expose a static `BlueprintCallable` factory with `BlueprintInternalUseOnly="true"` when following common async node patterns.
-- Perform validation in the factory or `Activate()`, then broadcast failure on the game thread for invalid input.
-- Document exact Blueprint node search name, input pins, success/failure delegates, cancellation behavior, and PIE validation steps.
+## 规则
 
-## References
+- 后台线程不要直接读写 `UObject`、`AActor`、`UActorComponent` 或 `UWorld` 状态。
+- 用值类型快照、线程安全队列或不可变数据把输入传给后台任务。
+- 回调前检查弱引用、World 有效性、对象未 pending kill。
+- Blueprint async node 必须有明确的激活、完成、失败和取消路径。
+- `ParallelFor` 只用于无共享可变状态或有明确同步策略的数据。
 
-- Read `references/async-patterns.md` for selection guidance across timers, `AsyncTask`, `Async`, `UE::Tasks`, `FRunnable`, `ParallelFor`, and Blueprint async nodes.
-- Use `$ue-external-services` when async work is primarily HTTP, WebSocket, TCP, JSON, backend APIs, heartbeats, or reconnect logic.
-- Use `$ue-cpp-gameplay` after async ownership is clear and the remaining work is normal gameplay C++.
-- Use `$ue-debug-validation` when symptoms involve race conditions, callbacks after destruction, game-thread asserts, or intermittent crashes.
+## 输出
+
+- 异步模型：选择 `AsyncTask`、`UE::Tasks`、`FRunnable`、Timer、Latent 或 Blueprint async node 的原因。
+- 线程边界：后台可做什么、GameThread 做什么。
+- 生命周期策略：取消、销毁、地图切换、超时和重复调用。
+- 验证方案：单元/PIE/日志/压力场景。
+
+## 参考
+
+- 代码模式和节点结构读取 `references/async-patterns.md`。

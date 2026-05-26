@@ -18,7 +18,7 @@
 ```text
 Name: ZHAOCHENGV UE Plugins
 Source: https://github.com/ZHAOCHENGV/ue-game-dev.git
-Git Ref: main
+Git Ref: ue-game-dev-zh
 Sparse Path: 留空，或在界面必填时填 .
 ```
 
@@ -129,9 +129,9 @@ New-Item -ItemType Junction -Path "$env:USERPROFILE\plugins\ue-game-dev" -Target
 也可以直接用自然语言：
 
 ```text
-Use UE Game Dev to design this Unreal plugin, module, or editor tool.
-Use UE Game Dev to review this GAS and replication flow.
-Use UE Game Dev to add tests for this UE feature.
+用 UE Game Dev 设计这个 Unreal 插件、模块或编辑器工具。
+用 UE Game Dev 审查这个 GAS 与 replication 流程。
+用 UE Game Dev 为这个 UE 功能补充测试。
 ```
 
 > 注意：`@ue-game-dev` 和 `/ue-game-dev` 是否出现自动补全，取决于当前 Codex App 版本和插件市场加载状态。如果 `/` 没有弹出插件，优先使用 `@ue-game-dev` 或直接写 `Use UE Game Dev ...`。

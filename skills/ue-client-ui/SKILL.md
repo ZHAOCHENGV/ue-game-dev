@@ -1,45 +1,44 @@
 ---
 name: ue-client-ui
-description: Unreal Engine runtime client UI development workflow for UMG, Widget Blueprints, CommonUI, HUDs, menus, widgets, view models, input focus, Enhanced Input UI flows, loading screens, localization, accessibility, DPI/layout behavior, Blueprint/C++ UI integration, and client-side gameplay presentation. Use when implementing, debugging, or reviewing in-game UI systems; use `ue-editor-tooling-slate` for editor tool Slate UI.
+description: 当 Unreal Engine 任务涉及 UMG、Widget Blueprint、CommonUI、HUD、菜单、ViewModel、输入焦点、Enhanced Input UI 流程、加载界面、本地化、无障碍、DPI/布局或 UI 性能时使用。
 ---
 
 # UE Client UI
 
-Use this skill for client-facing architecture and UI. Keep gameplay authority outside presentation code unless the project already centralizes it there.
+## 概览
 
-## First Pass
+这个技能负责 UE 客户端 UI。先确认 UI 层级、状态来源、输入焦点和刷新方式，再设计 Widget、CommonUI、ViewModel、HUD 或菜单流程。
 
-1. Identify the runtime UI stack: UMG, CommonUI, MVVM, custom HUD manager, or project-specific UI framework.
-2. Locate ownership: player controller, HUD, local player subsystem, game instance subsystem, widget tree, or view model.
-3. Trace how gameplay state reaches UI: delegates, replicated state, ASC tags/attributes, data assets, polling, or direct references.
-4. Check input mode, focus, cursor visibility, gamepad navigation, DPI scaling, and split-screen/local-player assumptions.
-5. Decide whether behavior belongs in Widget Blueprint, C++ UMG wrapper, view model/subsystem, or a hybrid.
+## 使用场景
 
-## Implementation Rules
+- 设计背包、HUD、主菜单、设置面板、加载界面、提示框或交互提示。
+- 排查按钮不响应、焦点丢失、手柄导航异常、DPI 适配、Widget Tick 性能。
+- 集成 CommonUI、Enhanced Input、MVVM/ViewModel、本地化和 UI 音效。
 
-- Keep widgets presentational where possible; route gameplay commands through controllers, subsystems, components, or existing managers.
-- Bind to events/delegates carefully and unbind on teardown when lifetimes differ.
-- Avoid heavy work in `Tick`, `NativePaint`, bindings, or per-frame Blueprint UI paths.
-- Prefer data/view-model updates over direct widget tree searches from gameplay code.
-- Make loading, empty, disabled, error, and disconnected states explicit for user-facing flows.
-- For multiplayer UI, distinguish local predicted state from server-confirmed state.
+## 工作流程
 
-## Runtime UI
+1. 确认 UI 拥有者：PlayerController、HUD、LocalPlayer Subsystem、GameInstance Subsystem 或 Widget。
+2. 定义状态来源：Gameplay 组件、SaveGame、ViewModel、DataAsset、Async service 或 replicated state。
+3. 设计 Widget 层级：根容器、弹窗、导航栈、输入模式、焦点默认项和关闭路径。
+4. 确定刷新方式：事件驱动、ViewModel 通知、显式刷新或低频 Timer。
+5. 验证 DPI、窗口尺寸、手柄/键鼠、暂停、加载、多人本地玩家和 packaged build。
 
-- Use UMG/CommonUI for designer-authored runtime screens.
-- Use Slate here only for runtime custom widgets already established by the project; use `$ue-editor-tooling-slate` for editor UI.
-- For CommonUI, respect activatable widget stacks, input actions, back handling, and platform-specific prompts.
-- Keep localization-friendly text in `FText`, not `FString`, for user-facing labels.
-- For Widget Blueprint logic, use `$ue-blueprint-workflow` when graph-level node/pin details are needed.
-- For C++ widget classes or runtime wrappers, expose the smallest Blueprint-facing API and keep gameplay mutation outside passive display widgets.
+## 规则
 
-## Verification
+- UI 不应直接拥有复杂 Gameplay 状态；它读取或订阅状态并发出用户意图。
+- 避免 Tick 和昂贵 Binding；大列表使用池化、分页或虚拟化策略。
+- 输入模式、鼠标显示、焦点恢复和 CommonUI action routing 必须成对处理。
+- UI 与 Enhanced Input 冲突时，先明确当前 Input Mode 和 Mapping Context 优先级。
+- 本地化文本使用 `FText`，不要把玩家可见文本写成 `FString` 常量。
 
-- Validate with mouse/keyboard and gamepad when focus or navigation changes.
-- Check at least one narrow and one wide viewport or DPI scale for layout work.
-- For HUD tied to network state, test with two clients or simulated delayed confirmation.
+## 输出
 
-## References
+- UI 架构：Widget、HUD、Controller、Subsystem、ViewModel 分工。
+- 交互流：打开、刷新、确认、取消、关闭、焦点恢复。
+- 资产与代码：WBP、DataAsset、Style、Input Action、C++ 类。
+- 验证：DPI、手柄/键鼠、PIE、packaged build 和性能观察。
 
-- Read `references/ui-patterns.md` for ownership, focus, view model, and performance review.
-- Read `references/ui-code-templates.md` for HUD subsystem, view model pattern, CommonUI activatable widget, and input mode switching code templates.
+## 参考
+
+- UI 模式读取 `references/ui-patterns.md`。
+- 代码模板读取 `references/ui-code-templates.md`。

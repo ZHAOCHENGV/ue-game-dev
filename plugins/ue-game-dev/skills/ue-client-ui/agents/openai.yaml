@@ -1,4 +1,4 @@
 interface:
   display_name: "UE Client UI"
-  short_description: "Build UE client architecture, UMG, Slate, input, and HUD flows."
-  default_prompt: "Use $ue-client-ui to implement this Unreal client UI workflow."
+  short_description: "设计 UE 客户端 UI、UMG、CommonUI、输入和 HUD 流程。"
+  default_prompt: "使用 $ue-client-ui 实现或排查这个 Unreal 客户端 UI 工作流。"

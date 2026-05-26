@@ -1,116 +1,84 @@
 ---
 name: ue-multi-agent-workflow
-description: Use when an Unreal Engine request explicitly asks for multi-agent, multi-expert, parallel specialist, team-style, or complex cross-domain coordination, especially old project onboarding, architecture review, large C++/Blueprint/UI/assets/test features, or packaging/log risk analysis that needs several independent UE perspectives.
+description: 当 Unreal Engine 请求明确要求 multi-agent、多专家、并行专家、团队协作、lean/full 模式，或复杂跨域任务需要项目接手、架构审查、C++/Blueprint/UI/资产/测试/发布风险协调时使用。
 ---
 
 # UE Multi-Agent Workflow
 
-## Overview
+## 概览
 
-Use this skill as a lightweight orchestration layer for complex UE work. It coordinates specialist perspectives, file ownership, dependency order, and verification without replacing the focused UE domain skills.
+这个技能是轻量多 Agent 编排协议，用于复杂 UE 任务的角色分工、并行发现和 Coordinator 汇总。简单单域问题不要强行启用多 Agent。
 
-## Core Rule
+## Mode 选择
 
-Route simple single-domain tasks to the specific skill instead. Multi-agent work is for complex or explicit coordination, not a default wrapper around every UE request.
+| Mode | 使用方式 |
+|------|----------|
+| `solo` | 简单单域任务，直接回到具体技能，不输出多 Agent 报告 |
+| `lean` | 默认复杂任务，通常启用 Coordinator + 1-2 个专项角色 |
+| `full` | 旧项目深度接手、插件架构审查、跨 C++/Blueprint/UI/资产/测试/发布风险的大任务 |
 
-Do not load these references for simple single-domain work. Load them only after this skill selects `lean` or `full` mode:
+## Coordinator 职责
 
-- `references/ue-agent-roles.md` for role responsibilities, ownership boundaries, and optional specialists.
-- `references/ue-agent-output-template.md` for the full report shape.
-- `references/ue-agent-conflict-resolution.md` when roles disagree, file ownership overlaps, evidence conflicts, or packaging boundaries are at risk.
+Coordinator 负责范围、角色、依赖顺序、冲突处理和最终综合。所有角色输出都必须回到 Coordinator，由 Coordinator 决定下一步进入哪个具体 UE 技能。
 
-## Modes
+## 角色池
 
-| Mode | Use When | Shape |
-|------|----------|-------|
-| `solo` | The request says no multi-agent, or the task is narrow. | Use the normal router and one focused domain skill. |
-| `lean` | Default for complex UE tasks with 2-3 independent perspectives. | Coordinator plus the minimum specialists needed. |
-| `full` | The user asks for full review, architecture review, large refactor, release risk, or broad old-project analysis. | Coordinator plus all relevant specialists and a verifier. |
+- Project Explorer：只读梳理旧项目、目录、模块、插件、资产命名。
+- UE Architecture Reviewer：模块边界、Runtime/Editor 拆分、Blueprint/C++ 所有权。
+- C++ Implementer：反射、UObject 生命周期、API、编译风险。
+- Blueprint Integrator：节点、Pin、默认值、资产交接和设计师步骤。
+- UI/UMG Specialist：Widget、CommonUI、DPI、输入焦点。
+- GAS/Networking Specialist：ASC、RPC、复制、预测、多 PIE。
+- AI/Animation Specialist：Behavior Tree、EQS、StateTree、AnimBP、Montage。
+- Render/VFX Specialist：材质、Niagara、shader、视觉性能。
+- Packaging/Release Specialist：发布准备、Project Launcher、CI、打包风险。
+- Log/Crash Triage：UBT/UHT/UAT、`Saved/Logs`、callstack、ensure/assert。
+- Verifier：构建、Blueprint compile、PIE、自动化测试、日志证据。
 
-If the user names a mode, respect it. Otherwise choose `lean` unless the task spans 4+ domains or has release/blocking risk. If the request is narrow even though it mentions a UE domain, choose `solo` and explain the focused skill route in one sentence.
+## Ownership boundaries
 
-## Role Palette
+- 每个角色必须声明自己读取或建议修改的文件/资产边界。
+- 两个角色不能同时声称拥有同一文件的最终决策；冲突交给 Coordinator。
+- C++ API 与 Blueprint 图的交接要写明 owner、输入、输出和验证。
+- 自动打包边界必须显式：multi-agent request must not trigger `$ue-build-release-automation` by itself。
 
-Use only the roles needed:
+## Parallel Discovery Results
 
-- Coordinator: owns scope, dependency order, conflict resolution, final synthesis, and user-facing next steps.
-- Project Explorer: read-only scan of `.uproject`, `Source/`, `Plugins/`, `Config/`, assets by filename, and existing `Saved/CodexWorkflow/`.
-- UE Architecture Reviewer: module boundaries, `.Build.cs`, Runtime/Editor split, Blueprint/C++ ownership, subsystem boundaries.
-- C++ Implementer: runtime/editor C++ APIs, reflection exposure, UObject lifetime, and compile risks.
-- Blueprint Integrator: Blueprint graph handoff, node names, pins, event ownership, asset setup, and designer-facing steps.
-- Verifier: build, Blueprint compile, PIE, automation tests, log/crash triage, and evidence checklist.
-- Optional specialists: Async Systems, External Services, GAS/Networking, UI/UMG, Enhanced Input, AI/Animation, Render/VFX, Packaging/Release, Log/Crash Triage.
-
-## Coordination Protocol
-
-1. Identify whether the request is explicit multi-agent or genuinely cross-domain.
-2. Select `solo`, `lean`, or `full`.
-   - If `solo`, stop here and route to the focused sibling skill without producing a multi-agent report.
-   - If `lean` or `full`, read only the reference files needed for the selected mode.
-3. Create an Agent Plan before implementation:
-   - goal and non-goals
-   - selected roles
-   - file or asset ownership boundaries
-   - read-only discovery tasks that can run in parallel
-   - dependent phases that must wait
-   - packaging boundary status
-4. Run independent discovery before dependent planning. If actual subagents are available and appropriate, dispatch independent read-only or disjoint write tasks in parallel; otherwise simulate the roles sequentially and label the result as a role pass.
-5. Collect all role results before making cross-domain decisions.
-6. Surface `BLOCKED` immediately when a role lacks required files, editor-only asset details, build access, or user approval.
-7. Resolve conflicts through the Coordinator. No role may unilaterally change files outside its assigned ownership.
-8. Route implementation slices to the focused sibling skills.
-
-## Tooling
-
-- Use `scripts/ue_agent_plan.py --request "<request>" --format json` to draft a read-only `solo` / `lean` / `full` role plan, ownership boundaries, packaging boundary, and recommended next skills.
-- Treat the tool output as a planning accelerator, not a command runner. It does not spawn agents, edit files, or run packaging.
-- If the tool returns `solo`, route to the focused skill and avoid a full multi-agent report.
-
-## Explicit Packaging Boundary
-
-Multi-agent orchestration must not trigger `$ue-build-release-automation` by itself. Use packaging automation only when the current user explicitly asks to package, run packaging, generate `RunUAT`/`BuildCookRun`, create one-click packaging, or configure CI release automation.
-
-For packaging failures, release readiness, or risk review without explicit automation, use `$ue-log-crash-triage` and `$ue-performance-packaging` perspectives inside the multi-agent plan.
-
-## Output Format
-
-Use this structure:
+并行发现结果统一使用以下格式：
 
 ```text
-UE Multi-Agent Plan
-- Mode:
-- Goal:
-- Roles:
-- Ownership boundaries:
-- Parallel discovery:
-- Dependent phases:
-- Packaging boundary:
-
-Parallel Discovery Results
-- [Role]: COMPLETE / CONCERNS / BLOCKED
-
-Coordinator Synthesis
-- Decisions:
-- Conflicts:
-- Recommended next skills:
-- Verification path:
-- User action needed:
+Role:
+Status: READY | CONCERNS | BLOCKED
+Files inspected:
+Findings:
+Risks:
+Recommended next skill:
 ```
 
-For implementation work, include exact follow-up skill routing such as `$ue-project-onboarding`, `$ue-architecture`, `$ue-cpp-gameplay`, `$ue-async-systems`, `$ue-external-services`, `$ue-blueprint-workflow`, `$ue-testing-automation`, `$ue-log-crash-triage`, or `$ue-performance-packaging`.
+`BLOCKED` 只用于缺少必要文件、权限、日志、项目路径、用户授权或会导致结论无效的关键证据。
 
-## When Not To Use
+## 读取策略
 
-- A single Enhanced Input issue, input event, or mapping context bug: use `$ue-input-enhanced`.
-- A single Actor, Component, `UFUNCTION`, or `BlueprintCallable` handoff: use `$ue-cpp-gameplay`.
-- A Blueprint-only node wiring issue: use `$ue-blueprint-workflow`.
-- A plain `RunUAT` command generation request: use `$ue-build-release-automation`.
-- A simple explanation question with no project coordination needs: answer directly or use the focused skill.
+- `solo` 不读取多 Agent references。
+- `lean` 只读取当前角色需要的一份 reference。
+- `full` 可读取全部 reference，但仍要按需摘要。
+- Do not load these references when the task is a narrow single-domain fix.
 
-## Common Mistakes
+## 工具
 
-- Spawning several agents that all read and edit the same files without ownership boundaries.
-- Letting a packaging specialist run automation from a passive readiness or failure-analysis request.
-- Producing separate role reports without a Coordinator synthesis.
-- Skipping Blueprint handoff when C++ exposes new gameplay APIs.
-- Treating generated `Intermediate/`, `Binaries/`, or stale logs as authoritative project state.
+- 可用只读脚本 `skills/ue-multi-agent-workflow/scripts/ue_agent_plan.py` 根据请求生成 `solo` / `lean` / `full` 角色计划。
+- 工具只生成分工建议，不修改 UE 项目。
+
+## 输出
+
+- Mode 和选择理由。
+- Coordinator synthesis：综合结论、依赖顺序和后续技能。
+- Parallel Discovery Results：各角色状态、发现、风险、阻塞。
+- Ownership boundaries：文件/资产/系统归属边界。
+- Focused follow-up：进入哪个具体 UE 技能继续实施或验证。
+
+## 参考
+
+- 角色定义读取 `references/ue-agent-roles.md`。
+- 输出模板读取 `references/ue-agent-output-template.md`。
+- 冲突处理读取 `references/ue-agent-conflict-resolution.md`。

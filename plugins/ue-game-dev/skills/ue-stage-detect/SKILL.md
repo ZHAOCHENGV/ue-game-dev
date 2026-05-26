@@ -1,53 +1,47 @@
 ---
 name: ue-stage-detect
-description: Use when a user asks where an Unreal Engine project stands, what workflow stage it is in, what is missing before implementation/testing/packaging, or wants a read-only stage and gap analysis for an existing UE project.
+description: 当用户询问 Unreal Engine 项目处于什么阶段、当前工作流缺什么、是否缺少实施/测试/打包前材料，或需要只读阶段与缺口分析时使用。
 ---
 
 # UE Stage Detect
 
-## Overview
+## 概览
 
-Use this skill for read-only UE project stage detection. Scan project artifacts, classify the current workflow stage, identify gaps, and recommend the next UE skill without editing project files.
+这个技能只读判断 UE 项目的开发阶段和缺口。它不实现功能，而是说明项目当前具备什么、缺什么、下一步应该进入哪个技能。
 
-## Stage Model
+## 阶段
 
-| Stage | Meaning |
-|-------|---------|
-| Onboarding | Existing project must be understood before changes. |
-| Feature Brief | Request is known but scope, ownership, or assets are unclear. |
-| Implementation Plan | Requirements are clear enough to split C++, Blueprint, assets, config, and tests. |
-| Implementation | Work is actively changing code/assets. |
-| Validation | Feature needs build, Blueprint compile, PIE, automation, or asset validation. |
-| Packaging Readiness | Project needs release readiness, cook/package diagnostics, or performance checks. |
-| Explicit Packaging | User explicitly asks to package/build/archive with RunUAT, BuildCookRun, Project Launcher, or CI. |
+- `intake`：入口信息不足，需先确认项目、目标或范围。
+- `onboarding`：旧项目/现有项目需要只读熟悉。
+- `brief`：需求需要澄清为功能简报。
+- `planning`：需求清楚但缺实施计划。
+- `implementation`：可以进入代码、Blueprint、资产或配置改动。
+- `validation`：需要构建、PIE、测试或资产验证。
+- `performance`：需要 profiling、打包准备或发布前检查。
+- `done`：需要证据化验收和交接。
 
-## Detection Workflow
+## 工作流程
 
-1. Locate `.uproject`, `Source/`, `Plugins/`, `Config/`, `Content/`, target files, `.uplugin`, and existing `Saved/CodexWorkflow/` state files if present.
-2. Count and classify evidence:
-   - Existing project structure and modules.
-   - Feature brief/task files.
-   - C++/Blueprint asset naming signals.
-   - Test files, automation specs, functional maps, or validation notes.
-   - Build/package scripts, logs, or release artifacts.
-3. Prefer explicit user intent over heuristics. "打包" with `RunUAT` means Explicit Packaging; "是否能打包" means Packaging Readiness.
-4. Report gaps as questions or next actions, not as silent assumptions.
-5. Do not create or update `Saved/CodexWorkflow/` unless the user explicitly asks to establish persistent workflow state.
+1. 读取 `.uproject`、目录结构、README、计划文档、测试证据和最近日志。
+2. 判断是否已有需求、计划、实现、测试、验证和项目记忆。
+3. 标记缺口：需求不清、架构未知、测试缺失、打包风险、日志未分诊。
+4. 输出阶段、证据、缺口和下一步技能。
 
-## Output
+## 规则
 
-```text
-UE Stage Report
-- Detected stage:
-- Confidence:
-- Evidence:
-- Missing or risky artifacts:
-- Recommended next skill:
-- Suggested state files, if the user wants persistence:
-```
+- 保持只读；不要改项目文件。
+- 用证据判断阶段，不凭感觉。
+- 如果用户要“开始做”，先给阶段结论，再说明是否应转入 brief、plan 或 domain skill。
+- 不把没有证据的风险写成事实。
 
-## References
+## 输出
 
-- Read `references/stage-report-template.md` when producing a structured report.
-- Use `$ue-project-onboarding` for old project read-only analysis.
-- Use `$ue-gate-check` when the user asks whether the project is ready to advance.
+- Stage：当前阶段。
+- Evidence：支持判断的文件、目录、日志或测试。
+- Gaps：进入下一阶段前缺什么。
+- Next skill：建议的具体 UE 技能名。
+- Minimal next action：最小下一步。
+
+## 参考
+
+- 阶段报告读取 `references/stage-report-template.md`。

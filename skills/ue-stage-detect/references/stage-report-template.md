@@ -1,43 +1,39 @@
-# UE Stage Report Template
+# UE 阶段报告模板
 
 ```text
-UE Stage Report
-
-Detected stage:
-- <Onboarding | Feature Brief | Implementation Plan | Implementation | Validation | Packaging Readiness | Explicit Packaging>
-
+Stage:
 Confidence:
-- <High | Medium | Low> — <why>
-
 Evidence:
-- Project:
-- Engine:
-- Source/modules:
-- Plugins:
-- Config:
-- Blueprint/assets:
-- Tests/validation:
-- Packaging/release:
-- Saved/CodexWorkflow:
+- Project files:
+- Existing docs:
+- Build/test artifacts:
+- Logs:
 
-Missing or risky artifacts:
-- <Gap, risk, or unknown>
+Gaps:
+- Requirements:
+- Architecture:
+- Implementation:
+- Validation:
+- Performance/Packaging:
 
 Recommended next skill:
-- $<skill-name> — <why>
-
-Suggested persistent workflow files:
-- Saved/CodexWorkflow/project-profile.md
-- Saved/CodexWorkflow/active-task.md
-- Saved/CodexWorkflow/ue-stage.md
+Minimal next action:
 ```
 
-## Heuristics
+## 阶段枚举
 
-- Existing UE project + no project report: Onboarding.
-- User has a feature idea but no clear owning module/assets: Feature Brief.
-- Feature has clear behavior but no work breakdown: Implementation Plan.
-- Files changed or user asks to implement directly: Implementation.
-- User asks "is it done", "how to test", or "verify": Validation.
-- User asks package readiness, cook errors, or release risk: Packaging Readiness.
-- User asks `RunUAT`, `BuildCookRun`, one-click package, archive, or CI build: Explicit Packaging.
+- `intake`
+- `onboarding`
+- `brief`
+- `planning`
+- `implementation`
+- `validation`
+- `performance`
+- `done`
+
+## 规则
+
+- 只读判断。
+- 事实和推断分开。
+- 下一步只给最小可行动建议。
+- 如果证据不足，降低 Confidence，并说明还需要读取哪些文件或日志。

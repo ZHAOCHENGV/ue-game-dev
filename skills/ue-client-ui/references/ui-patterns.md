@@ -1,25 +1,23 @@
-# UE Client UI Patterns
+# UE UI 模式
 
-## Ownership
+## 状态分层
 
-- Use PlayerController, HUD, LocalPlayerSubsystem, or project UI managers for screen orchestration.
-- Keep widgets focused on presentation and user intent.
-- Route gameplay mutations through gameplay systems rather than direct widget-side state changes.
+- Gameplay 系统拥有权威状态。
+- ViewModel、Subsystem 或 Controller 暴露 UI 可读状态。
+- Widget 展示状态并发送用户意图，不直接拥有复杂 gameplay 数据。
 
-## State Flow
+## 打开与关闭
 
-- Prefer delegates, field notifications, view models, or explicit refresh methods over per-frame polling.
-- Distinguish predicted local state from server-confirmed state for multiplayer UI.
-- Represent loading, empty, disabled, error, and disconnected states explicitly.
+- 打开 UI 时设置 Input Mode、鼠标显示、焦点默认项和 Mapping Context。
+- 关闭 UI 时恢复焦点、输入模式、鼠标显示和上一个界面状态。
+- 弹窗和菜单栈要有统一返回逻辑。
 
-## Input And Focus
+## 刷新
 
-- Set input mode intentionally for menus, gameplay, and mixed overlays.
-- Validate keyboard, mouse, and gamepad navigation.
-- Respect CommonUI action routing and back behavior when the project uses CommonUI.
+- 优先事件驱动、delegate、ViewModel 通知或显式 refresh。
+- 避免 Tick 和昂贵 Binding。
+- 大列表使用分页、池化或虚拟化。
 
-## Performance And Layout
+## 验证
 
-- Avoid heavy Blueprint bindings, widget tree searches, and per-frame formatting.
-- Use invalidation, retainer boxes, or virtualization only when they solve measured problems.
-- Check DPI scaling, safe zones, localization length, and narrow/wide viewport behavior.
+- DPI、窗口尺寸、手柄/键鼠、暂停、加载、多人本地玩家。

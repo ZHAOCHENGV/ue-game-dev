@@ -1,4 +1,4 @@
 interface:
   display_name: "UE Async Systems"
-  short_description: "Design safe Unreal async work and Blueprint async nodes."
-  default_prompt: "Use $ue-async-systems to design safe Unreal async C++ work, game-thread handoff, or Blueprint async nodes."
+  short_description: "设计安全的 UE 异步流程和 Blueprint 异步节点。"
+  default_prompt: "使用 $ue-async-systems 设计安全的 Unreal 异步 C++、GameThread 回切或 Blueprint 异步节点。"

@@ -1,59 +1,31 @@
-# UE Log/Crash Triage Report Template
+# 日志 / 崩溃分诊报告模板
 
-````markdown
-# UE Log/Crash Triage
-
-## Source
-- Log path or pasted source:
-- Timestamp:
-- UE version:
-- Project/module:
-- User action before failure:
-
-## First Actionable Failure
 ```text
-<short excerpt around the first actionable error>
+Failure stage:
+First actionable error:
+Evidence:
+- Log file:
+- Line:
+- Message:
+- Related file/asset/module:
+
+Likely cause:
+Why this is first:
+Recommended next skill:
+Immediate next action:
 ```
 
-## Classification
-- Phase: Build / UHT / Link / Editor / PIE / Blueprint Compile / Cook / Stage / Package / Runtime
-- Subsystem:
-- Recommended next skill:
-- Confidence: High / Medium / Low
-- Boundary: diagnosis only / fix candidate / packaging automation explicitly requested
+## 错误类型
 
-## Probable Root Cause
-- Cause:
-- Why this is the first failure:
-- Downstream symptoms:
-- Similar-looking noise to ignore:
+- UBT：C++ 编译、include、module dependency、toolchain。
+- UHT：反射宏、generated header、UCLASS/USTRUCT/UFUNCTION/UPROPERTY。
+- Link：缺符号、API macro、模块依赖、第三方库。
+- Blueprint compile：节点缺失、Pin 不兼容、父类/API 变化。
+- Cook：资产缺失、Editor-only 依赖、平台不支持、redirector。
+- Runtime crash：空指针、生命周期、线程、assert/ensure。
 
-## Inspection Targets
-- Files:
-- Assets:
-- Config:
-- Logs still needed:
-- Commands to rerun:
+## 报告规则
 
-## Fix Path
-1.
-2.
-3.
-
-## Verification
-- Command:
-- Editor check:
-- Manual smoke:
-
-## Workflow State Update
-- Add to `Saved/CodexWorkflow/known-risks.md`: yes/no
-- Risk entry:
-````
-
-## Classification Notes
-
-- UHT errors usually point at reflection metadata, generated header placement, missing includes, or invalid Blueprint exposure.
-- Link errors usually point at module dependencies, missing implementation, export macros, or third-party library linkage.
-- Cook failures often report many follow-on asset errors; choose the first missing class, failed load, Blueprint compile error, or assert that explains the cascade.
-- Runtime crashes need callstack frame ownership before proposing fixes; do not confuse the crashing caller with the first invalid state.
-- Packaging automation stays out of scope unless the user explicitly asks to run or generate `RunUAT`/`BuildCookRun`.
+- 报第一个可行动错误，不把最终 summary 当根因。
+- 引用日志要短，保留文件、行号、模块和错误文本。
+- 不确定时标注推断依据。

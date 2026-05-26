@@ -1,4 +1,4 @@
 interface:
   display_name: "UE World Interaction"
-  short_description: "Build Unreal pickups, spawners, traces, overlaps, and feedback."
-  default_prompt: "Use $ue-world-interaction to implement this Unreal interaction system."
+  short_description: "实现 UE 拾取、生成器、Trace、Overlap 和交互反馈。"
+  default_prompt: "使用 $ue-world-interaction 实现这个 Unreal 交互系统。"

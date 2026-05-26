@@ -1,43 +1,35 @@
-# UE Blueprint Rules
+# UE Blueprint 规则
 
-## Graph Shape
+## 图表结构
 
-- Keep Blueprint graphs readable: small functions, clear event ownership, no duplicate input events.
-- Prefer one visible execution story per graph; move reusable logic into functions, macros, components, or C++.
-- Name custom events by intent, not by implementation detail.
-- Always state exact node search names, exec pins, data pins, target objects, and compile validation.
+- Event Graph 只保留入口和编排逻辑；复杂流程拆到函数、组件、Subsystem 或 C++。
+- 节点链超过一屏时，优先拆函数或加清晰 reroute/comment。
+- 不要在多个 Blueprint 重复绑定同一个输入事件；先确认真正拥有输入的是 Pawn、Controller 还是 UI。
+- Widget Blueprint 中的 UI 刷新优先事件驱动，不依赖昂贵 Binding 或 Tick。
 
-## Blueprint And C++ Boundary
+## 常见 Anti-Pattern
 
-- Prefer Blueprint for designer-authored tuning, composition, UI behavior, animation/VFX hooks, and simple event wiring.
-- Prefer C++ for reusable systems, authority-sensitive logic, performance-sensitive loops, and stable APIs.
-- Keep authoritative gameplay state out of arbitrary widgets and level-only Blueprints.
-- Use Blueprint Interfaces or event dispatchers when the caller should not know the concrete class.
+- 每帧 `Cast To`、`Get All Actors Of Class`、查找 Widget 或遍历大数组。
+- 深层 Cast 链把 UI、Gameplay、SaveGame、Network 状态绑死。
+- 把权威游戏状态存放在 Widget 或临时 Actor 中。
+- 用宏隐藏复杂状态机，导致调试和断点困难。
+- 事件绑定没有成对解绑，造成重复触发或销毁后回调。
 
-## Input And Events
+## Blueprint 与 C++ 分工
 
-- Do not bind the same key or Enhanced Input action in multiple unrelated Blueprints.
-- When using Enhanced Input, verify `IA_` assets, `IMC_` mapping contexts, trigger pins, value type, and subsystem context addition.
-- Put local player input routing in PlayerController, Pawn, or an input component owner; keep UI focus handoff explicit.
+- Blueprint 适合资产组合、调参、表现、输入连线、Widget 行为和设计师可编辑流程。
+- C++ 适合稳定 API、性能敏感逻辑、复杂数据结构、网络权威、异步和跨蓝图复用系统。
+- 混合功能先定义 C++ 契约，再说明 Blueprint 默认值、事件、图连线和验证。
 
-## Widget Blueprint Updates
+## Widget Blueprint
 
-- Prefer explicit refresh events over expensive per-frame property bindings.
-- Use timers or invalidation-friendly updates for UI that changes periodically.
-- Avoid Tick-driven widget animation when Sequencer, UMG animation, timers, or state changes are enough.
-- Keep widgets as presentation surfaces; route inventory, save data, and network authority through gameplay owners or view models.
+- 避免在 Tick 中拉取 Gameplay 状态；用事件、ViewModel、delegate 或显式刷新。
+- 打开/关闭 UI 时成对处理 Input Mode、鼠标显示、焦点恢复和 Mapping Context。
+- 列表类 UI 要考虑池化、分页或虚拟化，避免一次创建大量 Widget。
+- 玩家可见文本使用 `FText`，本地化路径要在设计阶段明确。
 
-## Anti-Patterns
+## 验证
 
-- Long Event Graphs with unrelated workflows mixed together.
-- Repeated key/input events in multiple Blueprints.
-- Per-frame casts, broad `Get All Actors Of Class`, or expensive UI bindings.
-- Deep Cast chains where an interface, component lookup, or C++ API would be clearer.
-- Hidden authoritative state mutation from arbitrary widgets.
-- Copy-pasted graph islands that should be a function, macro, component, or C++ helper.
-
-## Validation
-
-- Do not assume `.uasset` content can be inspected as text; use filenames and ask for editor details when needed.
-- Validate Blueprint compile status, runtime warnings, and PIE/editor behavior before claiming done.
-- For graph instructions, include the expected visible result and the first check a designer can run in the editor.
+- 每次图改动后确认 Blueprint compile 无错误和 warning。
+- 验证事件唯一性、Pin 类型、默认值、资产引用和失败路径。
+- 对输入、UI、多人和异步回调至少跑一个 PIE 场景。

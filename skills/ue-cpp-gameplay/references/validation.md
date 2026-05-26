@@ -1,29 +1,25 @@
-# UE C++ Validation Checklist
+# UE C++ 验证
 
-## Build Checks
+## 构建
 
-- Build the touched target with the same engine install the project uses.
-- If UHT reflection changed, confirm generated code succeeds and Blueprint-exposed names are stable.
-- For module changes, regenerate project files only when descriptors or module layout changed.
-- Treat UHT errors as source-of-truth for reflection metadata, include order, and generated header placement.
-- Resolve warnings that indicate invalid reflection metadata, deprecated APIs, or editor/runtime dependency leaks.
+- 运行触及模块的目标构建，确认 UHT、编译和链接通过。
+- 修改反射宏、头文件或 `.Build.cs` 后，特别关注 generated code 和 module dependency。
+- Warning 不应无视；判断是否会影响 Blueprint、Cook 或 packaged build。
 
-## Runtime Checks
+## Blueprint
 
-- Start PIE for gameplay paths that depend on world, possession, input, collision, or assets.
-- Check logs for ensures, warnings, missing assets, failed loads, invalid casts, and replication warnings.
-- For editor-facing properties, confirm defaults and categories are usable in Details panels.
-- For asset references, confirm packaging-sensitive paths use soft references or primary assets where appropriate.
-- For multiplayer-sensitive code, run server plus at least one client or explain why the path is local-only.
+- 如果新增或修改 Blueprint-facing API，编译相关 Blueprint。
+- 验证节点搜索名、Category、Pin、默认值和事件是否符合预期。
+- 检查子 Blueprint 是否覆盖了旧默认值或旧事件。
 
-## Blueprint API Checks
+## PIE
 
-- Search for each new `BlueprintCallable`, `BlueprintPure`, event, delegate, or property by its expected node/display name.
-- Confirm target pin source, input pin types, output handling, and graph placement.
-- Compile at least one consuming Blueprint or provide exact editor validation steps when assets cannot be edited here.
+- 用最小地图/场景触发目标行为。
+- 覆盖成功路径、失败路径、重复调用、对象销毁和地图切换。
+- 多人功能至少说明 server/client 场景。
 
-## Handoff Evidence
+## 日志
 
-- Record target name, command or editor action, result, and first remaining risk.
-- Include PIE map, actor path, input/action, and expected visible result for gameplay changes.
-- If validation is blocked by missing Unreal Editor access, state the precise command or editor check the user should run.
+- 新增日志使用项目 log category。
+- 错误日志包含对象名、状态、输入参数或资产路径。
+- 记录首个失败症状，方便后续 `$ue-log-crash-triage`。
