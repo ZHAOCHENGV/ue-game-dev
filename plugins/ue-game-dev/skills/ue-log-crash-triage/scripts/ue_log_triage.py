@@ -31,27 +31,51 @@ def classify_phase(lines: list[str]) -> str:
 
 
 def is_summary_noise(line: str) -> bool:
-    return bool(re.search(r"AutomationTool exiting|ExitCode=|UnknownCookFailure|BUILD FAILED", line, re.I))
+    return bool(re.search(r"AutomationTool exiting|ExitCode=|UnknownCookFailure|BUILD FAILED|ERROR:\s*Cook failed", line, re.I))
 
 
-def find_first_failure(lines: list[str]) -> tuple[str, list[str]]:
+def failure_at(lines: list[str], index: int) -> dict:
+    line = lines[index]
+    start = max(0, index - 2)
+    end = min(len(lines), index + 3)
+    context = [entry.strip() for entry in lines[start:end] if entry.strip() and entry.strip() != line.strip()]
+    return {
+        "message": line.strip(),
+        "line": index + 1,
+        "evidence": [line.strip(), *context],
+    }
+
+
+def find_failures(lines: list[str], top_n: int) -> list[dict]:
+    failures = []
     for index, line in enumerate(lines):
         if is_summary_noise(line):
             continue
         if any(pattern.search(line) for pattern in ACTIONABLE_PATTERNS):
-            start = max(0, index - 2)
-            end = min(len(lines), index + 3)
-            context = [entry.strip() for entry in lines[start:end] if entry.strip() and entry.strip() != line.strip()]
-            evidence = [line.strip(), *context]
-            return line.strip(), evidence
+            failures.append(failure_at(lines, index))
+            if len(failures) >= top_n:
+                break
+    return failures
+
+
+def find_first_failure(lines: list[str]) -> tuple[str, list[str]]:
+    failures = find_failures(lines, 1)
+    if failures:
+        return failures[0]["message"], failures[0]["evidence"]
     return "No actionable failure found", []
 
 
-def triage_log(path: Path) -> dict:
+def triage_log(path: Path, top_n: int = 1) -> dict:
     if not path.exists():
         raise SystemExit(f"Log file not found: {path}")
     lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
-    first_failure, evidence = find_first_failure(lines)
+    failures = find_failures(lines, max(1, top_n))
+    if failures:
+        first_failure = failures[0]["message"]
+        evidence = failures[0]["evidence"]
+    else:
+        first_failure = "No actionable failure found"
+        evidence = []
     phase = classify_phase(lines)
     return {
         "tool": "ue-log-triage",
@@ -60,6 +84,7 @@ def triage_log(path: Path) -> dict:
         "first_actionable_failure": first_failure,
         "failure_phase": phase,
         "evidence": evidence,
+        "actionable_failures": failures,
         "probable_root_cause": infer_root_cause(first_failure, phase),
         "recommended_next_skill": "ue-log-crash-triage",
         "packaging_boundary": "review only",
@@ -95,10 +120,11 @@ def render_text(result: dict) -> str:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Read-only Unreal log triage helper.")
     parser.add_argument("--log", required=True, help="Path to an Unreal log file.")
+    parser.add_argument("--top-n", type=int, default=1, help="Number of actionable failures to return.")
     parser.add_argument("--format", choices=["json", "text"], default="text")
     args = parser.parse_args()
 
-    result = triage_log(Path(args.log).resolve())
+    result = triage_log(Path(args.log).resolve(), args.top_n)
     if args.format == "json":
         print(json.dumps(result, ensure_ascii=False, indent=2))
     else:

@@ -30,6 +30,8 @@ Use this skill first when the request spans multiple Unreal Engine areas or the 
 - Use `$ue-input-enhanced` for Enhanced Input, Input Actions, Input Mapping Contexts, input modifiers/triggers, pawn/controller binding, runtime mapping changes, key rebinding, local multiplayer input, UI focus/input mode conflicts, and input events that do not fire.
 - Use `$ue-async-systems` for `AsyncTask`, `Async()`, `UE::Tasks`, `FRunnable`, `ParallelFor`, `UBlueprintAsyncActionBase`, game-thread handoff, cancellation, async lifetime, and non-blocking gameplay/client operations.
 - Use `$ue-external-services` for HTTP, REST, JSON, WebSocket, TCP sockets, backend API clients, streaming responses, heartbeats, reconnects, request queues, auth headers, and external process or service integration.
+- Use `$ue-audio` for MetaSound, Sound Cues, AudioComponents, Sound Classes, Sound Mixes, Sound Concurrency, Quartz timing, spatialization, attenuation, and audio performance.
+- Use `$ue-world-streaming` for World Partition, Data Layers, HLOD, Level Streaming, Level Streaming Volumes, Large World Coordinates, runtime grid setup, and actor loading/unloading.
 - Use `$ue-save-load-sync` for SaveGame schemas, serialization, restore flows, RepNotify, RPC entry points, and persistent state that intersects with network state.
 - Use `$ue-world-interaction` for pickups, spawners, overlap/trace interactions, interaction radius checks, world actor lifecycle, and success/failure feedback.
 - Use `$ue-render-vfx` for renderer settings, materials, material functions, shader code, post process, Niagara systems, particles, GPU simulation, LODs, and visual performance.
@@ -46,7 +48,7 @@ If a task crosses domains, start with the skill that owns the first failing or u
 
 If the user explicitly asks for multi-agent coordination, route to `$ue-multi-agent-workflow` first so it can define roles, ownership boundaries, parallel discovery, dependent phases, and the focused follow-up skills.
 
-If the request involves audio, physics, destruction, level streaming, World Partition, or another domain without a dedicated sibling skill, handle it directly within this router using general Unreal best practices and note the coverage gap.
+If the request involves physics, destruction, or another domain without a dedicated sibling skill, handle it directly within this router using general Unreal best practices and note the coverage gap.
 
 ## Production Workflow
 

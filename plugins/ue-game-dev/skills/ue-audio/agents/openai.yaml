@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE Audio"
+  short_description: "Plan and debug Unreal audio, MetaSound, and runtime audio systems."
+  default_prompt: "Use $ue-audio to design or debug Unreal MetaSound, Sound Cue, AudioComponent, or audio performance work."

@@ -24,6 +24,28 @@ Use this skill for Blueprint-first development. Treat Blueprints as a first-clas
 - Keep pure functions side-effect free and put state mutation behind explicit exec flow.
 - Validate compile status, missing variables, broken pins, latent action context, and runtime ownership assumptions.
 
+## Widget Blueprint Flow
+
+- Treat Widget Blueprints as presentation surfaces unless the project already centralizes UI authority there.
+- Prefer event/delegate-driven refresh over property bindings that execute every frame.
+- Route gameplay commands through PlayerController, Pawn, subsystem, component, or view model owners.
+- Bind delegates once on construct/activation and unbind on destruct/deactivation when lifetimes differ.
+- Validate focus, input mode, cursor visibility, CommonUI back handling, and gamepad navigation when UI receives input.
+
+## Performance And Maintainability
+
+- Avoid per-frame casts, `Get All Actors Of Class`, large loops, or deep macro nesting in frequently executed graphs.
+- Convert repeated graph islands into functions, macros, components, or C++ APIs depending on ownership and reuse.
+- Keep macros for graph reuse without latent surprises; use functions for typed reusable logic and return values.
+- Keep Construction Script work editor-safe and avoid expensive runtime assumptions there.
+
+## Blueprint Debugging
+
+- Set the correct debug object instance before stepping.
+- Watch pin values at the first branch where observed behavior diverges from expected behavior.
+- Check latent action context, object validity, replicated role, and widget lifetime before changing graph structure.
+- Compile after each meaningful graph change and fix the first broken pin or missing variable before continuing.
+
 ## Boundary Hand-Off
 
 - Keep this skill focused on graph behavior and validation.

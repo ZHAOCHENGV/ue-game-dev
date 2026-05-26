@@ -4,6 +4,18 @@
 
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
+## [0.12.0] - 2026-05-26
+
+### 新增
+- `ue-audio` 技能：覆盖 MetaSound、Sound Cue、AudioComponent、Sound Class/Mix、Concurrency、Quartz、空间化、衰减、音频调试和平台音频设置。
+- `ue-world-streaming` 技能：覆盖 World Partition、Data Layers、HLOD、Level Streaming、Runtime Grid、Streaming Source、Actor 加载/卸载和开放世界验证。
+- 路由场景补齐 AI、动画、架构、蓝图、UI、调试、编辑器工具、GAS、插件模块、渲染/VFX、存档、起步、测试、交互、音频和世界流送领域覆盖。
+
+### 变更
+- 扩充 `rules/` 下 C++、蓝图、网络、资产和打包共享规则，补充 Good/Bad 示例、Anti-Pattern、UE5 注意事项和验证边界。
+- `ue-game-dev-router` 新增音频和世界流送专属路由，并将 audio、level streaming、World Partition 从覆盖缺口列表移除。
+- `plugin.json`、`README.md` 和市场包元数据更新到 `0.12.0`，补充 audio、metasound、world-partition、data-layers、hlod、level-streaming 等关键词。
+
 ## [0.11.0] - 2026-05-26
 
 ### 新增

@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE World Streaming"
+  short_description: "Plan Unreal World Partition, Data Layers, HLOD, and level streaming."
+  default_prompt: "Use $ue-world-streaming to design or debug World Partition, Data Layers, HLOD, or level streaming."

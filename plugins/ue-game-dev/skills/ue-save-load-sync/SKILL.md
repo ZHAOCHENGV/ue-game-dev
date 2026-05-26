@@ -22,6 +22,27 @@ Use this skill when gameplay state must persist, replicate, or both.
 - Report partial restore results instead of silently corrupting state.
 - Keep designer-authored static asset defaults separate from mutable runtime state.
 
+## Schema Choice
+
+- Use `USaveGame` for ordinary slot-based player, profile, settings, checkpoint, and local progression data.
+- Use custom `FArchive` or structured archives only when the project needs compact binary formats, custom versioning, streaming, encryption, or large data sets.
+- Use Primary Asset Ids, soft object paths, stable GUIDs, or project-defined row keys for durable references.
+- Store schema version and migration notes beside the data that needs migration.
+
+## Restore Timing
+
+- Restore global profile/settings before gameplay systems read them.
+- Restore world state after required maps, streamed levels, and asset registries are available.
+- Restore player state at login, respawn, possession, or checkpoint boundaries, not from arbitrary widgets.
+- Defer presentation updates to RepNotify, delegates, or explicit refresh events after authoritative state is applied.
+
+## Cloud And Local Sync
+
+- Separate local slot format from cloud transport format.
+- Define conflict policy: newest timestamp, server-authoritative revision, manual choice, or merge by subsystem.
+- Keep write operations atomic where possible: temporary file, commit/rename, then update slot metadata.
+- Report sync failures as recoverable states unless data corruption is confirmed.
+
 ## Network Sync Rules
 
 - Server owns durable multiplayer gameplay state.
@@ -29,6 +50,13 @@ Use this skill when gameplay state must persist, replicate, or both.
 - Do not assume single-player save logic can run unchanged in multiplayer.
 - Reconcile loaded state with current replicated state, authority, late join, and respawn flows.
 - Do not model GAS ability prediction or cue behavior here; use `$ue-gas-networking` for ASC and ability-specific replication.
+
+## Migration And Validation
+
+- Test loading the newest schema, at least one older schema, and an invalid/corrupt slot.
+- Log migrated version, ignored fields, missing assets, and partial restore failures.
+- Validate save timing under level travel, streaming activation, disconnect, reconnect, and shutdown.
+- Keep destructive reset/delete operations explicit and user-approved.
 
 ## References
 

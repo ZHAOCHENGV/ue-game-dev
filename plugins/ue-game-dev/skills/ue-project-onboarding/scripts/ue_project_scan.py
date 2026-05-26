@@ -55,12 +55,21 @@ def classify_assets(content_dir: Path) -> dict[str, list[str]]:
     return assets
 
 
-def scan_project(project: Path) -> dict:
+def module_matches(path: Path, root: Path, module_filter: str | None) -> bool:
+    if not module_filter:
+        return True
+    normalized = path.relative_to(root).parts
+    return len(normalized) >= 2 and normalized[0] == "Source" and normalized[1] == module_filter
+
+
+def scan_project(project: Path, module_filter: str | None = None) -> dict:
     uproject = find_uproject(project)
     root = uproject.parent
     data = read_json(uproject)
 
     modules = [entry.get("Name", "") for entry in data.get("Modules", []) if entry.get("Name")]
+    if module_filter:
+        modules = [name for name in modules if name == module_filter]
     enabled_plugins = [
         entry.get("Name", "")
         for entry in data.get("Plugins", [])
@@ -72,6 +81,8 @@ def scan_project(project: Path) -> dict:
     if source_root.exists():
         for path in sorted(source_root.rglob("*")):
             if not path.is_file():
+                continue
+            if not module_matches(path, root, module_filter):
                 continue
             if path.suffix in {".h", ".hpp", ".cpp", ".cs"}:
                 source_files.append(path.name)
@@ -118,15 +129,43 @@ def render_text(result: dict) -> str:
     return "\n".join(lines)
 
 
+def render_markdown(result: dict) -> str:
+    lines = [
+        "# UE Project Scan",
+        "",
+        f"- Project: {result['project']['name']}",
+        f"- Engine: {result['project']['engine_association']}",
+        f"- Root: {result['project']['root']}",
+        f"- Modules: {', '.join(result['modules']) or 'None found'}",
+        f"- Enabled plugins: {', '.join(result['enabled_plugins']) or 'None found'}",
+        f"- Source files: {len(result['source_files'])}",
+        f"- Build files: {len(result['build_files'])}",
+    ]
+    if result["source_files"]:
+        lines.extend(["", "## Source Files", ""])
+        lines.extend(f"- {name}" for name in result["source_files"])
+    if result["build_files"]:
+        lines.extend(["", "## Build Files", ""])
+        lines.extend(f"- {name}" for name in result["build_files"])
+    lines.extend(["", "## Recommended Next Skills", ""])
+    lines.extend(f"- {name}" for name in result["recommended_next_skills"])
+    return "\n".join(lines)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Read-only Unreal project scanner.")
     parser.add_argument("--project", required=True, help="Path to a UE project directory or .uproject file.")
-    parser.add_argument("--format", choices=["json", "text"], default="text")
+    parser.add_argument("--filter", help="Only include files from the named Source module.")
+    parser.add_argument("--format", choices=["json", "text", "markdown"], default="text")
+    parser.add_argument("--output-format", choices=["json", "text", "markdown"], help="Alias for --format.")
     args = parser.parse_args()
 
-    result = scan_project(Path(args.project).resolve())
-    if args.format == "json":
+    output_format = args.output_format or args.format
+    result = scan_project(Path(args.project).resolve(), args.filter)
+    if output_format == "json":
         print(json.dumps(result, ensure_ascii=False, indent=2))
+    elif output_format == "markdown":
+        print(render_markdown(result))
     else:
         print(render_text(result))
 

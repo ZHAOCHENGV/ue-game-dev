@@ -101,4 +101,85 @@
     "prompt": "这个 UE 功能做完了，帮我做完成验收和交接清单",
     "expected_skill": "ue-feature-done"
   }
+  ,
+  {
+    "name": "ai_navigation_behavior_tree",
+    "prompt": "Help me implement NPC patrol and chase with Behavior Tree, Blackboard, EQS, and NavMesh",
+    "expected_skill": "ue-ai-navigation"
+  },
+  {
+    "name": "animation_blend_space_state_machine",
+    "prompt": "Help me design character locomotion Blend Space, Animation Blueprint state machine, and Montage transitions",
+    "expected_skill": "ue-animation"
+  },
+  {
+    "name": "architecture_module_cycle",
+    "prompt": "Review this Unreal module dependency graph and fix a Runtime Editor circular dependency in Build.cs",
+    "expected_skill": "ue-architecture"
+  },
+  {
+    "name": "blueprint_workflow_widget_event",
+    "prompt": "Help me wire Blueprint nodes in a Widget Blueprint event graph and refresh UI after an interaction",
+    "expected_skill": "ue-blueprint-workflow"
+  },
+  {
+    "name": "client_ui_inventory_umg",
+    "prompt": "Help me build a UMG inventory HUD with CommonUI input focus and gamepad navigation",
+    "expected_skill": "ue-client-ui"
+  },
+  {
+    "name": "debug_validation_runtime_behavior",
+    "prompt": "Actor Tick fires but the gameplay effect is wrong; help me debug PIE behavior and validate evidence",
+    "expected_skill": "ue-debug-validation"
+  },
+  {
+    "name": "editor_tooling_slate_panel",
+    "prompt": "Create a Slate editor panel with ToolMenus, UICommand, and a details customization",
+    "expected_skill": "ue-editor-tooling-slate"
+  },
+  {
+    "name": "gas_networking_replication",
+    "prompt": "Design a GAS GameplayAbility with AttributeSet replication, GameplayCue, prediction, and server authority",
+    "expected_skill": "ue-gas-networking"
+  },
+  {
+    "name": "plugin_module_runtime_editor",
+    "prompt": "Create a Runtime plus Editor UE plugin module with .uplugin, Build.cs, API macro, and Public Private folders",
+    "expected_skill": "ue-plugin-module-dev"
+  },
+  {
+    "name": "render_vfx_niagara_gpu",
+    "prompt": "Create a Niagara GPU particle explosion with material shader cost and scalability checks",
+    "expected_skill": "ue-render-vfx"
+  },
+  {
+    "name": "save_load_sync_schema",
+    "prompt": "Implement a USaveGame save/load schema with version migration and replicated restore handoff",
+    "expected_skill": "ue-save-load-sync"
+  },
+  {
+    "name": "start_unclear_task",
+    "prompt": "I have an Unreal Engine task but I am not sure where to start or which workflow applies",
+    "expected_skill": "ue-start"
+  },
+  {
+    "name": "testing_automation_functional",
+    "prompt": "Write Unreal AutomationSpec and Functional Tests for this gameplay plugin",
+    "expected_skill": "ue-testing-automation"
+  },
+  {
+    "name": "world_interaction_pickup",
+    "prompt": "Build an interaction system with line trace pickup, overlap radius, prompts, and feedback",
+    "expected_skill": "ue-world-interaction"
+  },
+  {
+    "name": "audio_metasound",
+    "prompt": "Help me implement an adaptive MetaSound audio system with Sound Cue, AudioComponent, and Quartz timing",
+    "expected_skill": "ue-audio"
+  },
+  {
+    "name": "world_partition_data_layers",
+    "prompt": "Configure World Partition, Data Layers, HLOD, and Level Streaming for an open world map",
+    "expected_skill": "ue-world-streaming"
+  }
 ]

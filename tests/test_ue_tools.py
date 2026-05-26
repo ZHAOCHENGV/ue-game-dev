@@ -22,6 +22,18 @@ def run_tool(script: Path, *args: str) -> dict:
     return json.loads(completed.stdout)
 
 
+def run_text_tool(script: Path, *args: str) -> str:
+    completed = subprocess.run(
+        [sys.executable, str(script), *args],
+        cwd=ROOT,
+        check=True,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    return completed.stdout
+
+
 def write(path: Path, text: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(textwrap.dedent(text).strip() + "\n", encoding="utf-8")
@@ -95,6 +107,51 @@ class UEToolTests(unittest.TestCase):
             };
             """,
         )
+        write(
+            self.project / "Source" / "SampleEditor" / "SampleEditorTool.h",
+            """
+            #pragma once
+
+            #include "CoreMinimal.h"
+            #include "UObject/Object.h"
+            #include "SampleEditorTool.generated.h"
+
+            UCLASS()
+            class SAMPLEEDITOR_API USampleEditorTool : public UObject
+            {
+                GENERATED_BODY()
+
+            public:
+                UFUNCTION(BlueprintCallable, Category="Editor")
+                void RefreshEditorPreview();
+            };
+            """,
+        )
+        write(
+            self.project / "Source" / "SampleGame" / "Interactable.h",
+            """
+            #pragma once
+
+            #include "CoreMinimal.h"
+            #include "UObject/Interface.h"
+            #include "Interactable.generated.h"
+
+            UINTERFACE(BlueprintType)
+            class SAMPLEGAME_API UInteractable : public UInterface
+            {
+                GENERATED_BODY()
+            };
+
+            class SAMPLEGAME_API IInteractable
+            {
+                GENERATED_BODY()
+
+            public:
+                UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category="Interaction")
+                void Interact(AActor* InstigatorActor);
+            };
+            """,
+        )
         write(self.project / "Content" / "Input" / "IA_Jump.uasset", "binary placeholder")
         write(self.project / "Content" / "UI" / "WBP_Inventory.uasset", "binary placeholder")
         write(self.project / "Content" / "Maps" / "L_Test.umap", "binary placeholder")
@@ -105,6 +162,7 @@ class UEToolTests(unittest.TestCase):
             LogCook: Display: Cooking started
             UATHelper: Packaging (Windows): LogWindows: Error: appError called: Assertion failed: InventoryData != nullptr [File:D:/Sample/Source/SampleGame/InventoryComponent.cpp] [Line: 42]
             UATHelper: Packaging (Windows): ERROR: Cook failed.
+            LogBlueprint: Error: Blueprint Runtime Error: Accessed None trying to read property InventoryWidget
             AutomationTool exiting with ExitCode=25 (Error_UnknownCookFailure)
             """,
         )
@@ -128,6 +186,33 @@ class UEToolTests(unittest.TestCase):
         self.assertIn("WBP_Inventory.uasset", result["assets"]["WidgetBlueprints"])
         self.assertIn("ue-project-onboarding", result["recommended_next_skills"])
 
+    def test_project_scan_filters_module_and_renders_markdown(self) -> None:
+        result = run_tool(
+            ROOT / "skills" / "ue-project-onboarding" / "scripts" / "ue_project_scan.py",
+            "--project",
+            str(self.project),
+            "--filter",
+            "SampleGame",
+        )
+
+        self.assertEqual(result["modules"], ["SampleGame"])
+        self.assertIn("InventoryComponent.h", result["source_files"])
+        self.assertIn("Interactable.h", result["source_files"])
+        self.assertNotIn("SampleEditorTool.h", result["source_files"])
+
+        markdown = run_text_tool(
+            ROOT / "skills" / "ue-project-onboarding" / "scripts" / "ue_project_scan.py",
+            "--project",
+            str(self.project),
+            "--filter",
+            "SampleGame",
+            "--format",
+            "markdown",
+        )
+        self.assertIn("# UE Project Scan", markdown)
+        self.assertIn("- Project: SampleGame", markdown)
+        self.assertIn("InventoryComponent.h", markdown)
+
     def test_log_triage_extracts_first_actionable_failure(self) -> None:
         result = run_tool(
             ROOT / "skills" / "ue-log-crash-triage" / "scripts" / "ue_log_triage.py",
@@ -140,6 +225,20 @@ class UEToolTests(unittest.TestCase):
         self.assertIn("InventoryComponent.cpp", result["evidence"][0])
         self.assertEqual(result["recommended_next_skill"], "ue-log-crash-triage")
         self.assertNotEqual(result["recommended_next_skill"], "ue-build-release-automation")
+
+    def test_log_triage_extracts_top_n_actionable_failures(self) -> None:
+        result = run_tool(
+            ROOT / "skills" / "ue-log-crash-triage" / "scripts" / "ue_log_triage.py",
+            "--log",
+            str(self.project / "Saved" / "Logs" / "SampleGame.log"),
+            "--top-n",
+            "2",
+        )
+
+        self.assertEqual(len(result["actionable_failures"]), 2)
+        self.assertIn("Assertion failed", result["actionable_failures"][0]["message"])
+        self.assertIn("Blueprint Runtime Error", result["actionable_failures"][1]["message"])
+        self.assertEqual(result["first_actionable_failure"], result["actionable_failures"][0]["message"])
 
     def test_blueprint_api_report_finds_reflected_cpp_api(self) -> None:
         result = run_tool(
@@ -156,6 +255,24 @@ class UEToolTests(unittest.TestCase):
         add_item = next(entry for entry in result["apis"] if entry["name"] == "AddItem")
         self.assertEqual(add_item["kind"], "BlueprintCallable")
         self.assertIn("Search for Add Item", add_item["blueprint_steps"][0])
+
+    def test_blueprint_api_report_filters_module_and_reports_interfaces(self) -> None:
+        result = run_tool(
+            ROOT / "skills" / "ue-cpp-gameplay" / "scripts" / "ue_blueprint_api_report.py",
+            "--project",
+            str(self.project),
+            "--module",
+            "SampleGame",
+            "--interface",
+        )
+
+        names = {entry["name"] for entry in result["apis"]}
+        self.assertIn("Interact", names)
+        self.assertNotIn("RefreshEditorPreview", names)
+        interact = next(entry for entry in result["apis"] if entry["name"] == "Interact")
+        self.assertEqual(interact["owner_kind"], "UInterface")
+        self.assertEqual(interact["module"], "SampleGame")
+        self.assertTrue(all(entry["file"].startswith("Source/SampleGame/") for entry in result["apis"]))
 
     def test_agent_plan_selects_lean_roles_and_boundaries(self) -> None:
         result = run_tool(

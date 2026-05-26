@@ -26,6 +26,11 @@ UE_TOOL_SCRIPTS = [
     SKILLS / "ue-cpp-gameplay" / "scripts" / "ue_blueprint_api_report.py",
     SKILLS / "ue-multi-agent-workflow" / "scripts" / "ue_agent_plan.py",
 ]
+WARNINGS: list[str] = []
+
+
+def warn(message: str) -> None:
+    WARNINGS.append(message)
 
 
 def fail(message: str) -> None:
@@ -52,6 +57,17 @@ def parse_frontmatter(text: str, path: Path) -> dict[str, str]:
         key, value = line.split(":", 1)
         fields[key.strip()] = value.strip()
     return fields
+
+
+def load_json(path: Path) -> dict:
+    try:
+        return json.loads(read_text(path))
+    except json.JSONDecodeError as exc:
+        fail(f"{path.relative_to(ROOT)} invalid JSON: {exc}")
+
+
+def skill_names(skill_dirs: list[Path]) -> set[str]:
+    return {path.name for path in skill_dirs}
 
 
 def validate_skill_dirs() -> list[Path]:
@@ -91,10 +107,7 @@ def validate_readme_skill_count(skill_dirs: list[Path]) -> None:
 
 
 def validate_plugin_json() -> None:
-    try:
-        plugin = json.loads(read_text(PLUGIN_JSON))
-    except json.JSONDecodeError as exc:
-        fail(f"plugin.json invalid JSON: {exc}")
+    plugin = load_json(PLUGIN_JSON)
 
     if plugin.get("name") != "ue-game-dev":
         fail("plugin.json name must be ue-game-dev")
@@ -129,9 +142,26 @@ def validate_plugin_json() -> None:
         "websocket",
         "tcp",
         "json",
+        "audio",
+        "metasound",
+        "world-partition",
+        "data-layers",
+        "hlod",
+        "level-streaming",
     ]:
         if keyword not in keywords:
             fail(f"plugin keywords should include {keyword}")
+
+
+def validate_changelog_version() -> None:
+    plugin = load_json(PLUGIN_JSON)
+    version = plugin.get("version")
+    changelog = read_text(ROOT / "CHANGELOG.md")
+    match = re.search(r"^## \[([0-9]+\.[0-9]+\.[0-9]+)\]", changelog, re.M)
+    if not match:
+        fail("CHANGELOG latest version header not found")
+    if match.group(1) != version:
+        fail(f"CHANGELOG latest version {match.group(1)} must match plugin.json version {version}")
 
 
 def validate_packaging_boundary() -> None:
@@ -207,6 +237,64 @@ def route_prompt(prompt: str) -> str:
         return "ue-async-systems"
     if any(token in prompt for token in ["HTTP", "WebSocket", "TCP", "JSON 接口", "外部服务", "心跳", "重连"]):
         return "ue-external-services"
+    if any(token in prompt for token in ["MetaSound", "Sound Cue", "AudioComponent", "Sound Class", "Sound Mix", "Concurrency", "Quartz"]):
+        return "ue-audio"
+    if any(token in lower for token in ["audio", "sound", "attenuation", "spatialization"]):
+        return "ue-audio"
+    if any(token in prompt for token in ["World Partition", "Data Layers", "HLOD", "Level Streaming", "Streaming Volume", "Large World Coordinates"]):
+        return "ue-world-streaming"
+    if any(token in lower for token in ["runtime grid", "actor loading", "open world"]):
+        return "ue-world-streaming"
+    if any(token in prompt for token in ["Behavior Tree", "Blackboard", "EQS", "NavMesh", "AI Controller", "AI Perception", "StateTree"]):
+        return "ue-ai-navigation"
+    if any(token in prompt for token in ["Animation Blueprint", "Montage", "Blend Space", "Control Rig", "Motion Matching", "Anim Notify"]):
+        return "ue-animation"
+    if any(token in lower for token in ["root motion"]):
+        return "ue-animation"
+    if any(token in prompt for token in ["Build.cs dependency", "Public/Private", "module graph"]):
+        return "ue-architecture"
+    if any(token in lower for token in ["architecture", "module boundary", "circular dependency", "dependency graph"]):
+        return "ue-architecture"
+    if any(token in prompt for token in ["Event Graph", "Blueprint graph", "Widget Blueprint"]):
+        return "ue-blueprint-workflow"
+    if any(token in lower for token in ["wire blueprint nodes", "node", "pin"]):
+        return "ue-blueprint-workflow"
+    if any(token in prompt for token in ["UMG", "CommonUI", "HUD", "DPI"]):
+        return "ue-client-ui"
+    if any(token in lower for token in ["input focus", "view model", "gamepad navigation"]):
+        return "ue-client-ui"
+    if any(token in prompt for token in ["Gameplay Debugger", "PIE debug", "Actor Tick"]):
+        return "ue-debug-validation"
+    if any(token in lower for token in ["debug", "validation", "showdebug"]):
+        return "ue-debug-validation"
+    if any(token in prompt for token in ["Slate", "ToolMenus", "UICommand", "UICommands", "Editor subsystem"]):
+        return "ue-editor-tooling-slate"
+    if any(token in lower for token in ["details customization", "tab spawner", "editor panel"]):
+        return "ue-editor-tooling-slate"
+    if any(token in prompt for token in ["GameplayAbility", "AttributeSet", "GameplayCue", "GameplayEffect", "ASC"]):
+        return "ue-gas-networking"
+    if any(token in lower for token in ["prediction"]):
+        return "ue-gas-networking"
+    if any(token in prompt for token in [".uplugin", "ModuleRules", "API macro", "Public Private"]):
+        return "ue-plugin-module-dev"
+    if any(token in lower for token in ["plugin module", "runtime module", "editor module"]):
+        return "ue-plugin-module-dev"
+    if any(token in prompt for token in ["Niagara", "VFX", "Lumen", "Nanite"]):
+        return "ue-render-vfx"
+    if any(token in lower for token in ["material", "shader", "post process", "renderer", "gpu emitter"]):
+        return "ue-render-vfx"
+    if any(token in prompt for token in ["USaveGame", "SaveGame", "RepNotify"]):
+        return "ue-save-load-sync"
+    if any(token in lower for token in ["save/load", "serialization", "schema version", "restore"]):
+        return "ue-save-load-sync"
+    if any(token in lower for token in ["where to start", "start a ue task", "unclear scope", "choose workflow"]):
+        return "ue-start"
+    if any(token in prompt for token in ["AutomationSpec", "FAutomationTestBase", "Functional Test", "Functional Tests"]):
+        return "ue-testing-automation"
+    if any(token in lower for token in ["automation test", "regression", "pie scenario"]):
+        return "ue-testing-automation"
+    if any(token in lower for token in ["pickup", "spawner", "overlap", "line trace", "interact prompt", "interaction radius"]):
+        return "ue-world-interaction"
     if "BlueprintCallable" in prompt or "蓝图怎么接" in prompt:
         return "ue-cpp-gameplay"
     if "gas" in lower:
@@ -220,7 +308,7 @@ def validate_route_scenarios(skill_dirs: list[Path]) -> None:
     except json.JSONDecodeError as exc:
         fail(f"route_scenarios.json invalid JSON: {exc}")
 
-    known_skills = {path.name for path in skill_dirs}
+    known_skills = skill_names(skill_dirs)
     for scenario in scenarios:
         name = scenario.get("name", "<unnamed>")
         prompt = scenario.get("prompt", "")
@@ -237,6 +325,59 @@ def validate_route_scenarios(skill_dirs: list[Path]) -> None:
             fail(f"route scenario {name}: routed to forbidden skill {forbidden}")
 
 
+def validate_router_coverage(skill_dirs: list[Path]) -> None:
+    router_skill = read_text(ROUTER_SKILL)
+    router_refs = set(re.findall(r"\$([a-z0-9-]+)", router_skill))
+    known_skills = skill_names(skill_dirs)
+    unknown_router_refs = sorted(ref for ref in router_refs if ref.startswith("ue-") and ref not in known_skills)
+    if unknown_router_refs:
+        fail(f"router references unknown skills: {', '.join(unknown_router_refs)}")
+
+    try:
+        scenarios = json.loads(read_text(ROUTE_SCENARIOS))
+    except json.JSONDecodeError as exc:
+        fail(f"route_scenarios.json invalid JSON: {exc}")
+    covered = {scenario.get("expected_skill") for scenario in scenarios}
+
+    # Explicit packaging automation is covered by an explicit scenario, but keep this
+    # hook for future router-only skills that should not be scenario-routed.
+    coverage_exceptions: set[str] = set()
+    missing = sorted(ref for ref in router_refs if ref.startswith("ue-") and ref not in coverage_exceptions and ref not in covered)
+    if missing:
+        fail(f"router route coverage missing scenarios for: {', '.join(missing)}")
+
+
+def validate_skill_references(skill_dirs: list[Path]) -> None:
+    known_skills = skill_names(skill_dirs)
+    reference_pattern = re.compile(r"(?<![\w/-])((?:[a-z0-9-]+/)?references/[A-Za-z0-9_.-]+\.md)")
+    skill_ref_pattern = re.compile(r"\$([a-z0-9-]+)")
+
+    for skill_dir in skill_dirs:
+        skill_md = skill_dir / "SKILL.md"
+        text = read_text(skill_md)
+
+        for match in reference_pattern.finditer(text):
+            ref = match.group(1)
+            parts = ref.split("/", 1)
+            if len(parts) == 2 and parts[0] in known_skills:
+                path = SKILLS / parts[0] / parts[1]
+            else:
+                path = skill_dir / ref
+            if not path.exists():
+                fail(f"{skill_md.relative_to(ROOT)} references missing file: {ref}")
+
+        for ref in skill_ref_pattern.findall(text):
+            if ref.startswith("ue-") and ref not in known_skills:
+                fail(f"{skill_md.relative_to(ROOT)} references unknown skill: ${ref}")
+
+
+def validate_reference_sizes() -> None:
+    for path in sorted(SKILLS.glob("*/references/*.md")):
+        size = path.stat().st_size
+        if size < 500:
+            warn(f"{path.relative_to(ROOT)} is small ({size} bytes)")
+
+
 def validate_required_support_files() -> None:
     required_files = [
         ROOT / "templates" / "ue-task.md",
@@ -250,6 +391,8 @@ def validate_required_support_files() -> None:
         SKILLS / "ue-log-crash-triage" / "references" / "triage-report-template.md",
         SKILLS / "ue-async-systems" / "references" / "async-patterns.md",
         SKILLS / "ue-external-services" / "references" / "service-client-patterns.md",
+        SKILLS / "ue-audio" / "references" / "audio-checklist.md",
+        SKILLS / "ue-world-streaming" / "references" / "world-partition-checklist.md",
         SKILLS / "ue-plugin-module-dev" / "references" / "third-party-library-wrapper.md",
         ROUTE_SCENARIOS,
         ROOT / "tests" / "test_ue_tools.py",
@@ -325,8 +468,8 @@ def validate_marketplace_package() -> None:
         if not path.exists():
             fail(f"missing marketplace package file: {path.relative_to(ROOT)}")
 
-    root_plugin = json.loads(read_text(PLUGIN_JSON))
-    package_plugin = json.loads(read_text(package_plugin_json))
+    root_plugin = load_json(PLUGIN_JSON)
+    package_plugin = load_json(package_plugin_json)
     if package_plugin.get("name") != root_plugin.get("name"):
         fail("marketplace package plugin name must match root plugin")
     if package_plugin.get("version") != root_plugin.get("version"):
@@ -342,12 +485,18 @@ def main() -> None:
     skill_dirs = validate_skill_dirs()
     validate_readme_skill_count(skill_dirs)
     validate_plugin_json()
+    validate_changelog_version()
     validate_packaging_boundary()
     validate_multi_agent_support()
+    validate_skill_references(skill_dirs)
     validate_required_support_files()
     validate_tool_mentions()
     validate_marketplace_package()
     validate_route_scenarios(skill_dirs)
+    validate_router_coverage(skill_dirs)
+    validate_reference_sizes()
+    for message in WARNINGS:
+        print(f"WARN: {message}")
     print(f"OK: {len(skill_dirs)} skills validated")
 
 

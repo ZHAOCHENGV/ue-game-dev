@@ -42,9 +42,17 @@ def collect_statement(lines: list[str], start: int) -> str:
     return " ".join(parts)
 
 
+def module_name_for(path: Path, root: Path) -> str:
+    parts = path.relative_to(root).parts
+    if len(parts) >= 2 and parts[0] == "Source":
+        return parts[1]
+    return ""
+
+
 def parse_file(path: Path, root: Path) -> list[dict]:
     lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
     apis = []
+    owner_kind = "UInterface" if any("UINTERFACE" in line for line in lines) else "UObject"
     for index, line in enumerate(lines):
         stripped = line.strip()
         if stripped.startswith("UFUNCTION"):
@@ -56,7 +64,7 @@ def parse_file(path: Path, root: Path) -> list[dict]:
             if not match:
                 continue
             name = match.group(1)
-            apis.append(api_entry(name, kind, path, root, category_from_macro(stripped), statement))
+            apis.append(api_entry(name, kind, path, root, category_from_macro(stripped), statement, owner_kind))
         elif stripped.startswith("UPROPERTY"):
             kind = macro_kind(stripped, PROPERTY_KINDS)
             if not kind:
@@ -66,15 +74,17 @@ def parse_file(path: Path, root: Path) -> list[dict]:
             if not match:
                 continue
             name = match.group(1)
-            apis.append(api_entry(name, kind, path, root, category_from_macro(stripped), statement))
+            apis.append(api_entry(name, kind, path, root, category_from_macro(stripped), statement, owner_kind))
     return apis
 
 
-def api_entry(name: str, kind: str, path: Path, root: Path, category: str, signature: str) -> dict:
+def api_entry(name: str, kind: str, path: Path, root: Path, category: str, signature: str, owner_kind: str) -> dict:
     node_name = display_name(name)
     return {
         "name": name,
         "kind": kind,
+        "owner_kind": owner_kind,
+        "module": module_name_for(path, root),
         "category": category,
         "file": str(path.relative_to(root)).replace("\\", "/"),
         "signature": signature,
@@ -86,13 +96,17 @@ def api_entry(name: str, kind: str, path: Path, root: Path, category: str, signa
     }
 
 
-def report(project: Path) -> dict:
+def report(project: Path, module_filter: str | None = None, interface_only: bool = False) -> dict:
     root = project.resolve()
     source_root = root / "Source"
     apis = []
     for path in sorted(source_root.rglob("*")) if source_root.exists() else []:
+        if module_filter and module_name_for(path, root) != module_filter:
+            continue
         if path.suffix.lower() in {".h", ".hpp"}:
             apis.extend(parse_file(path, root))
+    if interface_only:
+        apis = [entry for entry in apis if entry["owner_kind"] == "UInterface"]
     return {
         "tool": "ue-blueprint-api-report",
         "read_only": True,
@@ -113,10 +127,12 @@ def render_text(result: dict) -> str:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Report Blueprint-exposed Unreal C++ API.")
     parser.add_argument("--project", required=True, help="Path to a UE project directory.")
+    parser.add_argument("--module", help="Only scan the named Source module.")
+    parser.add_argument("--interface", action="store_true", help="Only report UInterface Blueprint APIs.")
     parser.add_argument("--format", choices=["json", "text"], default="text")
     args = parser.parse_args()
 
-    result = report(Path(args.project))
+    result = report(Path(args.project), args.module, args.interface)
     if args.format == "json":
         print(json.dumps(result, ensure_ascii=False, indent=2))
     else:
