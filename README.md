@@ -1,6 +1,6 @@
 # UE Game Dev - Codex Plugin
 
-面向 Unreal Engine 游戏与客户端开发的 Codex 技能插件。它不是 Unreal Editor 的 `.uplugin` 插件，不需要放进 UE 项目的 `Plugins/` 目录；它是给 Codex App 使用的 UE 开发工作流插件，用来辅助项目入口判断、阶段检测、阶段门检查、项目记忆、日志/崩溃分诊、需求简报、实施计划、多 Agent 编排、证据化完成验收、旧项目接手、二开前分析、UE C++、蓝图、Enhanced Input、GAS、网络同步、渲染、材质、Niagara、UI、调试、测试和显式打包自动化等开发任务。
+面向 Unreal Engine 游戏与客户端开发的 Codex 技能插件。它不是 Unreal Editor 的 `.uplugin` 插件，不需要放进 UE 项目的 `Plugins/` 目录；它是给 Codex App 使用的 UE 开发工作流插件，用来辅助项目入口判断、阶段检测、阶段门检查、项目记忆、日志/崩溃分诊、需求简报、实施计划、多 Agent 编排、证据化完成验收、旧项目接手、二开前分析、UE C++、蓝图、异步系统、外部 HTTP/WebSocket/TCP 服务、Enhanced Input、GAS、网络同步、渲染、材质、Niagara、UI、调试、测试和显式打包自动化等开发任务。
 
 插件还内置一组只读 UE 辅助工具，用于快速扫描项目结构、提取日志首个可行动错误、整理 C++ 暴露给蓝图的 API，以及生成轻量多 Agent 分工计划。这些工具默认不修改 UE 项目、不编辑 `.uasset`、不执行打包。
 
@@ -111,6 +111,8 @@ New-Item -ItemType Junction -Path "$env:USERPROFILE\plugins\ue-game-dev" -Target
 @ue-game-dev 按这个功能需求写一份 C++/蓝图/资产/测试实施计划
 @ue-game-dev 帮我设计一个 UE 编辑器插件
 @ue-game-dev 检查这个 GAS 网络同步流程
+@ue-game-dev 帮我做一个 UBlueprintAsyncActionBase 异步蓝图节点
+@ue-game-dev 帮我在 UE 里接一个 HTTP JSON 接口，把返回数据分发给 UI
 @ue-game-dev 给这个项目生成 Win64 Development 的 RunUAT 打包命令
 @ue-game-dev 帮我排查 Enhanced Input 的 IA_Jump 为什么不触发
 ```
@@ -134,7 +136,7 @@ Use UE Game Dev to add tests for this UE feature.
 
 ## 功能概览
 
-本插件包含 **1 个路由技能 + 27 个领域技能**，覆盖 UE 开发全链路：
+本插件包含 **1 个路由技能 + 29 个领域技能**，覆盖 UE 开发全链路：
 
 | 技能 | 领域 |
 |------|------|
@@ -153,6 +155,8 @@ Use UE Game Dev to add tests for this UE feature.
 | `ue-plugin-module-dev` | 插件与模块开发（.uplugin、Build.cs、命名规范） |
 | `ue-editor-tooling-slate` | 编辑器工具与 Slate UI |
 | `ue-architecture` | 架构设计与模块边界 |
+| `ue-async-systems` | 异步系统、线程切换、Blueprint Async Action、取消与生命周期 |
+| `ue-external-services` | HTTP、JSON、WebSocket、TCP、外部服务客户端 |
 | `ue-input-enhanced` | Enhanced Input（Input Action、Mapping Context、重绑定、UI 焦点） |
 | `ue-gas-networking` | GAS 技能系统与网络同步 |
 | `ue-save-load-sync` | 存档/加载与状态同步 |
@@ -181,6 +185,8 @@ Use UE Game Dev to add tests for this UE feature.
 3. 路由器分发到最匹配的领域技能，例如 C++ 游戏逻辑会进入 `ue-cpp-gameplay`。
 4. 领域技能提供专业化工作流、检查清单、命名规范和参考模板。
 5. 跨领域任务会按优先级组合多个技能，例如功能简报 + C++ 实施计划 + 蓝图交接 + 自动化测试。
+
+异步系统和外部服务通信被拆成两个独立技能：`ue-async-systems` 负责 `AsyncTask`、`Async()`、`UE::Tasks`、`FRunnable`、`ParallelFor`、`UBlueprintAsyncActionBase`、GameThread 回切、取消和生命周期；`ue-external-services` 负责 HTTP/REST、JSON、WebSocket、TCP、心跳、重连、请求队列、认证头和服务结果分发。它们不会替代 `ue-gas-networking`，后者仍专注 GAS、RPC、复制、预测和 UE 多人玩法状态。
 
 多 Agent 能力是轻量编排层，适合“用多 Agent 熟悉旧项目”“full 模式审查插件架构”“多专家排查打包失败风险”这类复杂请求。它会先给出 Coordinator、Project Explorer、Architecture Reviewer、C++ Implementer、Blueprint Integrator、Verifier 等角色分工、文件所有权边界、并行发现结果和后续应进入的具体技能；普通单点问题仍会直接路由到对应技能。
 

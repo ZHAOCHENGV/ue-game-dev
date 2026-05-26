@@ -28,6 +28,8 @@ Use this skill first when the request spans multiple Unreal Engine areas or the 
 - Use `$ue-architecture` for module layout, `.Build.cs` dependencies, Public/Private boundaries, reflection exposure strategy, plugin boundaries, and large refactors.
 - Use `$ue-gas-networking` for GAS abilities, attributes, effects, cues, prediction, replication, RPCs, authority flow, multiplayer debugging, and network relevance.
 - Use `$ue-input-enhanced` for Enhanced Input, Input Actions, Input Mapping Contexts, input modifiers/triggers, pawn/controller binding, runtime mapping changes, key rebinding, local multiplayer input, UI focus/input mode conflicts, and input events that do not fire.
+- Use `$ue-async-systems` for `AsyncTask`, `Async()`, `UE::Tasks`, `FRunnable`, `ParallelFor`, `UBlueprintAsyncActionBase`, game-thread handoff, cancellation, async lifetime, and non-blocking gameplay/client operations.
+- Use `$ue-external-services` for HTTP, REST, JSON, WebSocket, TCP sockets, backend API clients, streaming responses, heartbeats, reconnects, request queues, auth headers, and external process or service integration.
 - Use `$ue-save-load-sync` for SaveGame schemas, serialization, restore flows, RepNotify, RPC entry points, and persistent state that intersects with network state.
 - Use `$ue-world-interaction` for pickups, spawners, overlap/trace interactions, interaction radius checks, world actor lifecycle, and success/failure feedback.
 - Use `$ue-render-vfx` for renderer settings, materials, material functions, shader code, post process, Niagara systems, particles, GPU simulation, LODs, and visual performance.
@@ -97,6 +99,8 @@ intake -> stage detect -> workflow state -> brief -> gate check -> implementatio
 - For plugin/module edits, keep Runtime and Editor dependencies separate and verify `.uplugin`, `.uproject`, and `.Build.cs` descriptors before code changes.
 - For editor tooling, verify registration/unregistration symmetry and keep editor-only dependencies out of runtime modules.
 - For gameplay features, identify authority, lifetime, ownership, save/replication needs, and editor asset requirements before changing code.
+- For async work, separate off-thread computation or IO from game-thread UObject access, and define cancellation before starting work.
+- For external service work, keep backend clients in subsystems or service objects, parse typed results, and do not confuse HTTP/WebSocket/TCP service calls with Unreal gameplay replication.
 - For multiplayer work, define which machine owns the state, how it replicates, and what is predicted locally.
 - For rendering/VFX work, check scalability, platform, material instruction cost, Niagara bounds, tick cost, and shader permutations.
 - For UI work, separate presentation from gameplay state where the project already has view models, controllers, managers, or subsystems.

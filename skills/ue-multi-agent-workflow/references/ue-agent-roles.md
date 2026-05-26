@@ -20,6 +20,8 @@ Use these roles only after `ue-multi-agent-workflow` has selected `lean` or `ful
 | GAS/Networking | Ability System, replication, RPC, prediction, authority, multiplayer PIE. |
 | UI/UMG | Widget Blueprint, CommonUI, HUD, view models, input mode, DPI/layout. |
 | Enhanced Input | Input Actions, Mapping Contexts, triggers/modifiers, rebinding, UI focus. |
+| Async Systems | AsyncTask, Async(), UE::Tasks, FRunnable, ParallelFor, Blueprint async nodes, cancellation. |
+| External Services | HTTP, REST, JSON, WebSocket, TCP, backend clients, heartbeat, reconnect, service event dispatch. |
 | AI/Animation | Behavior Tree, EQS, StateTree, AI Perception, Anim Blueprint, montage, IK. |
 | Render/VFX | Materials, Niagara, post process, shader, visual performance. |
 | Packaging/Release | Release readiness, Project Launcher, RunUAT risk review, CI release concerns. |
@@ -36,5 +38,6 @@ Use these roles only after `ue-multi-agent-workflow` has selected `lean` or `ful
 - One role owns each file or asset category at a time.
 - Read-only roles may report risks but cannot propose edits as if approved.
 - C++ and Blueprint roles must coordinate any reflected API handoff.
+- Async and External Services roles must coordinate game-thread handoff, weak ownership, and teardown with the owning C++ or subsystem role.
 - Packaging/Release may review packaging risk, but packaging automation remains explicit-only.
 - If two roles need the same file, the Coordinator serializes the work or marks the overlap as `BLOCKED`.

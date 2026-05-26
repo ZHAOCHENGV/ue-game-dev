@@ -12,6 +12,8 @@ ROLE_RULES = [
     ("GAS/Networking", ["GAS", "网络", "复制", "RPC", "replication"]),
     ("UI/UMG", ["UI", "UMG", "Widget", "HUD", "CommonUI"]),
     ("Enhanced Input", ["Enhanced Input", "IA_", "IMC_", "输入"]),
+    ("Async Systems", ["AsyncTask", "Async()", "UE::Tasks", "FRunnable", "ParallelFor", "UBlueprintAsyncActionBase", "异步", "后台线程"]),
+    ("External Services", ["HTTP", "WebSocket", "TCP", "JSON", "外部服务", "backend", "心跳", "重连"]),
     ("Packaging/Release", ["打包", "发布", "RunUAT", "BuildCookRun", "CI"]),
     ("Log/Crash Triage", ["日志", "崩溃", "Saved/Logs", "callstack", "失败"]),
 ]
@@ -66,6 +68,10 @@ def ownership_for_roles(roles: list[str]) -> list[str]:
         boundaries.append("Blueprint Integrator: Blueprint node/pin handoff and asset setup instructions; no binary .uasset edits")
     if "Verifier" in roles:
         boundaries.append("Verifier: build, Blueprint compile, PIE/test/log evidence")
+    if "Async Systems" in roles:
+        boundaries.append("Async Systems: async ownership, worker lifetime, game-thread handoff, cancellation boundaries")
+    if "External Services" in roles:
+        boundaries.append("External Services: HTTP/WebSocket/TCP client ownership, DTO contracts, retry/heartbeat/reconnect, service event dispatch")
     if not boundaries:
         boundaries.append("solo: no multi-agent ownership boundaries; use focused skill")
     return boundaries
@@ -85,6 +91,10 @@ def recommended_skills(request: str, roles: list[str], mode: str) -> list[str]:
         skills.append("ue-blueprint-workflow")
     if "Verifier" in roles:
         skills.append("ue-testing-automation")
+    if "Async Systems" in roles:
+        skills.append("ue-async-systems")
+    if "External Services" in roles:
+        skills.append("ue-external-services")
     if "Log/Crash Triage" in roles:
         skills.append("ue-log-crash-triage")
     if "Packaging/Release" in roles and not contains_any(request, ["生成打包命令", "运行打包", "自动打包", "BuildCookRun", "RunUAT"]):

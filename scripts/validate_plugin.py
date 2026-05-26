@@ -122,6 +122,13 @@ def validate_plugin_json() -> None:
         "ue-log-triage",
         "blueprint-api-report",
         "agent-plan",
+        "async",
+        "blueprint-async-action",
+        "external-services",
+        "http",
+        "websocket",
+        "tcp",
+        "json",
     ]:
         if keyword not in keywords:
             fail(f"plugin keywords should include {keyword}")
@@ -196,6 +203,10 @@ def route_prompt(prompt: str) -> str:
         return "ue-feature-done"
     if "Enhanced Input" in prompt or "IA_" in prompt or "Input Mapping" in prompt:
         return "ue-input-enhanced"
+    if any(token in prompt for token in ["UBlueprintAsyncActionBase", "AsyncTask", "后台线程", "GameThread", "ParallelFor", "异步蓝图节点", "异步节点"]):
+        return "ue-async-systems"
+    if any(token in prompt for token in ["HTTP", "WebSocket", "TCP", "JSON 接口", "外部服务", "心跳", "重连"]):
+        return "ue-external-services"
     if "BlueprintCallable" in prompt or "蓝图怎么接" in prompt:
         return "ue-cpp-gameplay"
     if "gas" in lower:
@@ -237,6 +248,9 @@ def validate_required_support_files() -> None:
         ROOT / "rules" / "ue-packaging.md",
         SKILLS / "ue-workflow-state" / "references" / "state-file-templates.md",
         SKILLS / "ue-log-crash-triage" / "references" / "triage-report-template.md",
+        SKILLS / "ue-async-systems" / "references" / "async-patterns.md",
+        SKILLS / "ue-external-services" / "references" / "service-client-patterns.md",
+        SKILLS / "ue-plugin-module-dev" / "references" / "third-party-library-wrapper.md",
         ROUTE_SCENARIOS,
         ROOT / "tests" / "test_ue_tools.py",
         *UE_TOOL_SCRIPTS,

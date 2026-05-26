@@ -4,6 +4,19 @@
 
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
+## [0.11.0] - 2026-05-26
+
+### 新增
+- `ue-async-systems` 技能：覆盖 `AsyncTask`、`Async()`、`UE::Tasks`、`FRunnable`、`ParallelFor`、`UBlueprintAsyncActionBase`、GameThread 回切、取消和生命周期安全。
+- `ue-external-services` 技能：覆盖 HTTP/REST、JSON、WebSocket、TCP、外部服务客户端、心跳、重连、请求队列、认证头和 UI/Gameplay 分发。
+- `ue-plugin-module-dev/references/third-party-library-wrapper.md`：补充第三方 C++ 库、SDK、DLL/静态库封装为 UE 插件/模块的通用边界。
+- 路由场景新增异步蓝图节点、HTTP JSON 接口和 WebSocket 客户端用例。
+
+### 变更
+- `ue-game-dev-router` 新增异步系统和外部服务路由，并明确外部服务通信不等同于 GAS/UE 复制。
+- `ue-cpp-gameplay`、`ue-architecture`、`ue-plugin-module-dev` 补充 Subsystem、`UDeveloperSettings`、异步、外部服务和第三方库封装的交接边界。
+- `plugin.json`、`README.md` 更新到 `0.11.0`，补充 async、HTTP、WebSocket、TCP、JSON 和 backend API 关键词。
+
 ## [0.10.0] - 2026-05-21
 
 ### 新增

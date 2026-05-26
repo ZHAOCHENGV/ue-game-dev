@@ -33,6 +33,7 @@ Use this skill for Unreal Engine `.uplugin` plugins and C++ modules. Keep plugin
 - Put public header dependencies in `PublicDependencyModuleNames`; put implementation-only dependencies in `PrivateDependencyModuleNames`.
 - Add dependencies only after verifying which module owns the type.
 - Avoid circular dependencies. Extract shared interfaces or contracts into a smaller shared module when needed.
+- For third-party libraries, isolate vendor headers/libs behind a narrow module boundary and expose Unreal-friendly types to the rest of the project.
 
 ## Editor Tooling Boundary
 
@@ -68,3 +69,4 @@ Use this skill for Unreal Engine `.uplugin` plugins and C++ modules. Keep plugin
 - Read `references/plugin-module-checklist.md` for `.uplugin`, module, `.Build.cs`, and packaging review.
 - Read `references/ue-naming-conventions.md` before creating or renaming UE assets, C++ files, modules, plugins, or Blueprint-exposed APIs.
 - Read `references/ue-cpp-coding-standard.md` before creating public C++ APIs or reviewing plugin code quality.
+- Read `references/third-party-library-wrapper.md` when wrapping external C++ libraries, SDKs, DLLs, static libs, or platform-specific vendor binaries.
