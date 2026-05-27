@@ -42,3 +42,4 @@ description: 当 Unreal Engine 任务涉及编辑器插件、Slate 界面、Tool
 
 - 检查清单读取 `references/editor-tooling-checklist.md`。
 - 代码模板读取 `references/editor-code-templates.md`。
+- 需要 ToolMenus、Tab 或 Slate 面板简短脚手架时读取 `references/slate-panel-template.md`。

@@ -44,6 +44,15 @@ description: 当 Unreal Engine 任务涉及输出日志、资产检查、Bluepri
 - 假设：已验证、已排除、仍需验证。
 - 下一步：最小修复、回归场景或应切换的领域技能。
 
+## 常见问题
+
+| 症状 | 可能原因 | 首个检查点 |
+|------|----------|------------|
+| Tick 执行但状态没变 | 实例不对、authority guard 或数据被覆盖 | 记录对象名、role、owner 和 Tick 前后数值 |
+| Blueprint 节点连了但无效果 | PIE debug object 不对或 latent context 不对 | 设置正确调试对象并重新编译资产 |
+| PIE 正常但 packaged build 失败 | Editor-only 引用、资产未 Cook 或配置差异 | 检查 `WITH_EDITOR`、模块依赖和 packaged log |
+| 多人客户端与服务器不一致 | Ownership、RPC 方向或 RepNotify 顺序问题 | 记录 role、owner、instigator 和复制时间点 |
+
 ## 参考
 
 - 调试清单读取 `references/debug-checklist.md`。

@@ -42,6 +42,7 @@ description: 当 Unreal Engine 任务涉及 .uplugin、.uproject 模块描述、
 ## 参考
 
 - 模块清单读取 `references/plugin-module-checklist.md`。
+- 创建 Runtime + Editor 双模块插件结构时读取 `references/plugin-scaffold-template.md`。
 - 命名规范读取 `references/ue-naming-conventions.md`。
 - C++ 规范读取 `references/ue-cpp-coding-standard.md`。
 - 第三方库封装读取 `references/third-party-library-wrapper.md`。

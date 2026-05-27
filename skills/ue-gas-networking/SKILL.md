@@ -41,4 +41,5 @@ description: 当 Unreal Engine 任务涉及 Gameplay Ability System、Ability、
 ## 参考
 
 - GAS 模式读取 `references/gas-patterns.md`。
+- 需要 GameplayAbility、AttributeSet 或 GameplayCue 模板时读取 `references/gas-ability-template.md`。
 - 网络清单读取 `references/networking-checklist.md`。

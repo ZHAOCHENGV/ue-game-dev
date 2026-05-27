@@ -42,3 +42,4 @@ description: 当 Unreal Engine 任务涉及 HTTP、REST、JSON、WebSocket 客�
 ## 参考
 
 - 服务客户端模式读取 `references/service-client-patterns.md`。
+- 需要 HTTP 服务客户端、JSON 解析和 UI 分发模板时读取 `references/http-service-template.md`。

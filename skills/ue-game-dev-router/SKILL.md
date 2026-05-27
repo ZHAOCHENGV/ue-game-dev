@@ -1,6 +1,6 @@
 ---
 name: ue-game-dev-router
-description: 当 Unreal Engine 游戏或客户端开发请求需要路由到最具体的 UE 工作流技能，或请求横跨项目入口、阶段检测、门检、项目记忆、日志/崩溃、需求简报、实施计划、完成交接、旧项目接手、多 Agent、Blueprint、C++、插件、模块、编辑器工具、GAS、网络、输入、AI、动画、渲染、UI、测试、调试、性能或打包时使用。
+description: 当 Unreal Engine 游戏或客户端开发请求需要路由到最具体的 UE 工作流技能，或请求横跨项目入口、阶段检测、门检、项目记忆、日志/崩溃、需求简报、实施计划、完成交接、旧项目接手、多 Agent、Blueprint、C++、插件、模块、编辑器工具、GAS、网络、输入、AI、动画、渲染、UI、物理、数据、测试、调试、性能或打包时使用。
 ---
 
 # UE Game Dev Router
@@ -32,6 +32,8 @@ description: 当 Unreal Engine 游戏或客户端开发请求需要路由到最�
 - 用 `$ue-external-services` 处理 HTTP、REST、JSON、WebSocket、TCP、后端 API、流式响应、心跳、重连、请求队列、认证头和外部服务集成。
 - 用 `$ue-audio` 处理 MetaSound、Sound Cue、AudioComponent、Sound Class/Mix、Concurrency、Quartz、空间化、衰减和音频性能。
 - 用 `$ue-world-streaming` 处理 World Partition、Data Layers、HLOD、Level Streaming、Streaming Volume、Large World Coordinates、Runtime Grid 和 Actor 加载/卸载。
+- 用 `$ue-physics-destruction` 处理 Chaos Physics、碰撞通道/配置、Physical Material、Geometry Collection、Fracture、布娃娃、Physics Constraint、物理动画混合和物理调试。
+- 用 `$ue-data-management` 处理 Primary Asset Manager、Data Asset、DataTable、CurveTable、DataRegistry、软/硬引用、异步资产加载、Cook 规则、Chunk 和玩法数据验证。
 - 用 `$ue-save-load-sync` 处理 SaveGame schema、序列化、恢复流程、RepNotify、RPC 入口和持久状态/网络状态交叉。
 - 用 `$ue-world-interaction` 处理拾取、生成器、Overlap/Trace 交互、交互半径、世界 Actor 生命周期和成功/失败反馈。
 - 用 `$ue-render-vfx` 处理 renderer settings、材质、Material Function、shader、post process、Niagara、粒子、GPU simulation、LOD 和视觉性能。
@@ -46,7 +48,16 @@ description: 当 Unreal Engine 游戏或客户端开发请求需要路由到最�
 
 跨域任务先进入“第一个失败点或用户可见行为”的拥有技能，再按需引入其他技能。用户明确要求多 Agent 时，先进入 `$ue-multi-agent-workflow` 定义角色、所有权边界、并行发现和后续技能。
 
-若请求涉及 physics、destruction 或其他尚无专属技能的领域，基于通用 UE 最佳实践处理，并明确告知当前插件暂无该领域专属技能。
+若请求涉及其他尚无专属技能的领域，基于通用 UE 最佳实践处理，并明确告知当前插件暂无该领域专属技能。
+
+## 中文路由提示
+
+- “粒子特效 / 后处理 / 材质球 / 着色器”路由到 `$ue-render-vfx`。
+- “角色动画 / 动画蓝图 / 蒙太奇 / 状态机 / IK”路由到 `$ue-animation`。
+- “行为树 / 巡逻 / 寻路 / AI感知 / 导航网格”路由到 `$ue-ai-navigation`。
+- “存档 / 读档 / 数据持久化”路由到 `$ue-save-load-sync`。
+- “布娃娃 / 物理约束 / 破坏系统 / 碰撞通道”路由到 `$ue-physics-destruction`。
+- “DataTable / 数据表 / 数据资产 / 软引用 / 异步加载 / 资产管理”路由到 `$ue-data-management`。
 
 ## 模糊请求处理
 
@@ -96,7 +107,7 @@ intake -> stage detect -> workflow state -> brief -> gate check -> implementatio
 - Blueprint 先描述图流，再给出节点/Pin 连线，验证编译并避免重复输入事件。
 - Runtime 与 Editor 依赖分离，编辑器工具注册/注销对称。
 - 多人任务必须说明 authority、ownership、replication、prediction 和验证场景。
-- 使用共享 `rules/` 处理 C++、Blueprint、网络、资产和打包规则。
+- 使用共享 `rules/` 处理 C++、Blueprint、网络、资产、命名、性能和打包规则。
 
 ## 验证
 

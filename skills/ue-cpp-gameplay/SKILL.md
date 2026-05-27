@@ -47,5 +47,6 @@ description: 当 Unreal Engine 任务涉及 Actor、ActorComponent、UObject、D
 ## 参考
 
 - C++ 模式读取 `references/cpp-patterns.md`。
+- 需要选择或草拟 `UGameInstanceSubsystem`、`UWorldSubsystem` 时读取 `references/subsystem-template.md`。
 - Blueprint API 读取 `references/blueprint-api.md`。
 - 验证步骤读取 `references/validation.md`。

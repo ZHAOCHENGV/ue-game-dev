@@ -41,3 +41,4 @@ description: 当 Unreal Engine 任务涉及插件或玩法功能测试、Automat
 ## 参考
 
 - 测试清单读取 `references/testing-checklist.md`。
+- 需要 Automation Test 或 Functional Test 代码骨架时读取 `references/automation-test-template.md`。

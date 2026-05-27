@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE Data Management"
+  short_description: "Plan Unreal gameplay data, asset references, DataTables, and async loading."
+  default_prompt: "Use $ue-data-management to design or debug DataTable, Primary Asset Manager, Data Asset, or async asset loading workflows."

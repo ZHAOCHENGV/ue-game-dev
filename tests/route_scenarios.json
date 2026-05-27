@@ -100,8 +100,7 @@
     "name": "feature_done",
     "prompt": "这个 UE 功能做完了，帮我做完成验收和交接清单",
     "expected_skill": "ue-feature-done"
-  }
-  ,
+  },
   {
     "name": "ai_navigation_behavior_tree",
     "prompt": "Help me implement NPC patrol and chase with Behavior Tree, Blackboard, EQS, and NavMesh",
@@ -181,5 +180,163 @@
     "name": "world_partition_data_layers",
     "prompt": "Configure World Partition, Data Layers, HLOD, and Level Streaming for an open world map",
     "expected_skill": "ue-world-streaming"
+  },
+  {
+    "name": "zh_particle_vfx",
+    "prompt": "帮我做一个粒子特效",
+    "expected_skill": "ue-render-vfx"
+  },
+  {
+    "name": "zh_render_post_process",
+    "prompt": "后处理材质球和渲染管线怎么优化",
+    "expected_skill": "ue-render-vfx"
+  },
+  {
+    "name": "zh_animation_state_machine",
+    "prompt": "角色动画状态机怎么设计",
+    "expected_skill": "ue-animation"
+  },
+  {
+    "name": "zh_animation_montage",
+    "prompt": "帮我做攻击蒙太奇和动画蓝图切换",
+    "expected_skill": "ue-animation"
+  },
+  {
+    "name": "zh_save_load",
+    "prompt": "帮我做存档和读档",
+    "expected_skill": "ue-save-load-sync"
+  },
+  {
+    "name": "zh_save_persistence",
+    "prompt": "这个角色数据需要做数据持久化",
+    "expected_skill": "ue-save-load-sync"
+  },
+  {
+    "name": "zh_behavior_tree_patrol",
+    "prompt": "行为树巡逻怎么实现",
+    "expected_skill": "ue-ai-navigation"
+  },
+  {
+    "name": "zh_ai_pathfinding",
+    "prompt": "NPC 寻路和 AI感知不稳定",
+    "expected_skill": "ue-ai-navigation"
+  },
+  {
+    "name": "zh_debug_breakpoint",
+    "prompt": "调试断点排查这个问题",
+    "expected_skill": "ue-debug-validation"
+  },
+  {
+    "name": "zh_runtime_diagnosis",
+    "prompt": "帮我诊断这个运行时行为为什么不对",
+    "expected_skill": "ue-debug-validation"
+  },
+  {
+    "name": "zh_backpack_ui",
+    "prompt": "帮我做一个背包UI",
+    "expected_skill": "ue-client-ui"
+  },
+  {
+    "name": "zh_health_bar_ui",
+    "prompt": "血条控件在不同分辨率下布局不对",
+    "expected_skill": "ue-client-ui"
+  },
+  {
+    "name": "zh_pickup_system",
+    "prompt": "做一个拾取物品的交互系统",
+    "expected_skill": "ue-world-interaction"
+  },
+  {
+    "name": "zh_trace_interaction",
+    "prompt": "射线检测交互提示怎么做",
+    "expected_skill": "ue-world-interaction"
+  },
+  {
+    "name": "zh_auto_test",
+    "prompt": "写几个自动化测试验证这个功能",
+    "expected_skill": "ue-testing-automation"
+  },
+  {
+    "name": "zh_regression_test",
+    "prompt": "帮我补一个回归测试和功能测试",
+    "expected_skill": "ue-testing-automation"
+  },
+  {
+    "name": "zh_architecture_decouple",
+    "prompt": "帮我分析模块划分和解耦方案",
+    "expected_skill": "ue-architecture"
+  },
+  {
+    "name": "zh_architecture_cycle",
+    "prompt": "这个模块有循环依赖，帮我拆一下",
+    "expected_skill": "ue-architecture"
+  },
+  {
+    "name": "zh_editor_tool",
+    "prompt": "帮我做一个编辑器工具面板",
+    "expected_skill": "ue-editor-tooling-slate"
+  },
+  {
+    "name": "zh_plugin_dev",
+    "prompt": "帮我创建一个 Runtime + Editor 双模块插件",
+    "expected_skill": "ue-plugin-module-dev"
+  },
+  {
+    "name": "zh_audio_effect",
+    "prompt": "帮我配一个空间化的音效",
+    "expected_skill": "ue-audio"
+  },
+  {
+    "name": "zh_async_task",
+    "prompt": "帮我做一个异步蓝图节点",
+    "expected_skill": "ue-async-systems"
+  },
+  {
+    "name": "zh_input_rebind",
+    "prompt": "帮我做按键绑定和重绑定",
+    "expected_skill": "ue-input-enhanced"
+  },
+  {
+    "name": "zh_render_perf_not_packaging",
+    "prompt": "检查一下渲染性能瓶颈",
+    "expected_skill": "ue-performance-packaging",
+    "forbidden_skill": "ue-build-release-automation"
+  },
+  {
+    "name": "ambiguous_gas_ui_bug",
+    "prompt": "GAS 技能系统的 UI 显示有 bug",
+    "expected_skill": "ue-gas-networking",
+    "forbidden_skill": "ue-build-release-automation"
+  },
+  {
+    "name": "ambiguous_async_blueprint_cpp",
+    "prompt": "蓝图里调用 C++ 的异步函数返回值有问题",
+    "expected_skill": "ue-async-systems"
+  },
+  {
+    "name": "ambiguous_niagara_packaged_missing",
+    "prompt": "Niagara 粒子在打包后不显示",
+    "expected_skill": "ue-render-vfx",
+    "forbidden_skill": "ue-build-release-automation"
+  },
+  {
+    "name": "zh_physics_ragdoll",
+    "prompt": "帮我做一个布娃娃物理效果",
+    "expected_skill": "ue-physics-destruction"
+  },
+  {
+    "name": "zh_physics_destruction",
+    "prompt": "这个墙体需要 Chaos 破坏系统和破碎效果",
+    "expected_skill": "ue-physics-destruction"
+  },
+  {
+    "name": "zh_datatable_asset",
+    "prompt": "帮我用 DataTable 管理物品数据",
+    "expected_skill": "ue-data-management"
+  },
+  {
+    "name": "zh_asset_manager_loading",
+    "prompt": "Primary Asset Manager 和软引用异步加载怎么设计",
+    "expected_skill": "ue-data-management"
   }
 ]

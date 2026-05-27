@@ -44,6 +44,15 @@ description: 当用户提供或要求分析 Unreal Engine 日志、UBT 编译错
 - Likely cause：推断原因，标明推断依据。
 - Next skill：后续具体 UE 技能名和建议验证。
 
+## 常见问题
+
+| 症状 | 可能原因 | 首个检查点 |
+|------|----------|------------|
+| `Cook failed` 前有大量 warning | 更早的资产加载、Blueprint 编译或 missing class 错误 | 向上找第一个 `Error:` |
+| unresolved external | 缺实现、模块依赖或 API macro 错误 | 检查符号所属模块和 `.Build.cs` |
+| Blueprint compile error | Pin 断裂、成员改名或父类 API 缺失 | 打开命名 Blueprint 并在 C++ 编译后重新 compile |
+| callstack 末尾在引擎代码 | 项目回调更早传入无效数据 | 找到 engine frame 之上的第一个项目 frame |
+
 ## 参考
 
 - 分诊报告模板读取 `references/triage-report-template.md`。

@@ -71,7 +71,54 @@ class UEToolTests(unittest.TestCase):
                 public SampleGame(ReadOnlyTargetRules Target) : base(Target)
                 {
                     PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine" });
-                    PrivateDependencyModuleNames.AddRange(new string[] { "EnhancedInput", "GameplayAbilities", "UMG" });
+                    PrivateDependencyModuleNames.AddRange(new string[] { "EnhancedInput", "GameplayAbilities", "UMG", "SampleEditor" });
+                }
+            }
+            """,
+        )
+        write(
+            self.project / "Source" / "SampleEditor" / "SampleEditor.Build.cs",
+            """
+            using UnrealBuildTool;
+
+            public class SampleEditor : ModuleRules
+            {
+                public SampleEditor(ReadOnlyTargetRules Target) : base(Target)
+                {
+                    PublicDependencyModuleNames.AddRange(new string[] { "Core", "SampleGame" });
+                    PrivateDependencyModuleNames.AddRange(new string[] { "UnrealEd", "Slate", "SlateCore" });
+                }
+            }
+            """,
+        )
+        write(
+            self.project / "Source" / "SampleGame" / "SampleGame.Target.cs",
+            """
+            using UnrealBuildTool;
+            using System.Collections.Generic;
+
+            public class SampleGameTarget : TargetRules
+            {
+                public SampleGameTarget(TargetInfo Target) : base(Target)
+                {
+                    Type = TargetType.Game;
+                    ExtraModuleNames.Add("SampleGame");
+                }
+            }
+            """,
+        )
+        write(
+            self.project / "Source" / "SampleEditor.Target.cs",
+            """
+            using UnrealBuildTool;
+            using System.Collections.Generic;
+
+            public class SampleEditorTarget : TargetRules
+            {
+                public SampleEditorTarget(TargetInfo Target) : base(Target)
+                {
+                    Type = TargetType.Editor;
+                    ExtraModuleNames.AddRange(new string[] { "SampleGame", "SampleEditor" });
                 }
             }
             """,
@@ -156,6 +203,16 @@ class UEToolTests(unittest.TestCase):
         write(self.project / "Content" / "UI" / "WBP_Inventory.uasset", "binary placeholder")
         write(self.project / "Content" / "Maps" / "L_Test.umap", "binary placeholder")
         write(
+            self.project / "Config" / "DefaultEngine.ini",
+            """
+            [/Script/EngineSettings.GameMapsSettings]
+            GameDefaultMap=/Game/Maps/L_Test
+
+            [/Script/UnrealEd.ProjectPackagingSettings]
+            +MapsToCook=(FilePath="/Game/Maps/L_Test")
+            """,
+        )
+        write(
             self.project / "Saved" / "Logs" / "SampleGame.log",
             """
             LogInit: Display: Running engine for game: SampleGame
@@ -185,6 +242,29 @@ class UEToolTests(unittest.TestCase):
         self.assertIn("IA_Jump.uasset", result["assets"]["InputActions"])
         self.assertIn("WBP_Inventory.uasset", result["assets"]["WidgetBlueprints"])
         self.assertIn("ue-project-onboarding", result["recommended_next_skills"])
+
+    def test_config_audit_reports_project_settings(self) -> None:
+        result = run_tool(
+            ROOT / "skills" / "ue-project-onboarding" / "scripts" / "ue_config_audit.py",
+            "--project",
+            str(self.project),
+        )
+
+        self.assertEqual(result["project"], "SampleGame")
+        self.assertEqual(result["checks"]["default_map"]["status"], "PASS")
+        self.assertIn("DefaultMap configured", result["checks"]["default_map"]["message"])
+        self.assertEqual(result["checks"]["enhanced_input"]["status"], "PASS")
+        self.assertEqual(result["checks"]["maps_to_cook"]["status"], "PASS")
+
+        missing = self.project / "Config" / "DefaultEngine.ini"
+        missing.unlink()
+        result = run_tool(
+            ROOT / "skills" / "ue-project-onboarding" / "scripts" / "ue_config_audit.py",
+            "--project",
+            str(self.project),
+        )
+        self.assertEqual(result["checks"]["default_map"]["status"], "FAIL")
+        self.assertEqual(result["checks"]["maps_to_cook"]["status"], "WARN")
 
     def test_project_scan_filters_module_and_renders_markdown(self) -> None:
         result = run_tool(
@@ -288,6 +368,30 @@ class UEToolTests(unittest.TestCase):
         self.assertEqual(result["packaging_boundary"], "not relevant")
         self.assertTrue(any("Source/" in boundary for boundary in result["ownership_boundaries"]))
         self.assertIn("ue-project-onboarding", result["recommended_next_skills"])
+
+    def test_dependency_graph_reports_dependencies_and_mermaid(self) -> None:
+        result = run_tool(
+            ROOT / "skills" / "ue-architecture" / "scripts" / "ue_dependency_graph.py",
+            "--project",
+            str(self.project),
+        )
+
+        modules = {entry["module"]: entry for entry in result["modules"]}
+        self.assertIn("SampleGame", modules)
+        self.assertIn("SampleEditor", modules)
+        self.assertIn("Engine", modules["SampleGame"]["public_dependencies"])
+        self.assertIn("UnrealEd", modules["SampleEditor"]["private_dependencies"])
+        self.assertTrue(any(issue["type"] == "editor_dependency" for issue in result["issues"]))
+
+        mermaid = run_text_tool(
+            ROOT / "skills" / "ue-architecture" / "scripts" / "ue_dependency_graph.py",
+            "--project",
+            str(self.project),
+            "--format",
+            "mermaid",
+        )
+        self.assertIn("graph TD", mermaid)
+        self.assertIn("SampleGame --> Engine", mermaid)
 
 
 if __name__ == "__main__":

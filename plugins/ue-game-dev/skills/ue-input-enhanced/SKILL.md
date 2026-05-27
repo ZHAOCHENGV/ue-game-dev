@@ -38,6 +38,15 @@ description: 当 Unreal Engine 请求涉及 Enhanced Input、Input Actions、Inp
 - UI/重绑策略：焦点、输入模式、保存和冲突处理。
 - 验证：PIE、手柄/键鼠、本地多人和调试命令。
 
+## 常见问题
+
+| 症状 | 可能原因 | 首个检查点 |
+|------|----------|------------|
+| Action 从不触发 | Mapping Context 没加到 LocalPlayer Subsystem | 记录 `AddMappingContext` 的 owner 和 priority |
+| Action 触发两次 | C++ 与 Blueprint 重复绑定或 setup 重复执行 | 检查 `SetupPlayerInputComponent` 和 Event Graph 输入节点 |
+| UI 吃掉 Gameplay 输入 | Input Mode、focus 或 CommonUI activation 拥有 action | 检查焦点 widget 和 active mapping contexts |
+| 重绑重启后丢失 | 用户设置未保存或 context 从默认值重建 | 检查 save slot/config 写入和 reload 顺序 |
+
 ## 参考
 
 - 输入清单读取 `references/enhanced-input-checklist.md`。

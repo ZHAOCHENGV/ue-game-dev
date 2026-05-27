@@ -26,6 +26,7 @@ description: 当请求要求 Codex 了解、审查、接手、继承、熟悉或
 ## 工具
 
 - 可用只读脚本 `skills/ue-project-onboarding/scripts/ue_project_scan.py` 快速扫描项目结构。
+- 当需要检查默认地图、Enhanced Input、Maps to Cook 或 editor-only 配置风险时，使用只读脚本 `skills/ue-project-onboarding/scripts/ue_config_audit.py`。
 - 工具只读取 `.uproject`、模块、插件、源码文件、Build 文件和常见资产文件名，不编辑 `.uasset` 或项目文件。
 
 ## 规则

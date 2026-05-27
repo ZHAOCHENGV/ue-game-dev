@@ -39,6 +39,11 @@ description: 当 Unreal Engine 任务涉及系统归属、模块图、层级边�
 - 迁移计划：文件移动、Build.cs 修改、API 调整、Blueprint 兼容策略。
 - 验证：目标构建、Editor 启动、Blueprint 编译、PIE 和打包风险。
 
+## 工具
+
+- 涉及 `.Build.cs` 依赖、模块循环、Runtime 依赖 Editor 或 Mermaid 模块图时，使用只读脚本 `skills/ue-architecture/scripts/ue_dependency_graph.py`。
+- 工具输出只能作为架构证据，不直接修改模块文件。
+
 ## 参考
 
 - 模块边界读取 `references/module-boundaries.md`。

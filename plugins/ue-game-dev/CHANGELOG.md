@@ -4,6 +4,20 @@
 
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
+## [0.13.0] - 2026-05-27
+
+### 新增
+- `ue-physics-destruction` 技能：覆盖 Chaos Physics、碰撞通道、Physical Material、Geometry Collection、Fracture、布娃娃、Physics Constraint 和物理调试。
+- `ue-data-management` 技能：覆盖 Primary Asset Manager、Data Asset、DataTable、CurveTable、DataRegistry、软/硬引用、异步加载、Cook 和 Chunk 规则。
+- `ue_config_audit.py` 只读工具：审计默认地图、Enhanced Input、Maps to Cook 和 editor-only 配置风险。
+- `ue_dependency_graph.py` 只读工具：解析 `.Build.cs` 依赖、Runtime→Editor 风险、循环依赖和 Mermaid 模块图。
+- `rules/ue-naming.md`、`rules/ue-performance.md`、`CONTRIBUTING.md` 和架构文档，用于插件维护与贡献流程。
+
+### 变更
+- 路由验证改为硬规则优先、领域加权评分 fallback，并补充大量中文路由场景。
+- marketplace mirror 校验增加内容哈希比对，防止根目录与 `plugins/ue-game-dev/` 不同步。
+- `plugin.json`、`README.md` 和市场包元数据更新到 `0.13.0`，补充 physics、chaos、destruction、data-management、asset-manager、config-audit 和 dependency-graph 等关键词。
+
 ## [0.12.0] - 2026-05-26
 
 ### 新增

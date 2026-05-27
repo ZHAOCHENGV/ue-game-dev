@@ -41,3 +41,4 @@ description: 当 Unreal Engine 任务涉及 AsyncTask、Async()、UE::Tasks、FR
 ## 参考
 
 - 代码模式和节点结构读取 `references/async-patterns.md`。
+- 需要完整 `UBlueprintAsyncActionBase` 节点形状时读取 `references/async-blueprint-node-template.md`。
