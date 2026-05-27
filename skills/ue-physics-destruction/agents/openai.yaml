@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE Physics Destruction"
+  short_description: "Plan and debug Unreal Chaos physics, collision, ragdoll, and destruction."
+  default_prompt: "Use $ue-physics-destruction to design or debug Chaos Physics, collision, ragdoll, or Geometry Collection destruction."

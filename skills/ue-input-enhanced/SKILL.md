@@ -51,6 +51,15 @@ When adding or changing input behavior that is visible to Blueprint, include exa
 - If rebinding does not persist, check settings save/load and when mapping contexts are rebuilt.
 - If a C++ action is Blueprint-exposed, pair the C++ API with graph-level implementation instructions.
 
+## Common Issues
+
+| Symptom | Likely Cause | First Check |
+|---------|--------------|-------------|
+| Action never fires | Mapping context was not added to the local player subsystem | Log `AddMappingContext` owner and priority |
+| Action fires twice | Duplicate binding in C++ and Blueprint or repeated setup | Inspect `SetupPlayerInputComponent` and Event Graph input nodes |
+| UI consumes gameplay input | Input mode/focus/CommonUI activation owns the action | Check focused widget and active mapping contexts |
+| Rebind disappears after restart | Settings were not saved or contexts rebuilt from defaults | Check save slot/config write and reload order |
+
 ## References
 
 - Read `references/enhanced-input-checklist.md` for asset setup, binding, and validation.

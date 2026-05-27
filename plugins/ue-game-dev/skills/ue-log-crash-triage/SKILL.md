@@ -66,6 +66,15 @@ UE Log/Crash Triage
 - Do not edit code during triage unless the user asks for a fix after the diagnosis.
 - Preserve uncertainty when logs are truncated; ask for the missing section around the first error.
 
+## Common Issues
+
+| Symptom | Likely Cause | First Check |
+|---------|--------------|-------------|
+| `Cook failed` after many warnings | Earlier asset load, Blueprint compile, or missing class error | Search upward for the first `Error:` before `Cook failed` |
+| Linker unresolved external | Missing implementation, module dependency, or API macro | Inspect the symbol owner and `.Build.cs` dependencies |
+| Blueprint compile error | Broken pin, renamed member, or missing parent API | Open the named Blueprint and compile it after C++ build |
+| Crash callstack ends in engine code | Project callback passed invalid data earlier | Find the first project frame above engine frames |
+
 ## References
 
 - Use `references/triage-report-template.md` for structured reports.

@@ -41,6 +41,7 @@ Use this skill for concrete Unreal C++ gameplay work. Favor project-local patter
 
 - Use `scripts/ue_blueprint_api_report.py --project <path> --format json` when reviewing or documenting Blueprint-exposed C++ APIs. It scans headers for `BlueprintCallable`, `BlueprintPure`, Blueprint events, and assignable/readable properties, then emits Blueprint handoff steps.
 - Read `references/cpp-patterns.md` when touching UObject ownership, reflection, module boundaries, or gameplay class design.
+- Read `references/subsystem-template.md` when choosing or sketching `UGameInstanceSubsystem` or `UWorldSubsystem` ownership.
 - Read `references/blueprint-api.md` before exposing C++ to Blueprint or splitting work between C++ and Blueprint.
 - Read `references/validation.md` before claiming a UE C++ change is complete.
 - Use `$ue-async-systems` when work involves background execution, game-thread handoff, async Blueprint nodes, cancellation, or thread lifetime.

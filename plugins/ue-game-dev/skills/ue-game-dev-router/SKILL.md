@@ -1,6 +1,6 @@
 ---
 name: ue-game-dev-router
-description: Route Unreal Engine game and client development requests to the most specific UE workflow skill. Use as the entry point when the domain or best skill is unclear, or when the request spans project intake, stage detection, gate checks, workflow state, log/crash triage, feature brief, implementation planning, completion handoff, onboarding, multi-agent coordination, Blueprint, C++, plugins, modules, editor tooling, GAS, networking, input, AI, animation, rendering, UI, testing, debugging, performance, or packaging.
+description: Route Unreal Engine game and client development requests to the most specific UE workflow skill. Use as the entry point when the domain or best skill is unclear, or when the request spans project intake, stage detection, gate checks, workflow state, log/crash triage, feature brief, implementation planning, completion handoff, onboarding, multi-agent coordination, Blueprint, C++, plugins, modules, editor tooling, GAS, networking, input, AI, animation, rendering, UI, physics, data, testing, debugging, performance, or packaging.
 ---
 
 # UE Game Dev Router
@@ -32,6 +32,8 @@ Use this skill first when the request spans multiple Unreal Engine areas or the 
 - Use `$ue-external-services` for HTTP, REST, JSON, WebSocket, TCP sockets, backend API clients, streaming responses, heartbeats, reconnects, request queues, auth headers, and external process or service integration.
 - Use `$ue-audio` for MetaSound, Sound Cues, AudioComponents, Sound Classes, Sound Mixes, Sound Concurrency, Quartz timing, spatialization, attenuation, and audio performance.
 - Use `$ue-world-streaming` for World Partition, Data Layers, HLOD, Level Streaming, Level Streaming Volumes, Large World Coordinates, runtime grid setup, and actor loading/unloading.
+- Use `$ue-physics-destruction` for Chaos Physics, collision channels/profiles, Physical Materials, Geometry Collections, Fracture, ragdoll, Physics Constraints, physics animation blending, and physics debugging.
+- Use `$ue-data-management` for Primary Asset Manager, Data Assets, DataTables, CurveTables, DataRegistry, soft/hard references, async asset loading, cook rules, chunks, and gameplay data validation.
 - Use `$ue-save-load-sync` for SaveGame schemas, serialization, restore flows, RepNotify, RPC entry points, and persistent state that intersects with network state.
 - Use `$ue-world-interaction` for pickups, spawners, overlap/trace interactions, interaction radius checks, world actor lifecycle, and success/failure feedback.
 - Use `$ue-render-vfx` for renderer settings, materials, material functions, shader code, post process, Niagara systems, particles, GPU simulation, LODs, and visual performance.
@@ -48,7 +50,16 @@ If a task crosses domains, start with the skill that owns the first failing or u
 
 If the user explicitly asks for multi-agent coordination, route to `$ue-multi-agent-workflow` first so it can define roles, ownership boundaries, parallel discovery, dependent phases, and the focused follow-up skills.
 
-If the request involves physics, destruction, or another domain without a dedicated sibling skill, handle it directly within this router using general Unreal best practices and note the coverage gap.
+If the request involves another domain without a dedicated sibling skill, handle it directly within this router using general Unreal best practices and note the coverage gap.
+
+## Chinese Routing Hints
+
+- 中文 "粒子特效 / 后处理 / 材质球 / 着色器" should route to `$ue-render-vfx`.
+- 中文 "角色动画 / 动画蓝图 / 蒙太奇 / 状态机 / IK" should route to `$ue-animation`.
+- 中文 "行为树 / 巡逻 / 寻路 / AI感知 / 导航网格" should route to `$ue-ai-navigation`.
+- 中文 "存档 / 读档 / 数据持久化" should route to `$ue-save-load-sync`.
+- 中文 "布娃娃 / 物理约束 / 破坏系统 / 碰撞通道" should route to `$ue-physics-destruction`.
+- 中文 "DataTable / 数据表 / 数据资产 / 软引用 / 异步加载 / 资产管理" should route to `$ue-data-management`.
 
 ## Production Workflow
 
@@ -109,7 +120,7 @@ intake -> stage detect -> workflow state -> brief -> gate check -> implementatio
 - For production-facing features, include an appropriate test or smoke validation path unless the user explicitly asks for exploration only.
 - For feature lifecycle work, preserve the intake/brief/plan/done chain when it adds clarity, but do not force it on small direct fixes.
 - For multi-agent work, require a coordinator synthesis, role statuses, file ownership boundaries, and focused follow-up skills before implementation.
-- Use the shared `rules/` guidance when a task touches C++, Blueprint, networking, assets, or packaging.
+- Use the shared `rules/` guidance when a task touches C++, Blueprint, networking, assets, naming, performance, or packaging.
 
 ## Verification
 

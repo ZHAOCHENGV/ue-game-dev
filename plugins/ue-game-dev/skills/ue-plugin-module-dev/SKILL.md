@@ -67,6 +67,7 @@ Use this skill for Unreal Engine `.uplugin` plugins and C++ modules. Keep plugin
 ## References
 
 - Read `references/plugin-module-checklist.md` for `.uplugin`, module, `.Build.cs`, and packaging review.
+- Read `references/plugin-scaffold-template.md` when creating a Runtime plus Editor plugin scaffold.
 - Read `references/ue-naming-conventions.md` before creating or renaming UE assets, C++ files, modules, plugins, or Blueprint-exposed APIs.
 - Read `references/ue-cpp-coding-standard.md` before creating public C++ APIs or reviewing plugin code quality.
 - Read `references/third-party-library-wrapper.md` when wrapping external C++ libraries, SDKs, DLLs, static libs, or platform-specific vendor binaries.

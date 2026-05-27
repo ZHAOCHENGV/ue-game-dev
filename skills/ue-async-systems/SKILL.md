@@ -38,6 +38,7 @@ Use this skill for Unreal Engine asynchronous work that must stay responsive, ga
 ## References
 
 - Read `references/async-patterns.md` for selection guidance across timers, `AsyncTask`, `Async`, `UE::Tasks`, `FRunnable`, `ParallelFor`, and Blueprint async nodes.
+- Read `references/async-blueprint-node-template.md` when the output needs a `UBlueprintAsyncActionBase` node shape.
 - Use `$ue-external-services` when async work is primarily HTTP, WebSocket, TCP, JSON, backend APIs, heartbeats, or reconnect logic.
 - Use `$ue-cpp-gameplay` after async ownership is clear and the remaining work is normal gameplay C++.
 - Use `$ue-debug-validation` when symptoms involve race conditions, callbacks after destruction, game-thread asserts, or intermittent crashes.

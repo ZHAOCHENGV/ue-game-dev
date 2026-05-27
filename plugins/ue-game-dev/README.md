@@ -138,7 +138,7 @@ Use UE Game Dev to add tests for this UE feature.
 
 ## 功能概览
 
-本插件包含 **1 个路由技能 + 31 个领域技能**，覆盖 UE 开发全链路：
+本插件包含 **1 个路由技能 + 33 个领域技能**，覆盖 UE 开发全链路：
 
 | 技能 | 领域 |
 |------|------|
@@ -161,6 +161,8 @@ Use UE Game Dev to add tests for this UE feature.
 | `ue-external-services` | HTTP、JSON、WebSocket、TCP、外部服务客户端 |
 | `ue-audio` | MetaSound、Sound Cue、AudioComponent、Quartz、空间化和音频性能 |
 | `ue-world-streaming` | World Partition、Data Layers、HLOD、Level Streaming 和开放世界流送 |
+| `ue-physics-destruction` | Chaos 物理、碰撞、布娃娃、Geometry Collection 和破坏系统 |
+| `ue-data-management` | DataTable、Data Asset、Asset Manager、软引用和异步资产加载 |
 | `ue-input-enhanced` | Enhanced Input（Input Action、Mapping Context、重绑定、UI 焦点） |
 | `ue-gas-networking` | GAS 技能系统与网络同步 |
 | `ue-save-load-sync` | 存档/加载与状态同步 |
@@ -240,16 +242,20 @@ Use UE Game Dev to add tests for this UE feature.
 | 工具 | 路径 | 用途 |
 |------|------|------|
 | `ue-project-scan` | `skills/ue-project-onboarding/scripts/ue_project_scan.py` | 只读扫描 `.uproject`、模块、插件、源码文件、Build 文件和常见资产文件名 |
+| `ue-config-audit` | `skills/ue-project-onboarding/scripts/ue_config_audit.py` | 只读审计 `Config/*.ini`、默认地图、Enhanced Input、Maps to Cook 和 editor-only 配置风险 |
 | `ue-log-triage` | `skills/ue-log-crash-triage/scripts/ue_log_triage.py` | 从 UE 日志中提取首个可行动错误、失败阶段、证据和下一步技能 |
 | `ue-blueprint-api-report` | `skills/ue-cpp-gameplay/scripts/ue_blueprint_api_report.py` | 扫描 `BlueprintCallable`、`BlueprintPure`、蓝图事件和可绑定属性，生成蓝图接法提示 |
+| `ue-dependency-graph` | `skills/ue-architecture/scripts/ue_dependency_graph.py` | 解析 `.Build.cs` 模块依赖、循环依赖、Runtime→Editor 风险，并可输出 Mermaid 图 |
 | `ue-agent-plan` | `skills/ue-multi-agent-workflow/scripts/ue_agent_plan.py` | 根据用户请求生成 `solo` / `lean` / `full` 角色分工、所有权边界和后续技能 |
 
 示例：
 
 ```powershell
 python skills\ue-project-onboarding\scripts\ue_project_scan.py --project F:\UEObject\MyGame --format json
+python skills\ue-project-onboarding\scripts\ue_config_audit.py --project F:\UEObject\MyGame --format json
 python skills\ue-log-crash-triage\scripts\ue_log_triage.py --log F:\UEObject\MyGame\Saved\Logs\MyGame.log --format json
 python skills\ue-cpp-gameplay\scripts\ue_blueprint_api_report.py --project F:\UEObject\MyGame --format json
+python skills\ue-architecture\scripts\ue_dependency_graph.py --project F:\UEObject\MyGame --format mermaid
 python skills\ue-multi-agent-workflow\scripts\ue_agent_plan.py --request "用多 Agent 熟悉这个旧 UE 项目，准备二开" --format json
 ```
 
@@ -324,17 +330,21 @@ skill-name/
 $env:PYTHONUTF8='1'
 python scripts\sync_marketplace_package.py
 python scripts\validate_plugin.py
+python -m unittest discover tests
+git diff --check
 ```
 
-`sync_marketplace_package.py` 会把根目录插件同步到 `plugins/ue-game-dev/` 市场安装包。`validate_plugin.py` 会检查 `plugin.json`、技能 frontmatter、`agents/openai.yaml`、README 技能数量、共享模板/规则文件、路由场景、marketplace 清单和市场包版本一致性，以及自动打包技能必须保持显式调用。
+`sync_marketplace_package.py` 会把根目录插件同步到 `plugins/ue-game-dev/` 市场安装包。`validate_plugin.py` 会检查 `plugin.json`、技能 frontmatter、`agents/openai.yaml`、README 技能数量、共享模板/规则文件、路由场景、marketplace 清单、市场包内容哈希一致性，以及自动打包技能必须保持显式调用。
 
 ## 工作流工件
 
 - `templates/ue-task.md`：用于保存 UE 单个功能/修复任务的目标、范围、实现计划和验收条件。
 - `templates/ue-test-evidence.md`：用于记录构建、蓝图编译、PIE、自动化测试、多人验证和打包风险证据。
 - `Saved/CodexWorkflow/`：推荐用于 UE 项目内的 AI 可读项目记忆，例如 `project-context.md`、`module-map.md`、`asset-index.md`、`decisions.md`、`known-risks.md` 和 `active-task.md`。
-- `rules/`：集中存放 UE C++、蓝图、网络、资产和打包规则，供 router、领域技能和自检脚本引用。
+- `rules/`：集中存放 UE C++、蓝图、网络、资产、命名、性能和打包规则，供 router、领域技能和自检脚本引用。
 - `tests/route_scenarios.json`：记录典型用户请求应路由到哪个技能，防止自动打包等边界被误改。
+- `CONTRIBUTING.md`：记录新增技能、修改路由、扩展工具、marketplace 同步和中文分支同步流程。
+- `docs/architecture.md`：用 Mermaid 描述 Router 硬规则和领域加权评分 fallback 的整体结构。
 
 ## 许可证
 

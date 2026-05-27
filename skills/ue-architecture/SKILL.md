@@ -41,6 +41,12 @@ Use this skill before broad implementation or refactors. Output the intended own
 - Provide Blueprint/C++ surface decisions.
 - Provide migration risk and validation steps.
 
+## Tooling
+
+- Use `scripts/ue_dependency_graph.py --project <path> --format json` to inspect `.Build.cs` dependency edges before proposing a module refactor.
+- Use `--format mermaid` when a visual module graph would make ownership or cycles easier to review.
+- Treat Runtime-to-Editor dependency warnings as architecture risks to resolve through module boundaries or editor-only modules.
+
 ## References
 
 - Read `references/module-boundaries.md` for module graph and boundary review.

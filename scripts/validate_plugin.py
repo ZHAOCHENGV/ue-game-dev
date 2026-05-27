@@ -1,6 +1,8 @@
+import hashlib
 import json
 import re
 import sys
+from collections import defaultdict
 from pathlib import Path
 
 
@@ -22,11 +24,16 @@ MULTI_AGENT_REFERENCES = [
 ]
 UE_TOOL_SCRIPTS = [
     SKILLS / "ue-project-onboarding" / "scripts" / "ue_project_scan.py",
+    SKILLS / "ue-project-onboarding" / "scripts" / "ue_config_audit.py",
     SKILLS / "ue-log-crash-triage" / "scripts" / "ue_log_triage.py",
     SKILLS / "ue-cpp-gameplay" / "scripts" / "ue_blueprint_api_report.py",
+    SKILLS / "ue-architecture" / "scripts" / "ue_dependency_graph.py",
     SKILLS / "ue-multi-agent-workflow" / "scripts" / "ue_agent_plan.py",
 ]
 WARNINGS: list[str] = []
+
+SYNC_DIRS = [".codex-plugin", "assets", "rules", "skills", "templates"]
+SYNC_FILES = ["CHANGELOG.md", "LICENSE", "README.md"]
 
 
 def warn(message: str) -> None:
@@ -148,6 +155,12 @@ def validate_plugin_json() -> None:
         "data-layers",
         "hlod",
         "level-streaming",
+        "physics",
+        "chaos",
+        "destruction",
+        "data-management",
+        "data-table",
+        "asset-manager",
     ]:
         if keyword not in keywords:
             fail(f"plugin keywords should include {keyword}")
@@ -196,6 +209,318 @@ def validate_multi_agent_support() -> None:
                 fail(f"{path.relative_to(ROOT)} should mention {token}")
 
 
+SKILL_PATTERNS: dict[str, list[tuple[str, float]]] = {
+    "ue-render-vfx": [
+        ("Niagara", 3.0),
+        ("VFX", 3.0),
+        ("Lumen", 2.0),
+        ("Nanite", 2.0),
+        ("material", 2.0),
+        ("shader", 2.0),
+        ("post process", 2.0),
+        ("renderer", 1.5),
+        ("gpu emitter", 2.0),
+        ("粒子特效", 3.0),
+        ("粒子系统", 3.0),
+        ("后处理", 2.0),
+        ("材质球", 2.0),
+        ("材质", 1.5),
+        ("着色器", 2.0),
+        ("渲染管线", 2.0),
+        ("渲染", 1.0),
+        ("特效", 1.5),
+    ],
+    "ue-animation": [
+        ("Animation Blueprint", 3.0),
+        ("Montage", 3.0),
+        ("Blend Space", 3.0),
+        ("Control Rig", 2.0),
+        ("Motion Matching", 2.0),
+        ("Anim Notify", 2.0),
+        ("root motion", 2.0),
+        ("动画蓝图", 3.0),
+        ("蒙太奇", 3.0),
+        ("骨骼动画", 2.0),
+        ("IK", 1.5),
+        ("状态机", 1.5),
+        ("角色动画", 2.0),
+        ("动画", 1.0),
+        ("动画重定向", 2.0),
+    ],
+    "ue-ai-navigation": [
+        ("Behavior Tree", 3.0),
+        ("Blackboard", 3.0),
+        ("EQS", 3.0),
+        ("NavMesh", 3.0),
+        ("AI Controller", 2.0),
+        ("AI Perception", 2.0),
+        ("StateTree", 2.0),
+        ("行为树", 3.0),
+        ("导航网格", 3.0),
+        ("巡逻", 2.0),
+        ("AI感知", 2.0),
+        ("寻路", 2.0),
+        ("导航", 1.5),
+        ("AI", 0.5),
+    ],
+    "ue-save-load-sync": [
+        ("USaveGame", 3.0),
+        ("SaveGame", 2.0),
+        ("RepNotify", 1.5),
+        ("save/load", 2.0),
+        ("serialization", 1.5),
+        ("schema version", 2.0),
+        ("restore", 1.0),
+        ("存档", 3.0),
+        ("读档", 3.0),
+        ("保存游戏", 2.0),
+        ("数据持久化", 2.0),
+        ("存读档", 2.0),
+    ],
+    "ue-debug-validation": [
+        ("Gameplay Debugger", 3.0),
+        ("PIE debug", 2.0),
+        ("Actor Tick", 1.5),
+        ("debug", 1.0),
+        ("validation", 1.0),
+        ("showdebug", 2.0),
+        ("调试", 2.0),
+        ("断点", 2.0),
+        ("排查", 1.5),
+        ("验证", 1.0),
+        ("诊断", 1.5),
+    ],
+    "ue-client-ui": [
+        ("UMG", 3.0),
+        ("CommonUI", 3.0),
+        ("HUD", 2.0),
+        ("DPI", 1.5),
+        ("input focus", 2.0),
+        ("view model", 2.0),
+        ("gamepad navigation", 2.0),
+        ("背包UI", 2.0),
+        ("用户界面", 2.0),
+        ("血条", 2.0),
+        ("控件", 1.5),
+        ("菜单", 1.0),
+        ("UI", 0.5),
+    ],
+    "ue-world-interaction": [
+        ("pickup", 2.0),
+        ("spawner", 2.0),
+        ("overlap", 1.5),
+        ("line trace", 2.0),
+        ("interact prompt", 2.0),
+        ("interaction radius", 2.0),
+        ("拾取物品", 3.0),
+        ("交互系统", 2.0),
+        ("射线检测", 2.0),
+        ("拾取", 2.0),
+        ("碰撞检测", 1.5),
+        ("交互", 1.0),
+    ],
+    "ue-testing-automation": [
+        ("AutomationSpec", 3.0),
+        ("FAutomationTestBase", 3.0),
+        ("Functional Test", 3.0),
+        ("Functional Tests", 3.0),
+        ("automation test", 2.0),
+        ("regression", 1.5),
+        ("pie scenario", 1.5),
+        ("自动化测试", 3.0),
+        ("功能测试", 2.0),
+        ("回归测试", 2.0),
+        ("测试", 0.5),
+    ],
+    "ue-gas-networking": [
+        ("GameplayAbility", 3.0),
+        ("AttributeSet", 3.0),
+        ("GameplayCue", 3.0),
+        ("GameplayEffect", 3.0),
+        ("ASC", 2.0),
+        ("prediction", 1.5),
+        ("gas", 1.5),
+        ("技能系统", 2.0),
+        ("属性集", 2.0),
+        ("冷却", 1.0),
+        ("预测", 1.0),
+        ("效果", 0.5),
+    ],
+    "ue-architecture": [
+        ("Build.cs dependency", 2.0),
+        ("Public/Private", 2.0),
+        ("module graph", 2.0),
+        ("architecture", 2.0),
+        ("module boundary", 2.0),
+        ("circular dependency", 3.0),
+        ("dependency graph", 2.0),
+        ("循环依赖", 3.0),
+        ("模块划分", 2.0),
+        ("依赖关系", 2.0),
+        ("解耦", 2.0),
+        ("架构", 1.5),
+    ],
+    "ue-blueprint-workflow": [
+        ("Event Graph", 3.0),
+        ("Blueprint graph", 2.0),
+        ("Widget Blueprint", 2.0),
+        ("wire blueprint nodes", 2.0),
+        ("node", 0.5),
+        ("pin", 0.5),
+        ("事件图", 2.0),
+        ("蓝图图表", 2.0),
+        ("蓝图节点", 2.0),
+        ("连线", 1.0),
+    ],
+    "ue-editor-tooling-slate": [
+        ("Slate", 3.0),
+        ("ToolMenus", 3.0),
+        ("UICommand", 3.0),
+        ("UICommands", 3.0),
+        ("Editor subsystem", 2.0),
+        ("details customization", 2.0),
+        ("tab spawner", 2.0),
+        ("editor panel", 2.0),
+        ("编辑器工具面板", 3.0),
+        ("编辑器面板", 2.0),
+        ("编辑器工具", 2.0),
+    ],
+    "ue-plugin-module-dev": [
+        (".uplugin", 3.0),
+        ("ModuleRules", 3.0),
+        ("API macro", 2.0),
+        ("Public Private", 2.0),
+        ("plugin module", 2.0),
+        ("runtime module", 2.0),
+        ("editor module", 2.0),
+        ("Runtime + Editor", 3.0),
+        ("插件开发", 2.0),
+        ("模块开发", 2.0),
+        ("双模块插件", 2.0),
+    ],
+    "ue-input-enhanced": [
+        ("Enhanced Input", 3.0),
+        ("IA_", 3.0),
+        ("Input Mapping", 3.0),
+        ("输入系统", 2.0),
+        ("按键绑定", 2.0),
+        ("重绑定", 2.0),
+    ],
+    "ue-async-systems": [
+        ("UBlueprintAsyncActionBase", 3.0),
+        ("AsyncTask", 3.0),
+        ("GameThread", 2.0),
+        ("ParallelFor", 2.0),
+        ("异步蓝图节点", 3.0),
+        ("异步节点", 2.0),
+        ("后台线程", 2.0),
+        ("异步", 1.0),
+    ],
+    "ue-external-services": [
+        ("HTTP", 2.0),
+        ("WebSocket", 3.0),
+        ("TCP", 2.0),
+        ("JSON 接口", 3.0),
+        ("外部服务", 2.0),
+        ("心跳", 2.0),
+        ("重连", 2.0),
+        ("接口对接", 2.0),
+    ],
+    "ue-audio": [
+        ("MetaSound", 3.0),
+        ("Sound Cue", 3.0),
+        ("AudioComponent", 3.0),
+        ("Sound Class", 2.0),
+        ("Sound Mix", 2.0),
+        ("Concurrency", 1.5),
+        ("Quartz", 2.0),
+        ("audio", 1.5),
+        ("sound", 1.0),
+        ("attenuation", 2.0),
+        ("spatialization", 2.0),
+        ("空间化", 2.0),
+        ("音效", 2.0),
+        ("音频", 2.0),
+        ("音乐", 1.5),
+        ("声音", 1.0),
+    ],
+    "ue-world-streaming": [
+        ("World Partition", 3.0),
+        ("Data Layers", 3.0),
+        ("HLOD", 3.0),
+        ("Level Streaming", 3.0),
+        ("Streaming Volume", 2.0),
+        ("Large World Coordinates", 2.0),
+        ("runtime grid", 2.0),
+        ("actor loading", 2.0),
+        ("open world", 2.0),
+        ("关卡流送", 3.0),
+        ("世界分区", 3.0),
+        ("开放世界", 2.0),
+    ],
+    "ue-physics-destruction": [
+        ("Chaos", 3.0),
+        ("Physics Constraint", 3.0),
+        ("Geometry Collection", 3.0),
+        ("Fracture", 3.0),
+        ("Ragdoll", 3.0),
+        ("Physical Material", 2.0),
+        ("collision channel", 2.0),
+        ("physics", 1.5),
+        ("destruction", 2.0),
+        ("布娃娃", 3.0),
+        ("物理约束", 3.0),
+        ("破坏系统", 3.0),
+        ("物理材质", 2.0),
+        ("碰撞通道", 2.0),
+        ("物理效果", 2.0),
+        ("破碎", 2.0),
+    ],
+    "ue-data-management": [
+        ("Primary Asset Manager", 3.0),
+        ("Asset Manager", 2.5),
+        ("DataTable", 3.0),
+        ("CurveTable", 2.0),
+        ("DataRegistry", 3.0),
+        ("FStreamableManager", 3.0),
+        ("Soft Reference", 2.0),
+        ("Hard Reference", 2.0),
+        ("Primary Asset Rules", 2.0),
+        ("Chunk", 1.5),
+        ("数据表", 3.0),
+        ("物品数据", 2.0),
+        ("数据资产", 2.0),
+        ("资产管理", 2.0),
+        ("异步加载", 2.0),
+        ("软引用", 2.0),
+        ("硬引用", 2.0),
+    ],
+    "ue-cpp-gameplay": [
+        ("BlueprintCallable", 3.0),
+        ("蓝图怎么接", 3.0),
+    ],
+    "ue-start": [
+        ("where to start", 2.0),
+        ("start a ue task", 2.0),
+        ("unclear scope", 2.0),
+        ("choose workflow", 2.0),
+        ("从哪开始", 2.0),
+        ("不知道怎么做", 1.5),
+    ],
+    "ue-performance-packaging": [
+        ("profile", 2.0),
+        ("profiling", 2.0),
+        ("stat unit", 2.0),
+        ("frame rate", 2.0),
+        ("性能", 1.5),
+        ("帧率", 2.0),
+        ("内存", 1.0),
+        ("优化", 1.0),
+        ("打包准备", 2.0),
+    ],
+}
+
+
 def route_prompt(prompt: str) -> str:
     lower = prompt.lower()
     multi_agent = any(
@@ -231,74 +556,14 @@ def route_prompt(prompt: str) -> str:
         return "ue-implementation-plan"
     if any(token in prompt for token in ["完成验收", "交接清单", "做完了"]):
         return "ue-feature-done"
-    if "Enhanced Input" in prompt or "IA_" in prompt or "Input Mapping" in prompt:
-        return "ue-input-enhanced"
-    if any(token in prompt for token in ["UBlueprintAsyncActionBase", "AsyncTask", "后台线程", "GameThread", "ParallelFor", "异步蓝图节点", "异步节点"]):
-        return "ue-async-systems"
-    if any(token in prompt for token in ["HTTP", "WebSocket", "TCP", "JSON 接口", "外部服务", "心跳", "重连"]):
-        return "ue-external-services"
-    if any(token in prompt for token in ["MetaSound", "Sound Cue", "AudioComponent", "Sound Class", "Sound Mix", "Concurrency", "Quartz"]):
-        return "ue-audio"
-    if any(token in lower for token in ["audio", "sound", "attenuation", "spatialization"]):
-        return "ue-audio"
-    if any(token in prompt for token in ["World Partition", "Data Layers", "HLOD", "Level Streaming", "Streaming Volume", "Large World Coordinates"]):
-        return "ue-world-streaming"
-    if any(token in lower for token in ["runtime grid", "actor loading", "open world"]):
-        return "ue-world-streaming"
-    if any(token in prompt for token in ["Behavior Tree", "Blackboard", "EQS", "NavMesh", "AI Controller", "AI Perception", "StateTree"]):
-        return "ue-ai-navigation"
-    if any(token in prompt for token in ["Animation Blueprint", "Montage", "Blend Space", "Control Rig", "Motion Matching", "Anim Notify"]):
-        return "ue-animation"
-    if any(token in lower for token in ["root motion"]):
-        return "ue-animation"
-    if any(token in prompt for token in ["Build.cs dependency", "Public/Private", "module graph"]):
-        return "ue-architecture"
-    if any(token in lower for token in ["architecture", "module boundary", "circular dependency", "dependency graph"]):
-        return "ue-architecture"
-    if any(token in prompt for token in ["Event Graph", "Blueprint graph", "Widget Blueprint"]):
-        return "ue-blueprint-workflow"
-    if any(token in lower for token in ["wire blueprint nodes", "node", "pin"]):
-        return "ue-blueprint-workflow"
-    if any(token in prompt for token in ["UMG", "CommonUI", "HUD", "DPI"]):
-        return "ue-client-ui"
-    if any(token in lower for token in ["input focus", "view model", "gamepad navigation"]):
-        return "ue-client-ui"
-    if any(token in prompt for token in ["Gameplay Debugger", "PIE debug", "Actor Tick"]):
-        return "ue-debug-validation"
-    if any(token in lower for token in ["debug", "validation", "showdebug"]):
-        return "ue-debug-validation"
-    if any(token in prompt for token in ["Slate", "ToolMenus", "UICommand", "UICommands", "Editor subsystem"]):
-        return "ue-editor-tooling-slate"
-    if any(token in lower for token in ["details customization", "tab spawner", "editor panel"]):
-        return "ue-editor-tooling-slate"
-    if any(token in prompt for token in ["GameplayAbility", "AttributeSet", "GameplayCue", "GameplayEffect", "ASC"]):
-        return "ue-gas-networking"
-    if any(token in lower for token in ["prediction"]):
-        return "ue-gas-networking"
-    if any(token in prompt for token in [".uplugin", "ModuleRules", "API macro", "Public Private"]):
-        return "ue-plugin-module-dev"
-    if any(token in lower for token in ["plugin module", "runtime module", "editor module"]):
-        return "ue-plugin-module-dev"
-    if any(token in prompt for token in ["Niagara", "VFX", "Lumen", "Nanite"]):
-        return "ue-render-vfx"
-    if any(token in lower for token in ["material", "shader", "post process", "renderer", "gpu emitter"]):
-        return "ue-render-vfx"
-    if any(token in prompt for token in ["USaveGame", "SaveGame", "RepNotify"]):
-        return "ue-save-load-sync"
-    if any(token in lower for token in ["save/load", "serialization", "schema version", "restore"]):
-        return "ue-save-load-sync"
-    if any(token in lower for token in ["where to start", "start a ue task", "unclear scope", "choose workflow"]):
-        return "ue-start"
-    if any(token in prompt for token in ["AutomationSpec", "FAutomationTestBase", "Functional Test", "Functional Tests"]):
-        return "ue-testing-automation"
-    if any(token in lower for token in ["automation test", "regression", "pie scenario"]):
-        return "ue-testing-automation"
-    if any(token in lower for token in ["pickup", "spawner", "overlap", "line trace", "interact prompt", "interaction radius"]):
-        return "ue-world-interaction"
-    if "BlueprintCallable" in prompt or "蓝图怎么接" in prompt:
-        return "ue-cpp-gameplay"
-    if "gas" in lower:
-        return "ue-gas-networking"
+
+    scores: dict[str, float] = defaultdict(float)
+    for skill_name, patterns in SKILL_PATTERNS.items():
+        for pattern, weight in patterns:
+            if pattern in prompt or pattern in lower:
+                scores[skill_name] += weight
+    if scores:
+        return max(scores, key=scores.get)
     return "ue-game-dev-router"
 
 
@@ -387,12 +652,16 @@ def validate_required_support_files() -> None:
         ROOT / "rules" / "ue-networking.md",
         ROOT / "rules" / "ue-assets.md",
         ROOT / "rules" / "ue-packaging.md",
+        ROOT / "rules" / "ue-naming.md",
+        ROOT / "rules" / "ue-performance.md",
         SKILLS / "ue-workflow-state" / "references" / "state-file-templates.md",
         SKILLS / "ue-log-crash-triage" / "references" / "triage-report-template.md",
         SKILLS / "ue-async-systems" / "references" / "async-patterns.md",
         SKILLS / "ue-external-services" / "references" / "service-client-patterns.md",
         SKILLS / "ue-audio" / "references" / "audio-checklist.md",
         SKILLS / "ue-world-streaming" / "references" / "world-partition-checklist.md",
+        SKILLS / "ue-physics-destruction" / "references" / "chaos-physics-checklist.md",
+        SKILLS / "ue-data-management" / "references" / "data-asset-patterns.md",
         SKILLS / "ue-plugin-module-dev" / "references" / "third-party-library-wrapper.md",
         ROUTE_SCENARIOS,
         ROOT / "tests" / "test_ue_tools.py",
@@ -406,8 +675,10 @@ def validate_required_support_files() -> None:
 def validate_tool_mentions() -> None:
     expected_mentions = {
         "ue_project_scan.py": SKILLS / "ue-project-onboarding" / "SKILL.md",
+        "ue_config_audit.py": SKILLS / "ue-project-onboarding" / "SKILL.md",
         "ue_log_triage.py": SKILLS / "ue-log-crash-triage" / "SKILL.md",
         "ue_blueprint_api_report.py": SKILLS / "ue-cpp-gameplay" / "SKILL.md",
+        "ue_dependency_graph.py": SKILLS / "ue-architecture" / "SKILL.md",
         "ue_agent_plan.py": SKILLS / "ue-multi-agent-workflow" / "SKILL.md",
     }
     readme = read_text(README)
@@ -416,6 +687,46 @@ def validate_tool_mentions() -> None:
             fail(f"{skill_path.relative_to(ROOT)} should mention {script_name}")
         if script_name not in readme:
             fail(f"README should mention {script_name}")
+
+
+def file_hash(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def validate_marketplace_content_sync() -> None:
+    for dir_name in SYNC_DIRS:
+        root_dir = ROOT / dir_name
+        package_dir = MARKETPLACE_PACKAGE / dir_name
+        if not root_dir.exists():
+            continue
+        if not package_dir.exists():
+            fail(f"missing marketplace package directory: {package_dir.relative_to(ROOT)}")
+
+        for root_file in sorted(root_dir.rglob("*")):
+            if not root_file.is_file():
+                continue
+            package_file = package_dir / root_file.relative_to(root_dir)
+            if not package_file.exists():
+                fail(f"marketplace mirror missing: {package_file.relative_to(ROOT)}")
+            if file_hash(root_file) != file_hash(package_file):
+                fail(f"marketplace mirror out of sync: {root_file.relative_to(ROOT)}")
+
+        for package_file in sorted(package_dir.rglob("*")):
+            if not package_file.is_file():
+                continue
+            root_file = root_dir / package_file.relative_to(package_dir)
+            if not root_file.exists():
+                warn(f"marketplace mirror has extra file: {package_file.relative_to(ROOT)}")
+
+    for filename in SYNC_FILES:
+        root_file = ROOT / filename
+        package_file = MARKETPLACE_PACKAGE / filename
+        if not root_file.exists():
+            continue
+        if not package_file.exists():
+            fail(f"marketplace mirror missing: {package_file.relative_to(ROOT)}")
+        if file_hash(root_file) != file_hash(package_file):
+            fail(f"marketplace mirror out of sync: {filename}")
 
 
 def validate_marketplace_package() -> None:
@@ -479,6 +790,7 @@ def validate_marketplace_package() -> None:
         package_tool = MARKETPLACE_PACKAGE / tool_path.relative_to(ROOT)
         if not package_tool.exists():
             fail(f"marketplace package missing UE tool script: {package_tool.relative_to(ROOT)}")
+    validate_marketplace_content_sync()
 
 
 def main() -> None:

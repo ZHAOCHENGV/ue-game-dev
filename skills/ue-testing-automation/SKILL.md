@@ -50,6 +50,7 @@ Use this skill when Unreal work needs a repeatable validation path. Prefer the s
 ## References
 
 - Read `references/testing-checklist.md` for test type selection, plugin-specific checks, assertions, and run notes.
+- Read `references/automation-test-template.md` when the output needs a concrete Automation Test or Functional Test skeleton.
 - Use `$ue-debug-validation` when first reproducing an unknown failure.
 - Use `$ue-performance-packaging` when validation includes cook, packaging, profiling, or release readiness.
 - Use `$ue-plugin-module-dev` when test dependencies require module or descriptor changes.

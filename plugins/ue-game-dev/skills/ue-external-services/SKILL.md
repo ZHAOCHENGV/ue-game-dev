@@ -36,6 +36,7 @@ Use this skill for Unreal projects that talk to services outside Unreal networki
 ## References
 
 - Read `references/service-client-patterns.md` for HTTP, JSON, WebSocket, TCP, retries, heartbeat, reconnect, and subsystem ownership patterns.
+- Read `references/http-service-template.md` when the task needs a reusable HTTP service client shape.
 - Use `$ue-client-ui` when the remaining task is UI presentation or widget state.
 - Use `$ue-save-load-sync` when external service responses must persist locally or reconcile with durable saved state.
 - Use `$ue-gas-networking` only when the question is Unreal gameplay replication, GAS prediction, RPC authority, or replicated ability state.

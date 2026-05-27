@@ -41,4 +41,5 @@ Use this skill for Unreal Editor extensions. Keep all editor-only code in editor
 
 - Read `references/editor-tooling-checklist.md` before implementing editor menus, commands, tabs, details panels, or asset tools.
 - Read `references/editor-code-templates.md` for ToolMenus registration, UICommands, tab spawner, detail customization, and asset type actions code templates.
+- Read `references/slate-panel-template.md` when the task needs a concise ToolMenus, tab, or Slate panel scaffold.
 - Use `$ue-plugin-module-dev` for `.uplugin`, module split, and `.Build.cs` decisions.

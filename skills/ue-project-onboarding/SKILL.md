@@ -44,6 +44,7 @@ Use `references/onboarding-report-template.md` when a structured report helps. U
 ## Tooling
 
 - Use `scripts/ue_project_scan.py --project <path> --format json` for a read-only structure scan before writing an onboarding report or refreshing workflow state.
+- Use `scripts/ue_config_audit.py --project <path> --format json` when onboarding needs Config checks for default maps, Enhanced Input, Maps to Cook, or editor-only settings.
 - The tool reads `.uproject`, `Source/`, `Plugins/`, `Config/`, and `Content` filenames only. It does not edit project files and does not inspect binary `.uasset` internals.
 - Treat the tool output as a starting index; still read high-signal source files before making architecture conclusions.
 

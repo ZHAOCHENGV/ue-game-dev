@@ -59,6 +59,15 @@ Use this skill when the main task is to learn what is actually failing before ch
 - Remove temporary logs, debug widgets, console variables, or editor-only helpers before handoff unless they are intentionally kept.
 - When the issue touches a more specific domain, route to that skill after evidence identifies the failing owner.
 
+## Common Issues
+
+| Symptom | Likely Cause | First Check |
+|---------|--------------|-------------|
+| Tick runs but state does not change | Wrong instance, authority guard, or overwritten data | Log object name, role, owner, and the exact value before/after Tick |
+| Blueprint node looks wired but does nothing | Debug object mismatch or latent context issue | Set the correct PIE debug object and compile the asset |
+| Works in PIE but not packaged | Editor-only reference, missing cook asset, or config difference | Check `WITH_EDITOR`, module dependencies, and packaged logs |
+| Multiplayer client disagrees with server | Ownership, RPC direction, or RepNotify order | Log role, remote role, owner, instigator, and replication timestamp |
+
 ## References
 
 - Read `references/debug-checklist.md` for fault-domain triage and validation.

@@ -1,7 +1,7 @@
 {
   "name": "ue-game-dev",
-  "version": "0.12.0",
-  "description": "Unreal Engine game and client development workflows for project intake, stage detection, gate checks, persistent workflow state, log/crash triage, feature briefs, implementation planning, lightweight multi-agent orchestration, read-only UE helper tools, evidence-based completion handoff, existing project onboarding, Blueprint, C++, async systems, external HTTP/WebSocket/TCP services, audio and MetaSound, World Partition and level streaming, plugins, modules, editor tooling, Slate, naming conventions, Enhanced Input, GAS, networking, AI, animation, rendering, materials, Niagara, gameplay, UI, testing, debugging, performance, and explicit packaging automation.\n\nAliases: @ue-game-dev, /ue-game-dev, UE Game Dev, Unreal Engine assistant.\n\nUse UE Game Dev when the user asks to start or scope an Unreal task, detect project stage, run a readiness gate, persist project memory, triage logs/crashes, coordinate multi-agent Unreal work, understand an old or existing UE project before secondary development, run read-only UE project/log/API/agent planning tools, plan C++/Blueprint/assets/tests, verify completion with evidence, or work on Unreal Engine C++, Blueprint, async work, external services, audio, MetaSound, World Partition, Data Layers, HLOD, level streaming, Enhanced Input, plugin/module, editor tooling, GAS, networking, rendering, materials, Niagara, UI, AI, animation, testing, debugging, performance, or explicit RunUAT/BuildCookRun packaging automation.",
+  "version": "0.13.0",
+  "description": "Unreal Engine game and client development workflows for project intake, stage detection, gate checks, persistent workflow state, log/crash triage, feature briefs, implementation planning, lightweight multi-agent orchestration, read-only UE helper tools, evidence-based completion handoff, existing project onboarding, Blueprint, C++, async systems, external HTTP/WebSocket/TCP services, audio and MetaSound, World Partition and level streaming, Chaos physics, destruction, data management, asset loading, plugins, modules, editor tooling, Slate, naming conventions, Enhanced Input, GAS, networking, AI, animation, rendering, materials, Niagara, gameplay, UI, testing, debugging, performance, and explicit packaging automation.\n\nAliases: @ue-game-dev, /ue-game-dev, UE Game Dev, Unreal Engine assistant.\n\nUse UE Game Dev when the user asks to start or scope an Unreal task, detect project stage, run a readiness gate, persist project memory, triage logs/crashes, coordinate multi-agent Unreal work, understand an old or existing UE project before secondary development, run read-only UE project/log/API/agent planning tools, plan C++/Blueprint/assets/tests, verify completion with evidence, or work on Unreal Engine C++, Blueprint, async work, external services, audio, MetaSound, World Partition, Data Layers, HLOD, level streaming, Chaos physics, destruction, data management, DataTable, Asset Manager, Enhanced Input, plugin/module, editor tooling, GAS, networking, rendering, materials, Niagara, UI, AI, animation, testing, debugging, performance, or explicit RunUAT/BuildCookRun packaging automation.",
   "author": {
     "name": "zhaocw",
     "email": "zcw1419@qq.com",
@@ -92,13 +92,29 @@
     "buildcookrun",
     "one-click-packaging",
     "ci-build",
-    "release-automation"
+    "release-automation",
+    "physics",
+    "chaos",
+    "destruction",
+    "ragdoll",
+    "geometry-collection",
+    "collision",
+    "data-management",
+    "data-table",
+    "datatable",
+    "asset-manager",
+    "primary-asset",
+    "data-registry",
+    "soft-reference",
+    "async-loading",
+    "dependency-graph",
+    "config-audit"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "UE Game Dev",
-    "shortDescription": "Unreal workflows for project memory, logs, async, services, audio, worlds, and packaging",
-    "longDescription": "Use UE Game Dev for Unreal Engine client and gameplay work across project intake, stage detection, readiness gates, persistent workflow state, log and crash triage, feature briefs, implementation planning, lightweight multi-agent orchestration, read-only helper tools for UE project scanning, log triage, Blueprint API reporting, agent planning, evidence-based completion handoff, existing project onboarding, Blueprint graphs, C++, async systems, HTTP/WebSocket/TCP external services, audio, MetaSound, World Partition, Data Layers, HLOD, level streaming, Enhanced Input, plugins, modules, editor tooling, Slate, naming conventions, Gameplay Ability System, multiplayer replication, save/load, AI/navigation, animation, rendering, materials, Niagara VFX, UMG, testing automation, debugging, performance, packaging validation, and explicit RunUAT/BuildCookRun release automation.",
+    "shortDescription": "Unreal workflows for project memory, logs, async, services, physics, data, worlds, and packaging",
+    "longDescription": "Use UE Game Dev for Unreal Engine client and gameplay work across project intake, stage detection, readiness gates, persistent workflow state, log and crash triage, feature briefs, implementation planning, lightweight multi-agent orchestration, read-only helper tools for UE project scanning, log triage, Blueprint API reporting, agent planning, evidence-based completion handoff, existing project onboarding, Blueprint graphs, C++, async systems, HTTP/WebSocket/TCP external services, audio, MetaSound, World Partition, Data Layers, HLOD, level streaming, Chaos physics, destruction, data management, DataTable, Asset Manager, Enhanced Input, plugins, modules, editor tooling, Slate, naming conventions, Gameplay Ability System, multiplayer replication, save/load, AI/navigation, animation, rendering, materials, Niagara VFX, UMG, testing automation, debugging, performance, packaging validation, and explicit RunUAT/BuildCookRun release automation.",
     "developerName": "zhaocw",
     "category": "Coding",
     "capabilities": [
