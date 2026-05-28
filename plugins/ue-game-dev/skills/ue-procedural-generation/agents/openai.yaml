@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE Procedural Generation"
+  short_description: "Plan and review PCG, runtime generation, and instanced worlds."
+  default_prompt: "Use $ue-procedural-generation to design or debug PCG graphs, runtime procedural content, or instanced mesh generation."

@@ -182,6 +182,72 @@
     "expected_skill": "ue-world-streaming"
   },
   {
+    "name": "game_features_modular_gameplay",
+    "prompt": "Design a Game Feature Plugin with ModularGameplay and Lyra Experience actions",
+    "expected_skill": "ue-game-features"
+  },
+  {
+    "name": "zh_game_features_lyra",
+    "prompt": "帮我做一个模块化 Game Feature 插件，接入 Lyra Experience",
+    "expected_skill": "ue-game-features"
+  },
+  {
+    "name": "mass_entity_crowd",
+    "prompt": "Implement Mass Entity crowd agents with MassProcessor and MassFragment",
+    "expected_skill": "ue-mass-entity"
+  },
+  {
+    "name": "zh_mass_entity_crowd_ai",
+    "prompt": "帮我用 Mass Entity 做一群 NPC 群体 AI",
+    "expected_skill": "ue-mass-entity"
+  },
+  {
+    "name": "procedural_generation_pcg",
+    "prompt": "Create a PCG graph and runtime procedural generation system",
+    "expected_skill": "ue-procedural-generation"
+  },
+  {
+    "name": "zh_procedural_generation_pcg",
+    "prompt": "帮我做 PCG 程序化生成地形和植被",
+    "expected_skill": "ue-procedural-generation"
+  },
+  {
+    "name": "state_tree_combat",
+    "prompt": "Implement StateTree tasks and transitions for NPC combat",
+    "expected_skill": "ue-state-trees"
+  },
+  {
+    "name": "zh_state_tree_combat",
+    "prompt": "帮我用 StateTree 状态树做敌人战斗逻辑",
+    "expected_skill": "ue-state-trees"
+  },
+  {
+    "name": "sequencer_movie_render_queue",
+    "prompt": "Create a Sequencer cutscene and Movie Render Queue pipeline",
+    "expected_skill": "ue-sequencer-cinematics"
+  },
+  {
+    "name": "zh_sequencer_movie_render_queue",
+    "prompt": "帮我做 Sequencer 过场动画和 Movie Render Queue 输出",
+    "expected_skill": "ue-sequencer-cinematics"
+  },
+  {
+    "name": "character_movement_network_prediction",
+    "prompt": "Tune CharacterMovementComponent network prediction and custom movement mode",
+    "expected_skill": "ue-character-movement"
+  },
+  {
+    "name": "zh_character_movement_prediction",
+    "prompt": "帮我调 CharacterMovementComponent 角色移动和网络预测",
+    "expected_skill": "ue-character-movement"
+  },
+  {
+    "name": "game_feature_with_gas_prioritizes_feature_boundary",
+    "prompt": "Build a Lyra-style Game Feature plugin with GAS ability grants",
+    "expected_skill": "ue-game-features",
+    "forbidden_skill": "ue-gas-networking"
+  },
+  {
     "name": "zh_particle_vfx",
     "prompt": "帮我做一个粒子特效",
     "expected_skill": "ue-render-vfx"

@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE Character Movement"
+  short_description: "Plan and debug CharacterMovementComponent locomotion and prediction."
+  default_prompt: "Use $ue-character-movement to tune or debug CharacterMovementComponent, custom movement modes, or replicated locomotion."

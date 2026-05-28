@@ -71,5 +71,6 @@ Use this skill for AI behavior, pathfinding, and autonomous agent systems. Keep 
 
 - Read `references/ai-behavior-checklist.md` for Behavior Tree, EQS, and Perception validation.
 - Read `references/navigation-checklist.md` for NavMesh, pathfinding, and agent configuration review.
+- Read `references/state-tree-mass-ai-accuracy.md` when AI requests mention StateTree, Mass Entity, Mass Crowd, or crowd AI boundaries.
 - Use `$ue-cpp-gameplay` when AI needs custom components, subsystems, or gameplay C++ implementation.
 - Use `$ue-gas-networking` when AI abilities use GAS or need multiplayer authority handling.

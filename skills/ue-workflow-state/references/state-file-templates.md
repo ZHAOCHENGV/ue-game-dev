@@ -10,13 +10,23 @@ Create only the files that match the user's request. Keep every section short, f
 - Project:
 - Path:
 - UE version or EngineAssociation:
+- Engine source/API baseline:
+- Target platforms:
 - Primary modules:
 - Enabled plugins:
+- Game Feature plugins:
 - Main maps:
 - Startup flow:
 - Input flow:
 - UI flow:
 - Networking/GAS/AI/rendering notes:
+- Asset conventions:
+- C++ conventions:
+- Blueprint conventions:
+- API verification notes:
+- Imported context:
+  - `.agents/ue-project-context.md` present:
+  - Read-only import summary:
 - Last refreshed:
 - Evidence:
 ```

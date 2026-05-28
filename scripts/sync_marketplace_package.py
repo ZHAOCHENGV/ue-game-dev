@@ -16,6 +16,7 @@ PACKAGE_DIRS = [
 PACKAGE_FILES = [
     "CHANGELOG.md",
     "LICENSE",
+    "NOTICE",
     "README.md",
 ]
 

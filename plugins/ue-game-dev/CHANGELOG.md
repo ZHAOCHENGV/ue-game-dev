@@ -4,6 +4,18 @@
 
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
+## [0.14.0] - 2026-05-28
+
+### 新增
+- 新增 `ue-game-features`、`ue-mass-entity`、`ue-procedural-generation`、`ue-state-trees`、`ue-sequencer-cinematics` 和 `ue-character-movement` 6 个领域技能，覆盖 Game Feature Plugin、ModularGameplay、Lyra Experience、Mass Entity、PCG、StateTree、Sequencer、Movie Render Queue 与 CharacterMovementComponent 网络预测等 UE5 专项领域。
+- 新增 API 准确性参考：`ue-cpp-gameplay`、`ue-plugin-module-dev`、`ue-gas-networking`、`ue-render-vfx`、`ue-client-ui` 和 `ue-ai-navigation` 均补充面向 UE C++/Build.cs/GAS/UI/渲染/Niagara/StateTree/Mass 的反幻觉检查资料。
+- 新增 `NOTICE`，记录对 MIT 许可 `quodsoler/unreal-engine-skills` 的选择性改写与署名。
+
+### 变更
+- `ue-game-dev-router`、`tests/route_scenarios.json` 和 `scripts/validate_plugin.py` 新增 6 个领域的中英文路由关键词与回归场景，并保持 Game Feature + GAS 组合优先进入 `ue-game-features`。
+- `Saved/CodexWorkflow/project-context.md` 模板扩展 engine source/API baseline、target platforms、Game Feature plugins、命名约定与 API verification notes 字段。
+- `README.md`、`.codex-plugin/plugin.json` 和 marketplace 同步规则更新到 `0.14.0+codex.20260528000100`，补充新技能、关键词和 attribution。
+
 ## [0.13.0] - 2026-05-27
 
 ### 新增

@@ -32,6 +32,12 @@ Use this skill first when the request spans multiple Unreal Engine areas or the 
 - Use `$ue-external-services` for HTTP, REST, JSON, WebSocket, TCP sockets, backend API clients, streaming responses, heartbeats, reconnects, request queues, auth headers, and external process or service integration.
 - Use `$ue-audio` for MetaSound, Sound Cues, AudioComponents, Sound Classes, Sound Mixes, Sound Concurrency, Quartz timing, spatialization, attenuation, and audio performance.
 - Use `$ue-world-streaming` for World Partition, Data Layers, HLOD, Level Streaming, Level Streaming Volumes, Large World Coordinates, runtime grid setup, and actor loading/unloading.
+- Use `$ue-game-features` for Game Feature Plugins, ModularGameplay, `UGameFeatureAction`, `UGameFrameworkComponentManager`, Lyra-style Experiences, activation/deactivation, ability/input/UI grants, and modular gameplay feature packs.
+- Use `$ue-mass-entity` for Mass Entity, Mass AI, Mass Crowd, `MassProcessor`, `MassFragment`, `MassTag`, `MassObserver`, Mass spawners, ZoneGraph/Smart Object crowd behavior, and high-volume data-oriented agents.
+- Use `$ue-procedural-generation` for PCG graphs, procedural generation, runtime generated worlds, `ProceduralMeshComponent`, ISM/HISM, spline generation, deterministic seeds, generated collision, and generated content cook/runtime boundaries.
+- Use `$ue-state-trees` for StateTree assets, tasks, evaluators, conditions, transitions, schemas, hierarchical AI/gameplay state machines, and Mass StateTree behavior.
+- Use `$ue-sequencer-cinematics` for Sequencer, Level Sequence, camera cuts, cutscenes, event tracks, Take Recorder, Movie Render Queue, cinematic playback, and rendered cinematic output.
+- Use `$ue-character-movement` for `CharacterMovementComponent`, locomotion tuning, movement modes, custom movement, root motion, movement replication, smoothing, and network prediction.
 - Use `$ue-physics-destruction` for Chaos Physics, collision channels/profiles, Physical Materials, Geometry Collections, Fracture, ragdoll, Physics Constraints, physics animation blending, and physics debugging.
 - Use `$ue-data-management` for Primary Asset Manager, Data Assets, DataTables, CurveTables, DataRegistry, soft/hard references, async asset loading, cook rules, chunks, and gameplay data validation.
 - Use `$ue-save-load-sync` for SaveGame schemas, serialization, restore flows, RepNotify, RPC entry points, and persistent state that intersects with network state.
@@ -54,6 +60,12 @@ If the request involves another domain without a dedicated sibling skill, handle
 
 ## Chinese Routing Hints
 
+- 中文 "Game Feature / 模块化玩法 / ModularGameplay / Lyra Experience / 功能插件 / 特性插件" should route to `$ue-game-features`.
+- 中文 "Mass Entity / Mass AI / Mass Crowd / 群体 AI / 大量 NPC / 人群模拟" should route to `$ue-mass-entity`.
+- 中文 "PCG / 程序化生成 / 生成地形 / 生成植被 / 样条生成 / 实例化网格" should route to `$ue-procedural-generation`.
+- 中文 "StateTree / 状态树 / 状态机任务 / 状态转换" should route to `$ue-state-trees`.
+- 中文 "Sequencer / Level Sequence / 过场动画 / 电影渲染 / Movie Render Queue / 镜头轨道" should route to `$ue-sequencer-cinematics`.
+- 中文 "CharacterMovementComponent / 角色移动 / 自定义移动模式 / 移动网络预测 / 运动复制" should route to `$ue-character-movement`.
 - 中文 "粒子特效 / 后处理 / 材质球 / 着色器" should route to `$ue-render-vfx`.
 - 中文 "角色动画 / 动画蓝图 / 蒙太奇 / 状态机 / IK" should route to `$ue-animation`.
 - 中文 "行为树 / 巡逻 / 寻路 / AI感知 / 导航网格" should route to `$ue-ai-navigation`.

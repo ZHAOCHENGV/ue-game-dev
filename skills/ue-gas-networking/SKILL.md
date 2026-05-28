@@ -42,6 +42,7 @@ Use this skill when gameplay correctness depends on authority, prediction, repli
 ## References
 
 - Read `references/gas-patterns.md` for ability/effect/cue structure and prediction decisions.
+- Read `references/gas-api-accuracy.md` before writing or reviewing GAS classes, ability tasks, attribute replication, prediction, Blueprint abilities, or Gameplay Cue guidance.
 - Read `references/gas-ability-template.md` when sketching a concrete GameplayAbility, AttributeSet, or GameplayCue implementation.
 - Read `references/networking-checklist.md` for replication and RPC review.
 - Use `$ue-blueprint-workflow` for Blueprint ability graph wiring and `$ue-cpp-gameplay` for C++ ability/component implementation.

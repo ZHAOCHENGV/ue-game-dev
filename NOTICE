@@ -1,0 +1,10 @@
+UE Game Dev Codex Plugin
+
+This project includes rewritten and workflow-adapted Unreal Engine API accuracy guidance inspired by:
+
+- unreal-engine-skills by quodsoler
+- Source: https://github.com/quodsoler/unreal-engine-skills
+- License: MIT
+- Copyright (c) 2025 quodsoler
+
+The referenced material was selectively adapted into this plugin's Codex App workflow, routing, and verification structure rather than imported as a full upstream skill bundle.

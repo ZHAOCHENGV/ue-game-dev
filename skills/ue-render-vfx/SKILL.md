@@ -40,3 +40,4 @@ Use this skill for visual features and visual performance. Treat assets, scalabi
 
 - Read `references/rendering-checklist.md` for material, shader, and renderer review.
 - Read `references/niagara-checklist.md` for Niagara authoring and debugging.
+- Read `references/render-vfx-api-accuracy.md` before writing material, renderer, render target, custom HLSL, or Niagara API guidance.
