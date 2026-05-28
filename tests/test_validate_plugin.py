@@ -47,6 +47,25 @@ class ValidatePluginTests(unittest.TestCase):
     def test_route_prompt_supports_new_skill_domains(self) -> None:
         self.assertEqual(validate_plugin.route_prompt("帮我做一个布娃娃物理效果"), "ue-physics-destruction")
         self.assertEqual(validate_plugin.route_prompt("帮我用 DataTable 管理物品数据"), "ue-data-management")
+        cases = {
+            "Design a Game Feature Plugin with ModularGameplay and Lyra Experience actions": "ue-game-features",
+            "帮我做一个模块化 Game Feature 插件，接入 Lyra Experience": "ue-game-features",
+            "Implement Mass Entity crowd agents with MassProcessor and MassFragment": "ue-mass-entity",
+            "帮我用 Mass Entity 做一群 NPC 群体 AI": "ue-mass-entity",
+            "Create a PCG graph and runtime procedural generation system": "ue-procedural-generation",
+            "帮我做 PCG 程序化生成地形和植被": "ue-procedural-generation",
+            "Implement StateTree tasks and transitions for NPC combat": "ue-state-trees",
+            "帮我用 StateTree 状态树做敌人战斗逻辑": "ue-state-trees",
+            "Create a Sequencer cutscene and Movie Render Queue pipeline": "ue-sequencer-cinematics",
+            "帮我做 Sequencer 过场动画和 Movie Render Queue 输出": "ue-sequencer-cinematics",
+            "Tune CharacterMovementComponent network prediction and custom movement mode": "ue-character-movement",
+            "帮我调 CharacterMovementComponent 角色移动和网络预测": "ue-character-movement",
+            "Build a Lyra-style Game Feature plugin with GAS ability grants": "ue-game-features",
+        }
+
+        for prompt, expected in cases.items():
+            with self.subTest(prompt=prompt):
+                self.assertEqual(validate_plugin.route_prompt(prompt), expected)
 
     def test_marketplace_hash_mismatch_detected(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

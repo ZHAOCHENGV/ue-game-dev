@@ -1,6 +1,6 @@
 # UE Game Dev - Codex Plugin
 
-面向 Unreal Engine 游戏与客户端开发的 Codex 技能插件。它不是 Unreal Editor 的 `.uplugin` 插件，不需要放进 UE 项目的 `Plugins/` 目录；它是给 Codex App 使用的 UE 开发工作流插件，用来辅助项目入口判断、阶段检测、阶段门检查、项目记忆、日志/崩溃分诊、需求简报、实施计划、多 Agent 编排、证据化完成验收、旧项目接手、二开前分析、UE C++、蓝图、异步系统、外部 HTTP/WebSocket/TCP 服务、Enhanced Input、GAS、网络同步、渲染、材质、Niagara、UI、调试、测试和显式打包自动化等开发任务。
+面向 Unreal Engine 游戏与客户端开发的 Codex 技能插件。它不是 Unreal Editor 的 `.uplugin` 插件，不需要放进 UE 项目的 `Plugins/` 目录；它是给 Codex App 使用的 UE 开发工作流插件，用来辅助项目入口判断、阶段检测、阶段门检查、项目记忆、日志/崩溃分诊、需求简报、实施计划、多 Agent 编排、证据化完成验收、旧项目接手、二开前分析、UE C++、蓝图、异步系统、外部 HTTP/WebSocket/TCP 服务、Game Feature Plugins、ModularGameplay、Lyra Experience、Mass Entity、PCG、StateTree、Sequencer、CharacterMovementComponent、Enhanced Input、GAS、网络同步、渲染、材质、Niagara、UI、调试、测试和显式打包自动化等开发任务。
 
 插件还内置一组只读 UE 辅助工具，用于快速扫描项目结构、提取日志首个可行动错误、整理 C++ 暴露给蓝图的 API，以及生成轻量多 Agent 分工计划。这些工具默认不修改 UE 项目、不编辑 `.uasset`、不执行打包。
 
@@ -138,7 +138,7 @@ New-Item -ItemType Junction -Path "$env:USERPROFILE\plugins\ue-game-dev" -Target
 
 ## 功能概览
 
-本插件包含 **1 个路由技能 + 33 个领域技能**，覆盖 UE 开发全链路：
+本插件包含 **1 个路由技能 + 39 个领域技能**，覆盖 UE 开发全链路：
 
 | 技能 | 领域 |
 |------|------|
@@ -161,6 +161,12 @@ New-Item -ItemType Junction -Path "$env:USERPROFILE\plugins\ue-game-dev" -Target
 | `ue-external-services` | HTTP、JSON、WebSocket、TCP、外部服务客户端 |
 | `ue-audio` | MetaSound、Sound Cue、AudioComponent、Quartz、空间化和音频性能 |
 | `ue-world-streaming` | World Partition、Data Layers、HLOD、Level Streaming 和开放世界流送 |
+| `ue-game-features` | Game Feature Plugin、ModularGameplay、Lyra Experience 和运行时功能激活 |
+| `ue-mass-entity` | Mass Entity、MassProcessor、MassFragment、Mass Crowd 和大量 NPC 模拟 |
+| `ue-procedural-generation` | PCG、程序化生成、ProceduralMesh、ISM/HISM 和生成式世界 |
+| `ue-state-trees` | StateTree、Task、Condition、Evaluator、AI/Gameplay 状态树 |
+| `ue-sequencer-cinematics` | Sequencer、Level Sequence、Movie Render Queue 和过场动画 |
+| `ue-character-movement` | CharacterMovementComponent、角色移动、网络预测和自定义移动模式 |
 | `ue-physics-destruction` | Chaos 物理、碰撞、布娃娃、Geometry Collection 和破坏系统 |
 | `ue-data-management` | DataTable、Data Asset、Asset Manager、软引用和异步资产加载 |
 | `ue-input-enhanced` | Enhanced Input（Input Action、Mapping Context、重绑定、UI 焦点） |
@@ -195,6 +201,10 @@ New-Item -ItemType Junction -Path "$env:USERPROFILE\plugins\ue-game-dev" -Target
 异步系统和外部服务通信被拆成两个独立技能：`ue-async-systems` 负责 `AsyncTask`、`Async()`、`UE::Tasks`、`FRunnable`、`ParallelFor`、`UBlueprintAsyncActionBase`、GameThread 回切、取消和生命周期；`ue-external-services` 负责 HTTP/REST、JSON、WebSocket、TCP、心跳、重连、请求队列、认证头和服务结果分发。它们不会替代 `ue-gas-networking`，后者仍专注 GAS、RPC、复制、预测和 UE 多人玩法状态。
 
 音频和开放世界流送现在也有独立技能：`ue-audio` 覆盖 MetaSound、Sound Cue、AudioComponent、Sound Class/Mix、Concurrency、Quartz、空间化、衰减和音频性能；`ue-world-streaming` 覆盖 World Partition、Data Layers、HLOD、Level Streaming、Runtime Grid、Streaming Source 和流送验证。
+
+UE5 新领域也有独立技能：`ue-game-features` 覆盖 Game Feature Plugin、ModularGameplay 和 Lyra 风格 Experience；`ue-mass-entity` 覆盖 Mass Entity、Mass AI 和群体模拟；`ue-procedural-generation` 覆盖 PCG 与运行时生成；`ue-state-trees` 覆盖 StateTree 任务、条件和转换；`ue-sequencer-cinematics` 覆盖 Sequencer 与 Movie Render Queue；`ue-character-movement` 覆盖 CharacterMovementComponent、网络预测和自定义移动模式。
+
+API 准确性参考已补入 C++、插件模块、GAS、Runtime UI、Niagara/渲染和 AI/StateTree/Mass 边界，用于在给出代码或流程前检查常见 Unreal API 幻觉点。
 
 多 Agent 能力是轻量编排层，适合“用多 Agent 熟悉旧项目”“full 模式审查插件架构”“多专家排查打包失败风险”这类复杂请求。它会先给出 Coordinator、Project Explorer、Architecture Reviewer、C++ Implementer、Blueprint Integrator、Verifier 等角色分工、文件所有权边界、并行发现结果和后续应进入的具体技能；普通单点问题仍会直接路由到对应技能。
 

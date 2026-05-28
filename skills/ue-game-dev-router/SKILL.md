@@ -32,6 +32,12 @@ description: 当 Unreal Engine 游戏或客户端开发请求需要路由到最�
 - 用 `$ue-external-services` 处理 HTTP、REST、JSON、WebSocket、TCP、后端 API、流式响应、心跳、重连、请求队列、认证头和外部服务集成。
 - 用 `$ue-audio` 处理 MetaSound、Sound Cue、AudioComponent、Sound Class/Mix、Concurrency、Quartz、空间化、衰减和音频性能。
 - 用 `$ue-world-streaming` 处理 World Partition、Data Layers、HLOD、Level Streaming、Streaming Volume、Large World Coordinates、Runtime Grid 和 Actor 加载/卸载。
+- 用 `$ue-game-features` 处理 Game Feature Plugin、ModularGameplay、Lyra Experience、UGameFeatureAction、运行时组件/能力/Input/UI 授予和模块化玩法激活。
+- 用 `$ue-mass-entity` 处理 Mass Entity、MassProcessor、MassFragment、Mass Crowd、Mass AI、ZoneGraph、Smart Objects 和大量 NPC 数据导向模拟。
+- 用 `$ue-procedural-generation` 处理 PCG、PCG Graph、程序化生成、ProceduralMesh、ISM/HISM、Spline 生成、确定性 seed、生成碰撞和运行时生成。
+- 用 `$ue-state-trees` 处理 StateTree、StateTreeTask、Condition、Evaluator、AI/Gameplay 状态树、Mass 行为和状态转换调试。
+- 用 `$ue-sequencer-cinematics` 处理 Sequencer、Level Sequence、Movie Render Queue、过场动画、镜头轨道、事件轨道、Take Recorder 和渲染输出流水线。
+- 用 `$ue-character-movement` 处理 CharacterMovementComponent、角色移动、自定义移动模式、移动复制、网络预测、server correction、root motion 和 locomotion bug。
 - 用 `$ue-physics-destruction` 处理 Chaos Physics、碰撞通道/配置、Physical Material、Geometry Collection、Fracture、布娃娃、Physics Constraint、物理动画混合和物理调试。
 - 用 `$ue-data-management` 处理 Primary Asset Manager、Data Asset、DataTable、CurveTable、DataRegistry、软/硬引用、异步资产加载、Cook 规则、Chunk 和玩法数据验证。
 - 用 `$ue-save-load-sync` 处理 SaveGame schema、序列化、恢复流程、RepNotify、RPC 入口和持久状态/网络状态交叉。
@@ -55,6 +61,12 @@ description: 当 Unreal Engine 游戏或客户端开发请求需要路由到最�
 - “粒子特效 / 后处理 / 材质球 / 着色器”路由到 `$ue-render-vfx`。
 - “角色动画 / 动画蓝图 / 蒙太奇 / 状态机 / IK”路由到 `$ue-animation`。
 - “行为树 / 巡逻 / 寻路 / AI感知 / 导航网格”路由到 `$ue-ai-navigation`。
+- “Game Feature / ModularGameplay / Lyra Experience / 模块化玩法 / 功能插件”路由到 `$ue-game-features`。
+- “Mass Entity / Mass AI / Mass Crowd / 群体 AI / 大量 NPC / 人群模拟”路由到 `$ue-mass-entity`。
+- “PCG / 程序化生成 / 生成地形 / 生成植被 / ProceduralMesh / HISM”路由到 `$ue-procedural-generation`。
+- “StateTree / 状态树 / 状态树任务 / 状态转换”路由到 `$ue-state-trees`。
+- “Sequencer / Level Sequence / Movie Render Queue / 过场动画 / 镜头轨道”路由到 `$ue-sequencer-cinematics`。
+- “CharacterMovementComponent / 角色移动 / 自定义移动模式 / 网络预测 / 移动复制”路由到 `$ue-character-movement`。
 - “存档 / 读档 / 数据持久化”路由到 `$ue-save-load-sync`。
 - “布娃娃 / 物理约束 / 破坏系统 / 碰撞通道”路由到 `$ue-physics-destruction`。
 - “DataTable / 数据表 / 数据资产 / 软引用 / 异步加载 / 资产管理”路由到 `$ue-data-management`。

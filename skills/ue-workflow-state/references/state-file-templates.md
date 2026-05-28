@@ -6,11 +6,27 @@
 # Project Context
 
 - Project:
-- UE version:
-- Platforms:
-- Main modules:
-- Main plugins:
-- Notes:
+- Path:
+- UE version or EngineAssociation:
+- Engine source/API baseline:
+- Target platforms:
+- Primary modules:
+- Enabled plugins:
+- Game Feature plugins:
+- Main maps:
+- Startup flow:
+- Input flow:
+- UI flow:
+- Networking/GAS/AI/rendering notes:
+- Asset conventions:
+- C++ conventions:
+- Blueprint conventions:
+- API verification notes:
+- Imported context:
+  - `.agents/ue-project-context.md` present:
+  - Read-only import summary:
+- Last refreshed:
+- Evidence:
 ```
 
 ## module-map.md
@@ -18,8 +34,14 @@
 ```markdown
 # Module Map
 
-| Module | Type | Owns | Depends on | Risks |
-|--------|------|------|------------|-------|
+| Module | Type | Dependencies | Key classes | Notes |
+|--------|------|--------------|-------------|-------|
+
+## Boundaries
+- Runtime modules:
+- Editor modules:
+- Public headers that are stable APIs:
+- Private implementation areas:
 ```
 
 ## asset-index.md
@@ -27,8 +49,11 @@
 ```markdown
 # Asset Index
 
-| Path | Type guess | Owner/System | Notes |
-|------|------------|--------------|-------|
+| Asset or folder | Type inferred from name/path | Used by | Notes |
+|-----------------|------------------------------|---------|-------|
+
+## Unknowns
+- Assets that require editor inspection:
 ```
 
 ## decisions.md
@@ -36,11 +61,8 @@
 ```markdown
 # Decisions
 
-## YYYY-MM-DD
-
-- Decision:
-- Context:
-- Consequence:
+| Date | Decision | Reason | Approved by | Evidence |
+|------|----------|--------|-------------|----------|
 ```
 
 ## known-risks.md
@@ -48,8 +70,8 @@
 ```markdown
 # Known Risks
 
-| Risk | Evidence | Impact | Next action |
-|------|----------|--------|-------------|
+| Risk | Area | Evidence | Mitigation | Status |
+|------|------|----------|------------|--------|
 ```
 
 ## active-task.md
@@ -59,7 +81,9 @@
 
 - Goal:
 - Scope:
+- Out of scope:
+- Planned files/assets:
+- Validation path:
 - Current status:
-- Next step:
-- Verification:
+- Handoff notes:
 ```

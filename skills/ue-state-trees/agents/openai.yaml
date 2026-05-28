@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE State Trees"
+  short_description: "Plan and review StateTree state machines for AI and gameplay."
+  default_prompt: "Use $ue-state-trees to design or debug StateTree tasks, evaluators, conditions, and transitions."

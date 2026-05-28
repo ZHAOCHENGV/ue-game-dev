@@ -49,5 +49,6 @@ description: 当 Unreal Engine 任务涉及 NPC 行为、Behavior Tree、Blackbo
 
 ## 参考
 
+- StateTree 与 Mass AI 路由边界读取 `references/state-tree-mass-ai-accuracy.md`。
 - 行为设计时读取 `references/ai-behavior-checklist.md`。
 - 导航、MoveTo 或 NavMesh 问题读取 `references/navigation-checklist.md`。

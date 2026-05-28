@@ -32,5 +32,6 @@ description: 当 Unreal Engine 任务涉及渲染设置、材质、Material Func
 
 ## 参考
 
+- 渲染、材质和 Niagara API 准确性读取 `references/render-vfx-api-accuracy.md`。
 - Niagara 清单读取 `references/niagara-checklist.md`。
 - 渲染清单读取 `references/rendering-checklist.md`。

@@ -33,7 +33,7 @@ UE_TOOL_SCRIPTS = [
 WARNINGS: list[str] = []
 
 SYNC_DIRS = [".codex-plugin", "assets", "rules", "skills", "templates"]
-SYNC_FILES = ["CHANGELOG.md", "LICENSE", "README.md"]
+SYNC_FILES = ["CHANGELOG.md", "LICENSE", "NOTICE", "README.md"]
 
 
 def warn(message: str) -> None:
@@ -161,6 +161,18 @@ def validate_plugin_json() -> None:
         "data-management",
         "data-table",
         "asset-manager",
+        "game-features",
+        "modular-gameplay",
+        "lyra-experience",
+        "mass-entity",
+        "mass-ai",
+        "pcg",
+        "procedural-generation",
+        "state-tree",
+        "sequencer",
+        "movie-render-queue",
+        "character-movement",
+        "network-prediction",
     ]:
         if keyword not in keywords:
             fail(f"plugin keywords should include {keyword}")
@@ -169,11 +181,14 @@ def validate_plugin_json() -> None:
 def validate_changelog_version() -> None:
     plugin = load_json(PLUGIN_JSON)
     version = plugin.get("version")
+    if not isinstance(version, str):
+        fail("plugin.json version must be a string")
+    base_version = version.split("+", 1)[0]
     changelog = read_text(ROOT / "CHANGELOG.md")
     match = re.search(r"^## \[([0-9]+\.[0-9]+\.[0-9]+)\]", changelog, re.M)
     if not match:
         fail("CHANGELOG latest version header not found")
-    if match.group(1) != version:
+    if match.group(1) != base_version:
         fail(f"CHANGELOG latest version {match.group(1)} must match plugin.json version {version}")
 
 
@@ -210,6 +225,108 @@ def validate_multi_agent_support() -> None:
 
 
 SKILL_PATTERNS: dict[str, list[tuple[str, float]]] = {
+    "ue-game-features": [
+        ("Game Feature", 4.0),
+        ("GameFeature", 4.0),
+        ("Game Feature Plugin", 4.0),
+        ("ModularGameplay", 4.0),
+        ("UGameFeatureAction", 4.0),
+        ("UGameFrameworkComponentManager", 4.0),
+        ("Lyra Experience", 4.0),
+        ("Lyra-style", 4.0),
+        ("Experience Action Set", 3.0),
+        ("ability grants", 2.0),
+        ("modular gameplay", 3.0),
+        ("模块化玩法", 4.0),
+        ("功能插件", 3.0),
+        ("特性插件", 3.0),
+        ("激活 Game Feature", 3.0),
+        ("接入 Lyra Experience", 4.0),
+    ],
+    "ue-mass-entity": [
+        ("Mass Entity", 4.0),
+        ("MassEntity", 4.0),
+        ("Mass AI", 4.0),
+        ("MassAI", 4.0),
+        ("Mass Crowd", 4.0),
+        ("MassProcessor", 4.0),
+        ("MassFragment", 4.0),
+        ("MassTag", 3.0),
+        ("MassObserver", 4.0),
+        ("MassSpawner", 3.0),
+        ("ZoneGraph", 2.0),
+        ("Smart Object", 2.0),
+        ("crowd agents", 3.0),
+        ("群体 AI", 4.0),
+        ("大量 NPC", 3.0),
+        ("人群模拟", 3.0),
+    ],
+    "ue-procedural-generation": [
+        ("PCG", 4.0),
+        ("PCG graph", 4.0),
+        ("PCG Graph", 4.0),
+        ("procedural generation", 4.0),
+        ("runtime procedural", 4.0),
+        ("ProceduralMesh", 4.0),
+        ("ProceduralMeshComponent", 4.0),
+        ("InstancedStaticMesh", 3.0),
+        ("HierarchicalInstancedStaticMesh", 3.0),
+        ("HISM", 3.0),
+        ("spline generation", 3.0),
+        ("deterministic seed", 2.0),
+        ("程序化生成", 4.0),
+        ("生成地形", 3.0),
+        ("生成植被", 3.0),
+        ("样条生成", 3.0),
+        ("实例化网格", 3.0),
+    ],
+    "ue-state-trees": [
+        ("StateTree", 4.0),
+        ("State Tree", 4.0),
+        ("StateTreeTask", 4.0),
+        ("StateTreeCondition", 4.0),
+        ("StateTreeEvaluator", 4.0),
+        ("StateTree schema", 3.0),
+        ("hierarchical state", 2.0),
+        ("状态树", 4.0),
+        ("状态机任务", 3.0),
+        ("状态转换", 3.0),
+        ("状态树任务", 3.0),
+    ],
+    "ue-sequencer-cinematics": [
+        ("Sequencer", 4.0),
+        ("Level Sequence", 4.0),
+        ("LevelSequence", 4.0),
+        ("Movie Render Queue", 4.0),
+        ("MRQ", 3.0),
+        ("cutscene", 3.0),
+        ("cinematic", 3.0),
+        ("camera cut", 3.0),
+        ("Take Recorder", 3.0),
+        ("event track", 2.0),
+        ("过场动画", 4.0),
+        ("电影渲染", 4.0),
+        ("镜头轨道", 3.0),
+        ("渲染输出", 2.0),
+    ],
+    "ue-character-movement": [
+        ("CharacterMovementComponent", 5.0),
+        ("Character Movement", 4.0),
+        ("custom movement mode", 4.0),
+        ("movement mode", 3.0),
+        ("network prediction", 4.0),
+        ("movement replication", 4.0),
+        ("replicated movement", 4.0),
+        ("root motion", 2.5),
+        ("locomotion", 2.0),
+        ("client prediction", 3.0),
+        ("server correction", 3.0),
+        ("角色移动", 4.0),
+        ("自定义移动模式", 4.0),
+        ("移动网络预测", 4.0),
+        ("运动复制", 4.0),
+        ("移动复制", 4.0),
+    ],
     "ue-render-vfx": [
         ("Niagara", 3.0),
         ("VFX", 3.0),
@@ -647,6 +764,7 @@ def validate_required_support_files() -> None:
     required_files = [
         ROOT / "templates" / "ue-task.md",
         ROOT / "templates" / "ue-test-evidence.md",
+        ROOT / "NOTICE",
         ROOT / "rules" / "ue-cpp.md",
         ROOT / "rules" / "ue-blueprint.md",
         ROOT / "rules" / "ue-networking.md",
@@ -660,6 +778,12 @@ def validate_required_support_files() -> None:
         SKILLS / "ue-external-services" / "references" / "service-client-patterns.md",
         SKILLS / "ue-audio" / "references" / "audio-checklist.md",
         SKILLS / "ue-world-streaming" / "references" / "world-partition-checklist.md",
+        SKILLS / "ue-game-features" / "references" / "game-feature-checklist.md",
+        SKILLS / "ue-mass-entity" / "references" / "mass-entity-checklist.md",
+        SKILLS / "ue-procedural-generation" / "references" / "procedural-generation-checklist.md",
+        SKILLS / "ue-state-trees" / "references" / "state-tree-checklist.md",
+        SKILLS / "ue-sequencer-cinematics" / "references" / "sequencer-cinematics-checklist.md",
+        SKILLS / "ue-character-movement" / "references" / "character-movement-checklist.md",
         SKILLS / "ue-physics-destruction" / "references" / "chaos-physics-checklist.md",
         SKILLS / "ue-data-management" / "references" / "data-asset-patterns.md",
         SKILLS / "ue-plugin-module-dev" / "references" / "third-party-library-wrapper.md",
@@ -767,6 +891,7 @@ def validate_marketplace_package() -> None:
     package_templates = MARKETPLACE_PACKAGE / "templates"
     package_readme = MARKETPLACE_PACKAGE / "README.md"
     package_license = MARKETPLACE_PACKAGE / "LICENSE"
+    package_notice = MARKETPLACE_PACKAGE / "NOTICE"
     for path in [
         package_plugin_json,
         package_skills,
@@ -775,6 +900,7 @@ def validate_marketplace_package() -> None:
         package_templates,
         package_readme,
         package_license,
+        package_notice,
     ]:
         if not path.exists():
             fail(f"missing marketplace package file: {path.relative_to(ROOT)}")
