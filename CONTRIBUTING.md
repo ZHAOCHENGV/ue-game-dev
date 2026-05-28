@@ -5,7 +5,8 @@
 1. Work from `main` for the primary plugin version.
 2. Keep root plugin files as the source of truth.
 3. After edits, run `python scripts\sync_marketplace_package.py` to refresh `plugins/ue-game-dev/`.
-4. Run validation before committing:
+4. When the change should be installed into the local Codex App plugin cache, run `python scripts\update_codex_app_plugin.py`. Use `--skip-reinstall` for file-only sync/validation.
+5. Run validation before committing:
 
 ```powershell
 $env:PYTHONUTF8='1'
@@ -15,7 +16,7 @@ python -m unittest discover tests
 git diff --check
 ```
 
-5. When plugin content changes, apply the same structural change to `ue-game-dev-zh` and localize skill explanations, comments, and prose to Chinese while preserving code, commands, paths, UE APIs, skill names, and `$ue-*` references.
+6. When plugin content changes, apply the same structural change to `ue-game-dev-zh` and localize skill explanations, comments, and prose to Chinese while preserving code, commands, paths, UE APIs, skill names, and `$ue-*` references.
 
 ## Adding A Skill
 
@@ -24,6 +25,7 @@ git diff --check
 - Route the skill from `skills/ue-game-dev-router/SKILL.md`.
 - Add route scenarios to `tests/route_scenarios.json`.
 - Update `.codex-plugin/plugin.json`, `README.md`, and `CHANGELOG.md` when the public skill surface changes.
+- If the new skill adapts third-party MIT material, update `NOTICE` and keep content rewritten for this plugin's workflow instead of importing a full upstream bundle.
 
 ## Updating Routing
 
@@ -45,6 +47,7 @@ git diff --check
 - Do not edit `plugins/ue-game-dev/` first.
 - Edit root files, then run `scripts\sync_marketplace_package.py`.
 - `validate_plugin.py` hashes `.codex-plugin/`, `assets/`, `rules/`, `skills/`, `templates/`, `CHANGELOG.md`, `LICENSE`, and `README.md` against the marketplace mirror.
+- `update_codex_app_plugin.py` wraps cachebuster updates, marketplace sync, validation, marketplace registration, and Codex App reinstall for local release checks.
 
 ## Commit Messages
 

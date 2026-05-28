@@ -1,8 +1,8 @@
 # UE Game Dev - Codex Plugin
 
-面向 Unreal Engine 游戏与客户端开发的 Codex 技能插件。它不是 Unreal Editor 的 `.uplugin` 插件，不需要放进 UE 项目的 `Plugins/` 目录；它是给 Codex App 使用的 UE 开发工作流插件，用来辅助项目入口判断、阶段检测、阶段门检查、项目记忆、日志/崩溃分诊、需求简报、实施计划、多 Agent 编排、证据化完成验收、旧项目接手、二开前分析、UE C++、蓝图、异步系统、外部 HTTP/WebSocket/TCP 服务、Enhanced Input、GAS、网络同步、渲染、材质、Niagara、UI、调试、测试和显式打包自动化等开发任务。
+面向 Unreal Engine 游戏与客户端开发的 Codex 技能插件。它不是 Unreal Editor 的 `.uplugin` 插件，不需要放进 UE 项目的 `Plugins/` 目录；它是给 Codex App 使用的 UE 开发工作流插件，用来辅助项目入口判断、阶段检测、阶段门检查、项目记忆、日志/崩溃分诊、需求简报、实施计划、多 Agent 编排、证据化完成验收、旧项目接手、二开前分析、UE C++、蓝图、异步系统、外部 HTTP/WebSocket/TCP 服务、Game Feature、Mass Entity、PCG、StateTree、Sequencer、CharacterMovementComponent、Enhanced Input、GAS、网络同步、渲染、材质、Niagara、UI、调试、测试和显式打包自动化等开发任务。
 
-插件还内置一组只读 UE 辅助工具，用于快速扫描项目结构、提取日志首个可行动错误、整理 C++ 暴露给蓝图的 API，以及生成轻量多 Agent 分工计划。这些工具默认不修改 UE 项目、不编辑 `.uasset`、不执行打包。
+插件还内置一组只读 UE 辅助工具，用于快速扫描项目结构、提取日志首个可行动错误、整理 C++ 暴露给蓝图的 API，以及生成轻量多 Agent 分工计划。这些工具默认不修改 UE 项目、不编辑 `.uasset`、不执行打包。部分 UE C++ API 准确性参考借鉴自 MIT 许可的 `quodsoler/unreal-engine-skills`，并改写为本插件的 Codex 工作流结构。
 
 ## 安装方法
 
@@ -115,6 +115,9 @@ New-Item -ItemType Junction -Path "$env:USERPROFILE\plugins\ue-game-dev" -Target
 @ue-game-dev 帮我在 UE 里接一个 HTTP JSON 接口，把返回数据分发给 UI
 @ue-game-dev 帮我用 MetaSound 和 AudioComponent 做一个自适应音效系统
 @ue-game-dev 帮我配置 World Partition、Data Layers 和 HLOD
+@ue-game-dev 帮我做一个模块化 Game Feature 插件，接入 Lyra Experience
+@ue-game-dev 帮我用 PCG 程序化生成地形和植被
+@ue-game-dev 帮我调 CharacterMovementComponent 角色移动和网络预测
 @ue-game-dev 给这个项目生成 Win64 Development 的 RunUAT 打包命令
 @ue-game-dev 帮我排查 Enhanced Input 的 IA_Jump 为什么不触发
 ```
@@ -138,7 +141,7 @@ Use UE Game Dev to add tests for this UE feature.
 
 ## 功能概览
 
-本插件包含 **1 个路由技能 + 33 个领域技能**，覆盖 UE 开发全链路：
+本插件包含 **1 个路由技能 + 39 个领域技能**，覆盖 UE 开发全链路：
 
 | 技能 | 领域 |
 |------|------|
@@ -161,6 +164,12 @@ Use UE Game Dev to add tests for this UE feature.
 | `ue-external-services` | HTTP、JSON、WebSocket、TCP、外部服务客户端 |
 | `ue-audio` | MetaSound、Sound Cue、AudioComponent、Quartz、空间化和音频性能 |
 | `ue-world-streaming` | World Partition、Data Layers、HLOD、Level Streaming 和开放世界流送 |
+| `ue-game-features` | Game Feature Plugin、ModularGameplay、Lyra Experience、运行时功能激活 |
+| `ue-mass-entity` | Mass Entity、Mass AI、Mass Crowd、Processor/Fragment/Observer |
+| `ue-procedural-generation` | PCG、ProceduralMesh、ISM/HISM、样条和运行时程序化生成 |
+| `ue-state-trees` | StateTree 任务、Evaluator、Condition、Transition 和状态机设计 |
+| `ue-sequencer-cinematics` | Sequencer、Level Sequence、过场动画、Movie Render Queue |
+| `ue-character-movement` | CharacterMovementComponent、移动模式、Root Motion、移动复制和网络预测 |
 | `ue-physics-destruction` | Chaos 物理、碰撞、布娃娃、Geometry Collection 和破坏系统 |
 | `ue-data-management` | DataTable、Data Asset、Asset Manager、软引用和异步资产加载 |
 | `ue-input-enhanced` | Enhanced Input（Input Action、Mapping Context、重绑定、UI 焦点） |
@@ -195,6 +204,8 @@ Use UE Game Dev to add tests for this UE feature.
 异步系统和外部服务通信被拆成两个独立技能：`ue-async-systems` 负责 `AsyncTask`、`Async()`、`UE::Tasks`、`FRunnable`、`ParallelFor`、`UBlueprintAsyncActionBase`、GameThread 回切、取消和生命周期；`ue-external-services` 负责 HTTP/REST、JSON、WebSocket、TCP、心跳、重连、请求队列、认证头和服务结果分发。它们不会替代 `ue-gas-networking`，后者仍专注 GAS、RPC、复制、预测和 UE 多人玩法状态。
 
 音频和开放世界流送现在也有独立技能：`ue-audio` 覆盖 MetaSound、Sound Cue、AudioComponent、Sound Class/Mix、Concurrency、Quartz、空间化、衰减和音频性能；`ue-world-streaming` 覆盖 World Partition、Data Layers、HLOD、Level Streaming、Runtime Grid、Streaming Source 和流送验证。
+
+从 `0.14.0` 开始，插件新增一组从 UE C++ API 准确性参考中提炼出的领域技能：`ue-game-features`、`ue-mass-entity`、`ue-procedural-generation`、`ue-state-trees`、`ue-sequencer-cinematics` 和 `ue-character-movement`。这些技能保留 Codex 的项目接手、路由、验证和交接方式，同时补强 Game Feature、Mass、PCG、StateTree、Sequencer 和 CharacterMovementComponent 等 UE5 专项领域。
 
 多 Agent 能力是轻量编排层，适合“用多 Agent 熟悉旧项目”“full 模式审查插件架构”“多专家排查打包失败风险”这类复杂请求。它会先给出 Coordinator、Project Explorer、Architecture Reviewer、C++ Implementer、Blueprint Integrator、Verifier 等角色分工、文件所有权边界、并行发现结果和后续应进入的具体技能；普通单点问题仍会直接路由到对应技能。
 
@@ -336,6 +347,14 @@ git diff --check
 
 `sync_marketplace_package.py` 会把根目录插件同步到 `plugins/ue-game-dev/` 市场安装包。`validate_plugin.py` 会检查 `plugin.json`、技能 frontmatter、`agents/openai.yaml`、README 技能数量、共享模板/规则文件、路由场景、marketplace 清单、市场包内容哈希一致性，以及自动打包技能必须保持显式调用。
 
+如果要把当前工作区内容同步到本机 Codex App 插件缓存，可以运行：
+
+```powershell
+python scripts\update_codex_app_plugin.py
+```
+
+该脚本会刷新 `+codex.<timestamp>` 版本后缀、同步 marketplace 包、运行校验，并通过 Codex CLI 重新安装 `ue-game-dev@zhaochengv-ue`。只想更新文件、不重装 App 插件时可加 `--skip-reinstall`。
+
 ## 工作流工件
 
 - `templates/ue-task.md`：用于保存 UE 单个功能/修复任务的目标、范围、实现计划和验收条件。
@@ -349,3 +368,7 @@ git diff --check
 ## 许可证
 
 [MIT](LICENSE)
+
+## Attribution
+
+- This plugin includes rewritten and workflow-adapted Unreal Engine API accuracy guidance inspired by `quodsoler/unreal-engine-skills`, copyright (c) 2025 quodsoler, licensed under MIT.

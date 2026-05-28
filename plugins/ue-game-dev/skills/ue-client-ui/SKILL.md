@@ -43,3 +43,4 @@ Use this skill for client-facing architecture and UI. Keep gameplay authority ou
 
 - Read `references/ui-patterns.md` for ownership, focus, view model, and performance review.
 - Read `references/ui-code-templates.md` for HUD subsystem, view model pattern, CommonUI activatable widget, and input mode switching code templates.
+- Read `references/ui-api-accuracy.md` before writing UMG lifecycle, CommonUI, MVVM, runtime Slate, or localization-sensitive UI guidance.
