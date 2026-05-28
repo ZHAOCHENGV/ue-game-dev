@@ -2,6 +2,7 @@ import tempfile
 import unittest
 from contextlib import redirect_stdout
 from io import StringIO
+import json
 from pathlib import Path
 from unittest import mock
 
@@ -65,6 +66,17 @@ class ValidatePluginTests(unittest.TestCase):
                 with redirect_stdout(StringIO()):
                     with self.assertRaises(SystemExit):
                         validate_plugin.validate_marketplace_content_sync()
+
+    def test_plugin_interface_text_is_readable_chinese(self) -> None:
+        plugin = json.loads((validate_plugin.ROOT / ".codex-plugin" / "plugin.json").read_text(encoding="utf-8"))
+        interface = plugin["interface"]
+
+        for field in ["shortDescription", "longDescription"]:
+            value = interface[field]
+            with self.subTest(field=field):
+                self.assertIn("UE", value)
+                self.assertRegex(value, r"[\u4e00-\u9fff]")
+                self.assertNotIn("??", value)
 
 
 if __name__ == "__main__":
