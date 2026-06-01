@@ -4,6 +4,18 @@
 
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
+## [0.14.1] - 2026-06-01
+
+### 新增
+- `ue-game-dev-router` 新增 mattpocock/skills 风格的工程流程交接说明：UE 日志/运行时 bug 可衔接 `diagnose`，测试先行场景可衔接 `tdd`，需求澄清可衔接 `grill-with-docs`，老项目架构复盘可衔接 `improve-codebase-architecture`。
+- `Saved/CodexWorkflow/project-context.md` 模板扩展 `CONTEXT.md`、`CONTEXT-MAP.md`、`docs/adr/` 和 `.agents/ue-project-context.md` 的只读导入字段，并补充 Gameplay Tags、Input/UI/GAS conventions、Runtime/Editor split 和 API verification notes。
+- 新增 `docs/agents/repo-workflow.md`，记录 issue tracker、领域文档、ADR、分支同步和外部工程流程参考。
+
+### 变更
+- `scripts/validate_plugin.py` 增加用户可见中文乱码守门、外部流程交接校验和 `+codex.<timestamp>` 版本校验回归，避免 README、metadata、route scenarios 再次出现 mojibake。
+- `.codex-plugin/plugin.json` 增加 `diagnose`、`tdd`、`grill-with-docs` 和 `improve-codebase-architecture` 关键词，保持插件名、包名、`@ue-game-dev` 和 `/ue-game-dev` 不变。
+- `CONTRIBUTING.md` 明确插件内容更新后必须同步根目录、`plugins/ue-game-dev` 市场包、本地 Codex App 安装目录、GitHub `main` 和 `ue-game-dev-zh`。
+
 ## [0.14.0] - 2026-05-28
 
 ### 新增

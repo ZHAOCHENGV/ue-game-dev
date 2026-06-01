@@ -26,10 +26,11 @@ Default to `Saved/CodexWorkflow/` inside the UE project unless the user requests
 
 1. Find the `.uproject`, then read nearby `Source/`, `Plugins/`, `Config/`, `.Build.cs`, `.Target.cs`, and `.uplugin` files.
 2. Read existing `Saved/CodexWorkflow/*.md` before creating or refreshing state.
-3. Preserve user-approved facts. Mark uncertain items as `Unknown` or `Needs editor inspection`; do not invent Blueprint asset internals.
-4. Update only the minimum state files needed for the request.
-5. Link each important fact to evidence: file path, class name, asset filename, config section, or log excerpt.
-6. After implementation, refresh `active-task.md`, `decisions.md`, and `known-risks.md` when the change affects future work.
+3. If present, read `CONTEXT.md`, `CONTEXT-MAP.md`, `docs/adr/`, and `.agents/ue-project-context.md` as reference-only project context. Summarize terms, ADR decisions, API verification notes, and module language into `Saved/CodexWorkflow/`; do not overwrite those source documents.
+4. Preserve user-approved facts. Mark uncertain items as `Unknown` or `Needs editor inspection`; do not invent Blueprint asset internals.
+5. Update only the minimum state files needed for the request.
+6. Link each important fact to evidence: file path, class name, asset filename, config section, log excerpt, ADR, or context document.
+7. After implementation, refresh `active-task.md`, `decisions.md`, and `known-risks.md` when the change affects future work.
 
 ## Use With Other Skills
 
