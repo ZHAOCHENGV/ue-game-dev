@@ -1,6 +1,6 @@
-# Slate Panel 模板
+# Slate Panel Template
 
-## 注册形状
+## Registration Shape
 
 ```cpp
 void FSampleToolsEditorModule::StartupModule()
@@ -15,9 +15,9 @@ void FSampleToolsEditorModule::ShutdownModule()
 }
 ```
 
-## 面板规则
+## Panel Rules
 
-- menu、command、tab、delegate 的注册和注销必须对称。
-- Editor-only 代码放在 Editor module。
-- 菜单/工具栏使用 `ToolMenus`，自定义面板使用 Slate widget。
-- 验证 reload、shutdown 和 plugin disable 路径。
+- Register and unregister menus, commands, tabs, and delegates symmetrically.
+- Keep editor-only code in Editor modules.
+- Use `ToolMenus` for menus/toolbars and Slate widgets for custom panels.
+- Validate reload, shutdown, and plugin disable paths.

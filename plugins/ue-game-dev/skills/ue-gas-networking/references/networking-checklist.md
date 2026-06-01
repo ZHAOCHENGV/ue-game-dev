@@ -1,27 +1,41 @@
-# GAS 网络检查清单
+# UE Networking Checklist
 
-## 权威
+## Authority
 
-- 谁激活 Ability：client predicted、server only、server initiated。
-- ASC owner/avatar 是否正确。
-- Replication Mode：Full、Mixed、Minimal 是否适合项目。
+- Identify who can request the action and who can approve it.
+- Validate client requests on the server.
+- Keep server-owned state authoritative and replicated.
+- Avoid client-only changes to state that affects damage, inventory, movement, cooldowns, or scoring.
 
-## 预测
+## Replication
 
-- 预测输入是否可回滚。
-- cost/cooldown 是否在预测和服务器确认间一致。
-- 失败原因能否反馈给 owning client。
+- Prefer replicated properties for durable state.
+- Prefer RPCs for transient events.
+- Use replication conditions for owner-only or skip-owner data.
+- Consider dormancy, relevancy, late join, respawn, and seamless travel.
 
-## 复制
+## RPC Review
 
-- AttributeSet 字段是否使用 RepNotify。
-- Gameplay Cue 是否在目标客户端出现。
-- Tag、Effect、Montage 状态是否按预期同步。
+- Server RPC: validate ownership and input.
+- Client RPC: send only to the owning connection unless a broader path is intentional.
+- Multicast RPC: use for transient, non-durable events; avoid using it as state storage.
 
-## 验证
+## Debug Logs
 
-- Listen Server。
-- Dedicated Server。
-- 多 PIE。
-- 人为延迟或 packet loss。
-- late join / respawn / possession change。
+Log role, net mode, owner, instigator, actor name, connection, prediction key, and relevant gameplay tags near failing paths.
+
+## Multiplayer Validation Matrix
+
+| Check | Listen Server | Dedicated Server | High Ping | Packet Loss |
+|---|---|---|---|---|
+| Ability activation | required | required | required | optional for early prototype |
+| GameplayEffect replication | required | required | required | required before release |
+| GameplayCue presentation | required | required | required | required before release |
+| Attribute prediction | required when predicted | required when predicted | required | required |
+| Character movement ability | required | required | required | required when movement is predicted |
+
+## Prediction Evidence
+
+- Capture prediction key, ability spec handle, activation mode, and rollback/cancel path.
+- Validate listen server and dedicated server separately; listen-server success does not prove dedicated-server correctness.
+- Use packet lag or network emulation before claiming client prediction is stable.

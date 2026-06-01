@@ -1,11 +1,12 @@
-# UE Game Dev 贡献指南
+# Contributing To UE Game Dev
 
-## 开发流程
+## Development Flow
 
-1. 主版本在 `main` 分支开发。
-2. 根目录插件文件是唯一源头，不要优先手改 `plugins/ue-game-dev/`。
-3. 修改后运行 `python scripts\sync_marketplace_package.py` 刷新 marketplace 安装包。
-4. 提交前运行：
+1. Work from `main` for the primary plugin version.
+2. Keep root plugin files as the source of truth.
+3. After edits, run `python scripts\sync_marketplace_package.py` to refresh `plugins/ue-game-dev/`.
+4. When the change should be installed into the local Codex App plugin cache, run `python scripts\update_codex_app_plugin.py`. Use `--skip-reinstall` for file-only sync/validation.
+5. Run validation before committing:
 
 ```powershell
 $env:PYTHONUTF8='1'
@@ -15,48 +16,47 @@ python -m unittest discover tests
 git diff --check
 ```
 
-5. 任何插件内容改动都要同步到 `ue-game-dev-zh`。中文分支保留代码、命令、路径、UE API、技能名和 `$ue-*` 引用英文不变，技能说明、注释、解释和文档正文使用中文。
-6. 面向发布的更新完成验证后，要同步推送到 GitHub 的 `main` 和 `ue-game-dev-zh`；PR/功能分支保留到两个分支都完成同步为止。
+6. When plugin content changes, apply the same structural change to `ue-game-dev-zh` and localize skill explanations, comments, and prose to Chinese while preserving code, commands, paths, UE APIs, skill names, and `$ue-*` references.
+7. Push the verified change to GitHub for both `main` and `ue-game-dev-zh` when the update is release-facing; keep feature branches available for PR review until both branches are synchronized.
 
-## 新增技能
+## Adding A Skill
 
-- 创建 `skills/<skill-name>/SKILL.md`、`skills/<skill-name>/agents/openai.yaml`，并至少提供一个有用的 `references/*.md`。
-- `SKILL.md` frontmatter 必须包含 `name` 和 `description`。
-- 在 `skills/ue-game-dev-router/SKILL.md` 增加路由说明。
-- 在 `tests/route_scenarios.json` 增加对应路由场景。
-- 对外能力变化时同步更新 `.codex-plugin/plugin.json`、`README.md` 和 `CHANGELOG.md`。
+- Create `skills/<skill-name>/SKILL.md`, `skills/<skill-name>/agents/openai.yaml`, and at least one useful `references/*.md`.
+- `SKILL.md` frontmatter must include `name` and `description`.
+- Route the skill from `skills/ue-game-dev-router/SKILL.md`.
+- Add route scenarios to `tests/route_scenarios.json`.
+- Update `.codex-plugin/plugin.json`, `README.md`, and `CHANGELOG.md` when the public skill surface changes.
+- If the new skill adapts third-party MIT material, update `NOTICE` and keep content rewritten for this plugin's workflow instead of importing a full upstream bundle.
 
-## 修改路由
+## Updating Routing
 
-- `scripts/validate_plugin.py` 中硬规则必须优先于评分规则：multi-agent、显式打包、打包失败分诊、workflow state、stage、brief、plan、done。
-- 先写路由场景，再向 `SKILL_PATTERNS` 添加领域关键词。
-- 用户常见输入可能中英混合时，同时补中英文场景。
-- 保留 `$ue-build-release-automation` 的 forbidden 场景，避免被动触发自动打包。
+- Keep hard guardrails ahead of scoring in `scripts/validate_plugin.py`: multi-agent, explicit packaging, packaging failure triage, workflow state, stage, brief, plan, and done routes.
+- Add domain keywords to `SKILL_PATTERNS` only after route scenarios describe the expected behavior.
+- Add Chinese and English examples when the user-facing wording is likely to be bilingual.
+- Preserve forbidden scenarios for `$ue-build-release-automation`.
 
-## 新增工具
+## Adding Tools
 
-- 工具默认只读，除非计划明确要求写入。
-- 输入路径要显式，例如 `--project` 或 `--log`。
-- 支持 `--format json`，方便测试和自动化。
-- 同步加入 `UE_TOOL_SCRIPTS`、`validate_tool_mentions()`、README 和拥有该工具的 SKILL。
-- 在 `tests/` 下补单元测试。
+- Tools must be read-only unless a future plan explicitly says otherwise.
+- Support `--project` or a similarly explicit input path.
+- Support `--format json` for tests and automation.
+- Add the tool to `UE_TOOL_SCRIPTS`, `validate_tool_mentions()`, README, and the owning skill.
+- Add a unit test under `tests/`.
 
-## Marketplace 包
+## Marketplace Package
 
-- 不要先编辑 `plugins/ue-game-dev/`。
-- 修改根目录后运行 `scripts\sync_marketplace_package.py`。
-- `validate_plugin.py` 会对 `.codex-plugin/`、`assets/`、`rules/`、`skills/`、`templates/`、`CHANGELOG.md`、`LICENSE` 和 `README.md` 做内容哈希比对。
-- `scripts\update_codex_app_plugin.py` 负责本地 Codex App 的 cachebuster、marketplace 注册和插件重装验证。
+- Do not edit `plugins/ue-game-dev/` first.
+- Edit root files, then run `scripts\sync_marketplace_package.py`.
+- `validate_plugin.py` hashes `.codex-plugin/`, `assets/`, `rules/`, `skills/`, `templates/`, `CHANGELOG.md`, `LICENSE`, and `README.md` against the marketplace mirror.
+- `update_codex_app_plugin.py` wraps cachebuster updates, marketplace sync, validation, marketplace registration, and Codex App reinstall for local release checks.
 
-## 提交信息
+## Engineering Flow References
 
-## 工程流程参考
+- `mattpocock/skills` is a process reference for diagnosis, TDD, architecture review, and requirement questioning. Summarize the workflow handoff in UE terms; do not copy full external skill text into this plugin.
+- Keep UE domain ownership inside `UE Game Dev`: logs and runtime bugs route to `ue-log-crash-triage` or `ue-debug-validation`, test-first feature work routes to `ue-testing-automation`, fuzzy requirements route to `ue-feature-brief`, and old project/module tangles route to `ue-project-onboarding` or `ue-architecture`.
+- Document repository conventions, issue tracker expectations, ADR locations, and branch sync rules under `docs/agents/` when they affect future agents.
 
-- `mattpocock/skills` 仅作为诊断、TDD、架构复盘和需求追问的流程参考。只在 UE 语境里总结交接方式，不复制完整外部 skill 文本。
-- 保持 UE 领域归属在 `UE Game Dev` 内：日志和运行时 bug 先路由到 `ue-log-crash-triage` 或 `ue-debug-validation`，测试先行功能先路由到 `ue-testing-automation`，需求模糊先路由到 `ue-feature-brief`，旧项目或模块纠缠先路由到 `ue-project-onboarding` 或 `ue-architecture`。
-- 影响未来 agent 的仓库约定、issue tracker、ADR 位置和分支同步规则，记录到 `docs/agents/`。
+## Commit Messages
 
-## 提交信息
-
-- 用户偏好详细中文提交日志。
-- 提交信息应说明主要能力、验证命令，以及是否已同步 `ue-game-dev-zh`。
+- Use detailed Chinese commit messages for user-facing work.
+- Mention the main capability changed, important validation, and whether `ue-game-dev-zh` was synchronized.

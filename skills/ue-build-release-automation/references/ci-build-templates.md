@@ -1,52 +1,95 @@
-# CI 打包模板
+# CI Build Templates
 
-## 通用步骤
+## PowerShell Script Shape
 
-```text
-1. Checkout repository
-2. Restore/cache DerivedDataCache if policy allows
-3. Locate Unreal Engine installation
-4. Generate project files if needed
-5. Run BuildCookRun
-6. Upload logs
-7. Archive packaged artifacts
+Use parameterized scripts so local and CI builds share the same entry point:
+
+```powershell
+param(
+  [Parameter(Mandatory=$true)][string]$EngineRoot,
+  [Parameter(Mandatory=$true)][string]$ProjectPath,
+  [string]$Platform = "Win64",
+  [string]$Config = "Development",
+  [Parameter(Mandatory=$true)][string]$ArchiveDir
+)
+
+$RunUAT = Join-Path $EngineRoot "Engine\Build\BatchFiles\RunUAT.bat"
+if (-not (Test-Path $RunUAT)) { throw "RunUAT not found: $RunUAT" }
+if (-not (Test-Path $ProjectPath)) { throw "Project not found: $ProjectPath" }
+
+& $RunUAT BuildCookRun `
+  -project="$ProjectPath" `
+  -noP4 `
+  -platform=$Platform `
+  -clientconfig=$Config `
+  -build `
+  -cook `
+  -stage `
+  -pak `
+  -archive `
+  -archivedirectory="$ArchiveDir" `
+  -utf8output
+
+if ($LASTEXITCODE -ne 0) {
+  throw "BuildCookRun failed with exit code $LASTEXITCODE"
+}
 ```
 
-## GitHub Actions 片段
+## GitHub Actions Shape
+
+Use only for self-hosted Windows runners that already have Unreal Engine and platform SDKs installed:
 
 ```yaml
-name: UE Package
+name: Package Unreal
 
 on:
   workflow_dispatch:
+    inputs:
+      config:
+        type: choice
+        options: [Development, Shipping]
+        default: Development
 
 jobs:
   package:
-    runs-on: self-hosted
+    runs-on: [self-hosted, Windows]
     steps:
       - uses: actions/checkout@v4
-      - name: Package Win64
+      - name: Package
         shell: powershell
         run: |
-          & "C:\Program Files\Epic Games\UE_5.4\Engine\Build\BatchFiles\RunUAT.bat" BuildCookRun `
-            -project="${{ github.workspace }}\MyGame.uproject" `
-            -noP4 `
-            -platform=Win64 `
-            -clientconfig=Development `
-            -build -cook -stage -pak -archive `
-            -archivedirectory="${{ github.workspace }}\Artifacts\Win64"
+          .\Build\Package.ps1 `
+            -EngineRoot "${{ vars.UE_ENGINE_ROOT }}" `
+            -ProjectPath "${{ github.workspace }}\ProjectName.uproject" `
+            -Platform "Win64" `
+            -Config "${{ inputs.config }}" `
+            -ArchiveDir "${{ github.workspace }}\Artifacts\Win64-${{ inputs.config }}"
       - uses: actions/upload-artifact@v4
         with:
-          name: package-logs
-          path: |
-            Saved/Logs/**
-            Engine/Programs/AutomationTool/Saved/Logs/**
+          name: Win64-${{ inputs.config }}
+          path: Artifacts/Win64-${{ inputs.config }}
 ```
 
-## 注意事项
+## CI Rules
 
-- UE 打包通常需要 self-hosted runner。
-- 不要把证书、token、keystore、provisioning profile 写进仓库。
-- DDC cache 要按项目、平台和引擎版本隔离。
-- CI 产物目录要和源码、Intermediate、Saved 分离。
-- 失败时上传完整日志，但报告中只总结首个可行动错误。
+- Keep engine install, SDK setup, signing secrets, and artifact upload outside the skill unless the user asks for that provider.
+- Use self-hosted runners for UE builds unless the user has a custom image.
+- Store UAT logs as artifacts.
+- Fail the job when `RunUAT` returns non-zero.
+- Keep release publishing as a separate explicit stage after package validation.
+
+## Jenkins Parameters
+
+- `UE_PROJECT`
+- `UE_ENGINE_ROOT`
+- `PLATFORM`
+- `CONFIGURATION`
+- `ARCHIVE_DIR`
+- `BUILD_VERSION`
+- `RUN_TESTS`
+
+## Horde Notes
+
+- Keep agent pools aligned with installed engine versions and platform SDKs.
+- Use shared DDC deliberately; record cache location and invalidation policy.
+- Archive packaged builds, symbols, UAT logs, test reports, and build metadata separately.

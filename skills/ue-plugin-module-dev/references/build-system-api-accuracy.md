@@ -1,35 +1,35 @@
-# UE Build System API 准确性
+# UE Build System API Accuracy
 
-本参考将 `quodsoler/unreal-engine-skills` 的 API 准确性思路改写进 UE Game Dev 插件风格。任务触及 `.Build.cs`、模块布局、插件描述或 include/link 错误时使用。
+This reference adapts API-accuracy guidance from `quodsoler/unreal-engine-skills` into the UE Game Dev plugin style. Use it when a task touches `.Build.cs`, module layout, plugin descriptors, or include/link errors.
 
-## Build.cs 放置
+## Build.cs Placement
 
-- `PublicDependencyModuleNames` 用于 public header 或 public inline code 中出现的类型所属模块。
-- `PrivateDependencyModuleNames` 用于只在 `.cpp` 或 private header 中使用的模块。
-- 现代 UE 模块布局下，`PublicIncludePaths` 和 `PrivateIncludePaths` 应很少使用；优先依赖标准 `Public/` 与 `Private/` 目录。
-- 不要为了消除 include 错误添加宽泛依赖；先找到类型真正所属模块。
+- `PublicDependencyModuleNames` is for modules whose types appear in public headers or public inline code.
+- `PrivateDependencyModuleNames` is for modules only used by `.cpp` files or private headers.
+- `PublicIncludePaths` and `PrivateIncludePaths` should be rare in modern UE module layout; prefer normal `Public/` and `Private/` folders.
+- Do not add broad dependencies to silence include errors; identify the module that owns the actual type.
 
-## Runtime 与 Editor
+## Runtime Versus Editor
 
-- Runtime 模块不能依赖 `UnrealEd`、`AssetTools`、`PropertyEditor`、`LevelEditor`、`ToolMenus` 或 editor-only style/tooling 模块。
-- Editor 模块可以依赖 runtime 模块，runtime 模块不应依赖 editor 模块。
-- 需要共享契约时，抽出窄 runtime/shared 模块，而不是制造循环依赖。
+- Runtime modules must not depend on `UnrealEd`, `AssetTools`, `PropertyEditor`, `LevelEditor`, `ToolMenus`, or editor-only style/tooling modules.
+- Editor modules may depend on runtime modules, but runtime modules should not depend on editor modules.
+- If shared contracts are needed, extract a narrow runtime/shared module instead of creating a circular dependency.
 
-## Public API Macro
+## Public API Macros
 
-- 跨模块暴露的 public class 需要模块导出宏，例如 `MYMODULE_API`。
-- 永不跨模块边界的 private 实现类不需要 export macro。
-- Public header 保持最小和稳定，能 forward declare 就不要在头文件重 include。
+- Public classes that cross module boundaries need the module export macro such as `MYMODULE_API`.
+- Private implementation classes that never cross module boundaries do not need export macros.
+- Keep public headers minimal and stable; forward declare where possible and include concrete headers in `.cpp`.
 
-## Target 与 Descriptor
+## Target And Descriptor Review
 
-- `.uproject` 和 `.uplugin` 的 module entry 必须匹配真实模块目录名。
-- Target 文件定义 build target 类型和 included modules，不要把 target module 与 plugin descriptor module 混淆。
-- Loading Phase 应明确；编辑器注册通常在 editor module startup，runtime gameplay 不应依赖 editor startup。
+- `.uproject` and `.uplugin` module entries should match actual module folder names.
+- Target files define build target type and included modules; do not confuse target modules with plugin descriptor modules.
+- Loading phases should be intentional. Editor registration commonly uses editor module startup, while runtime gameplay should not rely on editor startup.
 
-## Include/Link 分诊
+## Link/Include Triage
 
-- Include error：找到声明类型的 header，在真正需要的位置加窄 include。
-- Link error：先检查 owning module dependency 和 export macro。
-- Reflection/UHT error：检查 generated include 顺序、宏位置、不支持的反射类型和缺失模块依赖。
-- Packaged build error：优先检查 editor-only 依赖、未 Cook 资产或 plugin descriptor/module type 不匹配。
+- Include error: find the header that declares the type and add the narrow include in the `.cpp` or public header that needs it.
+- Link error: check the owning module dependency and export macro before changing code shape.
+- Reflection/UHT error: check generated include order, macro placement, unsupported reflected types, and missing module dependencies.
+- Packaged build error: look first for editor-only dependencies, uncooked assets, or plugin descriptor/module type mismatch.

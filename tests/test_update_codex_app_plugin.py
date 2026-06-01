@@ -1,6 +1,8 @@
 import json
 import tempfile
 import unittest
+from contextlib import redirect_stdout
+from io import StringIO
 from pathlib import Path
 from unittest import mock
 
@@ -56,6 +58,32 @@ class UpdateCodexAppPluginTests(unittest.TestCase):
             update_codex_app_plugin.parse_marketplace_root(output),
             Path("C:/tmp/ue-game-dev"),
         )
+
+    def test_dry_run_reports_without_mutating(self) -> None:
+        args = type(
+            "Args",
+            (),
+            {
+                "codex_home": "C:/Users/zhaocw/.codex",
+                "dry_run": True,
+                "skip_cachebuster": False,
+                "cachebuster": None,
+                "skip_reinstall": False,
+                "codex_cli": None,
+                "replace_marketplace": False,
+            },
+        )()
+        with mock.patch.object(update_codex_app_plugin, "parse_args", return_value=args), mock.patch.object(
+            update_codex_app_plugin, "update_cachebuster"
+        ) as update_cachebuster, mock.patch.object(update_codex_app_plugin, "run") as run, redirect_stdout(StringIO()) as stdout:
+            update_codex_app_plugin.main()
+
+        output = stdout.getvalue()
+        self.assertIn("Dry run for ue-game-dev@zhaochengv-ue", output)
+        self.assertIn("Source version:", output)
+        self.assertIn("Files that would be copied:", output)
+        update_cachebuster.assert_not_called()
+        run.assert_not_called()
 
 
 if __name__ == "__main__":

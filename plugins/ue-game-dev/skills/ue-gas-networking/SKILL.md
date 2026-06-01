@@ -1,46 +1,48 @@
 ---
 name: ue-gas-networking
-description: 当 Unreal Engine 任务涉及 Gameplay Ability System、Ability、Attribute、Gameplay Effect、Gameplay Cue、prediction、Ability Task、Blueprint Ability、ASC replication、RPC、authority flow 或多人能力调试时使用。
+description: Unreal Engine Gameplay Ability System and multiplayer ability networking workflow. Use for GAS abilities, attributes, gameplay effects, gameplay cues, prediction, ability tasks, Blueprint ability integration, ASC replication modes, RPC authority for ability activation, dedicated server behavior, listen server edge cases, and multiplayer ability implementation or review. Use `ue-save-load-sync` for SaveGame persistence or non-GAS durable state synchronization.
 ---
 
 # UE GAS Networking
 
-## 概览
+Use this skill when gameplay correctness depends on authority, prediction, replication, or GAS state.
 
-这个技能处理 GAS 与多人同步。先确认 ASC 所在位置、属性归属、预测策略和 authority flow，再设计 Ability、Effect、Cue 和验证场景。
+## First Pass
 
-## 使用场景
+1. Identify the GAS network model: single-player, listen server, dedicated server, client prediction, simulated proxy, or replay.
+2. Identify ASC ownership, avatar, replication mode, and predicted versus authoritative ability state.
+3. For GAS, locate the `AbilitySystemComponent`, attribute sets, initialization path, avatar/owner actor relationship, and input binding path.
+4. Read existing abilities/effects/cues before adding new patterns.
+5. Identify whether ability logic lives in Blueprint abilities, C++ ability classes, or a hybrid with Blueprint-authored effects/cues.
 
-- 创建 GameplayAbility、AttributeSet、GameplayEffect、GameplayCue。
-- 排查 Ability 不激活、预测回滚、属性不同步、Cue 不显示、RPC 方向错误。
-- 设计客户端预测、服务器确认、输入绑定、冷却、消耗、标签阻塞和多人 PIE 验证。
+## GAS Rules
 
-## 工作流程
+- Initialize ASC consistently on server and client, especially after possession and avatar changes.
+- Keep gameplay effects data-driven where designers need tuning; keep ability activation logic in C++ when it coordinates state.
+- Use gameplay tags for state gates and cancellation rules instead of scattered booleans.
+- Separate authoritative effects from cosmetic cues. Gameplay Cues should not be the only source of gameplay truth.
+- Use prediction windows only around actions that are safe to predict and can reconcile cleanly.
+- Prefer ability tasks for async waits, targeting, montage events, and gameplay events when they match existing project style.
+- Keep Blueprint abilities focused on orchestration, animation/VFX/SFX hooks, and designer-tuned effects; move validation, reusable targeting, and authority-sensitive logic to C++ when needed.
 
-1. 确认 ASC 在 Pawn、PlayerState 或组件中，明确 owner/avatar actor。
-2. 设计属性和标签：AttributeSet、GameplayTag、GE modifier、replication mode。
-3. 定义能力生命周期：输入、CanActivate、Commit、Task、EndAbility、Cancel。
-4. 区分预测与服务器权威：哪些效果可预测，哪些必须等服务器。
-5. 验证 dedicated/listen server、client latency、reconnect 或 possession 切换。
+## GAS Networking Rules
 
-## 规则
+- Server owns authoritative ability outcomes. Clients request/predict intent; the server validates and reconciles.
+- Use GAS replication, Gameplay Cues, and attributes for ability-visible state.
+- Avoid multicast for effects that should be represented by Gameplay Cues or replicated ability/attribute state.
+- For owner-only data, use owner-only replication conditions or ASC replication mode consistent with the project.
+- Use `$ue-save-load-sync` when the state must persist across sessions or restore after load.
 
-- 属性变化用 AttributeSet 和 GE 表达，避免绕过 GAS 直接改 replicated 字段。
-- Ability Task 生命周期必须跟 Ability 结束/取消绑定。
-- Gameplay Cue 用于表现，不应承载核心权威逻辑。
-- RepNotify、RPC 和 ASC replication mode 要与项目多人模型一致。
-- Blueprint Ability 适合组合逻辑，复杂规则和安全校验放 C++。
+## Debugging
 
-## 输出
+- Reproduce with at least two clients when the issue is network-visible.
+- Log role, local role, remote role, owner, instigator, prediction key, ability spec handle, and gameplay tags near the failing path.
+- Check both server and client logs before changing code.
 
-- GAS 架构：ASC、AttributeSet、Ability、Effect、Cue、Tag 分工。
-- 网络路径：输入、预测、服务器确认、复制和回滚。
-- Blueprint/C++ 边界：可调项、事件、任务和安全校验。
-- 验证：多人 PIE、延迟、日志、Gameplay Debugger 和属性观察。
+## References
 
-## 参考
-
-- GAS API 准确性与网络所有权读取 `references/gas-api-accuracy.md`。
-- GAS 模式读取 `references/gas-patterns.md`。
-- 需要 GameplayAbility、AttributeSet 或 GameplayCue 模板时读取 `references/gas-ability-template.md`。
-- 网络清单读取 `references/networking-checklist.md`。
+- Read `references/gas-patterns.md` for ability/effect/cue structure and prediction decisions.
+- Read `references/gas-api-accuracy.md` before writing or reviewing GAS classes, ability tasks, attribute replication, prediction, Blueprint abilities, or Gameplay Cue guidance.
+- Read `references/gas-ability-template.md` when sketching a concrete GameplayAbility, AttributeSet, or GameplayCue implementation.
+- Read `references/networking-checklist.md` for replication and RPC review.
+- Use `$ue-blueprint-workflow` for Blueprint ability graph wiring and `$ue-cpp-gameplay` for C++ ability/component implementation.

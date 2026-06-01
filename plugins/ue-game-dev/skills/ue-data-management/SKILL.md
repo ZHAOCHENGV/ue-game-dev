@@ -1,52 +1,45 @@
 ---
 name: ue-data-management
-description: 当 Unreal Engine 请求涉及 Primary Asset Manager、Data Asset、DataTable、CurveTable、DataRegistry、软/硬引用、FStreamableManager 异步加载、Primary Asset Rules、Cook Chunk、玩法数据建模或资产加载策略时使用。
+description: Unreal Engine data management workflow for Primary Asset Manager, Data Assets, DataTable, CurveTable, DataRegistry, soft and hard references, FStreamableManager async loading, Primary Asset Rules, cook chunks, and runtime data validation. Use when requests involve gameplay data modeling, asset loading strategy, item tables, or cook-aware asset references.
 ---
 
 # UE Data Management
 
-这个技能处理玩法数据模型、资产引用策略、异步加载和 Cook 感知的资产组织。目标是同时照顾设计师编辑、运行时加载成本、存档兼容和打包规则。
+Use this skill for gameplay data models, asset reference strategy, async loading, and cook-aware asset organization. Keep designer editing, runtime load cost, save compatibility, and packaging rules aligned.
 
-## 工作流程
+## First Pass
 
-1. 判断数据形态：Data Asset、Primary Data Asset、DataTable、CurveTable、Config、Gameplay Tags、DataRegistry 或后端数据。
-2. 定位拥有者：谁创建、加载、缓存、修改、保存、复制或展示这些数据。
-3. 决定引用策略：hard reference、soft reference、Primary Asset ID、row handle、Gameplay Tag 或 config key。
-4. 引入新引用前检查 Cook 规则、chunk、Asset Manager 设置和异步加载路径。
-5. 定义验证：Editor 数据审计、缺失 row、异步加载失败、packaged build 访问和版本迁移。
+1. Identify the data shape: Data Asset, Primary Data Asset, DataTable, CurveTable, Config, Gameplay Tags, DataRegistry, or backend data.
+2. Locate owners: systems that author, load, cache, mutate, save, replicate, or display the data.
+3. Decide whether references should be hard, soft, primary asset IDs, row handles, gameplay tags, or config keys.
+4. Check cook rules, chunking, asset manager settings, and async loading paths before introducing new references.
+5. Define validation: editor data audit, missing row handling, async load failure behavior, packaged build access, and version migration.
 
-## 数据建模规则
+## Data Modeling Rules
 
-- 记录像对象、有资产引用、需要设计师编辑时，优先 Data Asset。
-- 大量同构行并需要 CSV/JSON 导入导出时，优先 DataTable。
-- 数值曲线和平衡数据使用 CurveTable 或 Curve asset。
-- Config 用于环境或项目设置，不用于大型玩法目录。
-- Gameplay Tag 用于稳定语义 ID，避免字符串驱动分类逻辑。
+- Use Data Assets for object-like records with asset references and designer-friendly editing.
+- Use DataTables for tabular rows that share one struct and benefit from CSV/JSON import/export.
+- Use CurveTables for numeric curves and balancing data that needs interpolation.
+- Use Config for environment or project settings, not large gameplay catalogs.
+- Use Gameplay Tags for stable semantic identifiers; avoid stringly typed category logic.
 
-## 资产加载规则
+## Asset Loading Rules
 
-- 只有确实随 owner 常驻加载时才用 hard reference。
-- 可选、大型、装饰性或模式专属资产使用 `TSoftObjectPtr`、`TSoftClassPtr`、`FSoftObjectPath` 或 Primary Asset ID。
-- soft reference 通过 `FStreamableManager` 或 Asset Manager 加载，并处理成功/失败。
-- async load callback 要检查 UObject 生命周期，并在 GameThread 写玩法对象。
-- soft reference 资产必须通过 Primary Asset Rules、map 引用、显式 Cook 列表或 bundle 进入 Cook。
+- Use hard references only when always-loaded ownership is intentional.
+- Use `TSoftObjectPtr`, `TSoftClassPtr`, `FSoftObjectPath`, or Primary Asset IDs for optional or large assets.
+- Load soft references through `FStreamableManager` or the Asset Manager with explicit success/failure handling.
+- Keep async load callbacks safe: validate UObject lifetime and return to the game thread before touching gameplay objects.
+- Ensure soft-referenced assets are included by Primary Asset Rules, map references, explicit cook lists, or bundle rules.
 
-## 运行时与打包
+## Runtime And Packaging
 
-- 验证 DataTable row struct、缺失 row fallback、重复 ID 和 row rename 风险。
-- 存档里保存 row name、asset ID 或 soft path 时必须有版本迁移策略。
-- Runtime 引用中避免 editor-only 资产。
-- 对资产发现和异步加载行为做 packaged build 检查。
+- Validate DataTable row structs, missing row fallbacks, duplicate IDs, and row rename risks.
+- Version save data that stores row names, asset IDs, or soft paths.
+- Avoid editor-only assets in runtime references.
+- Include packaged build checks for asset discovery and async load behavior.
 
-## 输出
+## References
 
-- 数据形态决策：Data Asset、DataTable、DataRegistry、Config 或 backend。
-- 引用策略：hard/soft、Primary Asset ID、row handle、Gameplay Tag。
-- 加载流程：同步、异步、缓存、失败路径和生命周期。
-- 验证：Editor 数据检查、PIE、packaged build、Cook 和迁移风险。
-
-## 参考
-
-- 选择 Data Asset、DataTable、DataRegistry 或 Config 前读取 `references/data-asset-patterns.md`。
-- 添加 soft reference 或 `FStreamableManager` 加载前读取 `references/async-loading-checklist.md`。
-- 资产前缀、Gameplay Tag 和模块命名使用共享 `rules/ue-naming.md`。
+- Read `references/data-asset-patterns.md` before choosing Data Asset, DataTable, DataRegistry, or Config.
+- Read `references/async-loading-checklist.md` before adding soft references or `FStreamableManager` loading.
+- Use shared `rules/ue-naming.md` for asset prefixes, Gameplay Tag naming, and module naming.

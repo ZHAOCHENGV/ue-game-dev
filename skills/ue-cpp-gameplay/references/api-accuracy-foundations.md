@@ -1,45 +1,45 @@
-# UE C++ API 准确性基础
+# UE C++ API Accuracy Foundations
 
-本参考吸收 MIT 许可 `quodsoler/unreal-engine-skills` 的 API 校验思路，并按 UE Game Dev 插件风格改写。给出 C++ 代码前用它减少虚构 UE API。
+This reference distills API-accuracy checks inspired by the public MIT-licensed `quodsoler/unreal-engine-skills` project. Use it to reduce hallucinated UE C++ APIs before presenting code.
 
-## 反射检查
+## Reflection Sanity
 
-- 每个反射类、结构体、枚举都需要匹配的 generated include 和 `GENERATED_BODY()`。
-- 只有需要反射、Blueprint、config、序列化、复制或编辑器暴露时，才使用 `UCLASS`、`USTRUCT`、`UENUM`、`UFUNCTION`、`UPROPERTY`。
-- UE5 结构体优先使用 `GENERATED_BODY()`，不要引入旧式 generated body 宏。
-- `AddDynamic` 绑定动态多播 delegate 时，目标函数必须是 `UFUNCTION`。
-- RPC 声明需要对应 `_Implementation`；不要凭空添加 validation 签名，除非项目/引擎版本已有这种风格。
+- Every reflected class, struct, and enum needs the matching generated include and `GENERATED_BODY()`.
+- Use `UCLASS`, `USTRUCT`, `UENUM`, `UFUNCTION`, and `UPROPERTY` only where reflection, Blueprint access, config, serialization, replication, or editor exposure is actually needed.
+- In UE5, prefer `GENERATED_BODY()` for structs; do not introduce legacy generated-body macros.
+- Dynamic multicast delegate bindings with `AddDynamic` require the target function to be a `UFUNCTION`.
+- RPC declarations need their generated `_Implementation` body. Do not invent validation signatures unless the target engine/project style already uses them.
 
-## UObject 生命周期
+## UObject Lifetime
 
-- 反射的 UObject 成员使用 `UPROPERTY()`，UE5 项目通常配合 `TObjectPtr<T>`。
-- 非拥有缓存引用使用 `TWeakObjectPtr<T>`。
-- 可选资产使用 `TSoftObjectPtr<T>`、`TSoftClassPtr<T>` 或 Primary Asset ID，避免强加载。
-- 不要用 `TSharedPtr` 或 `TUniquePtr` 管理 UObject 派生类型。
-- 非 UObject owner 如果必须持有 UObject 引用，需要明确 GC 引用策略，例如 `FGCObject` 或 UObject owner。
+- Reflected UObject members should be `UPROPERTY()` and usually `TObjectPtr<T>` in UE5 codebases.
+- Use `TWeakObjectPtr<T>` for non-owning cached UObject references that may be destroyed.
+- Use `TSoftObjectPtr<T>`, `TSoftClassPtr<T>`, or Primary Asset IDs for optional assets that should not force-load.
+- Do not use `TSharedPtr` or `TUniquePtr` for UObject-derived types.
+- For non-UObject owners that must hold UObject references, use an explicit GC reference strategy such as `FGCObject` or a UObject owner.
 
-## 容器与字符串
+## Containers And Strings
 
-- 反射或 gameplay-facing 数据优先使用 UE 容器：`TArray`、`TMap`、`TSet`。
-- 避免在 ranged-for 中修改 `TArray`；删除元素时用索引或收集后处理。
-- 稳定标识用 `FName`，可变字符串/路径用 `FString`，玩家可见文本用 `FText`。
-- 项目已有 Gameplay Tags 时，玩法分类优先用 Tag，不要用字符串硬编码。
+- Use UE containers (`TArray`, `TMap`, `TSet`) for reflected/gameplay-facing data unless the boundary specifically requires STL.
+- Avoid mutating `TArray` during ranged-for iteration; iterate by index when removing.
+- Use `FName` for stable identifiers, `FString` for mutable strings/paths, and `FText` for player-visible localized text.
+- Prefer Gameplay Tags over stringly typed gameplay categories when the project already uses tags.
 
-## Subsystem 访问
+## Subsystem Access
 
-- `UGameInstanceSubsystem`：通过 `GetGameInstance()->GetSubsystem<T>()`，跨地图加载保留。
-- `UWorldSubsystem`：通过 `GetWorld()->GetSubsystem<T>()`，作用域是 world/PIE instance。
-- `ULocalPlayerSubsystem`：通过 LocalPlayer 获取，每个本地用户一份。
-- `UEngineSubsystem`：通过 `GEngine->GetEngineSubsystem<T>()`，全局 engine 生命周期。
+- `UGameInstanceSubsystem`: access through `GetGameInstance()->GetSubsystem<T>()`; persists across map loads.
+- `UWorldSubsystem`: access through `GetWorld()->GetSubsystem<T>()`; scoped to a world/PIE instance.
+- `ULocalPlayerSubsystem`: access through the local player; per local user.
+- `UEngineSubsystem`: access through `GEngine->GetEngineSubsystem<T>()`; global engine lifetime.
 
-## 复制检查
+## Replication Checks
 
-- replicated property 同时需要反射 specifier 和 `GetLifetimeReplicatedProps`。
-- `ReplicatedUsing` 需要匹配的 `UFUNCTION` OnRep handler。
-- 把可变复制状态暴露给 Blueprint 前，先定义 owner、authority、prediction、save/load 和 UI 通知边界。
+- A replicated property needs both the reflected specifier and `GetLifetimeReplicatedProps`.
+- `ReplicatedUsing` needs a matching `UFUNCTION` OnRep handler.
+- Define owner, authority, prediction, save/load, and UI notification boundaries before exposing mutable replicated state to Blueprint.
 
-## 发送代码前
+## Before Sending Code
 
-- 尽量用项目附近代码或 UE 头文件确认类名和函数名。
-- 每个可能需要 `.Build.cs` 的 include/API 都说明所属模块。
-- 使用 `TObjectPtr`、Enhanced Input、StateTree、Mass、PCG 等较新 API 时说明引擎版本假设。
+- Verify class/function names against nearby project code or UE headers when possible.
+- Name the owning module for every include/API that may require `.Build.cs` changes.
+- Mention engine-version assumptions when using newer APIs such as `TObjectPtr`, Enhanced Input, StateTree, Mass, or PCG.

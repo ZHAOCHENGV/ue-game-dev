@@ -1,4 +1,4 @@
-# GAS Ability 模板
+# GAS Ability Template
 
 ```cpp
 UCLASS()
@@ -17,10 +17,10 @@ public:
 };
 ```
 
-## 检查清单
+## Checklist
 
-- 定义 activation policy、cost、cooldown 和 authority 预期。
-- 预测型客户端逻辑保持 prediction key 有效。
-- AttributeSet 值复制时提供清晰 `OnRep`。
-- GameplayCue 处理表现；权威状态留在 Ability/Effect 中。
-- 涉及 prediction 时测试 listen server 和 dedicated server 行为。
+- Define activation policy, cost, cooldown, and authority expectations.
+- Keep prediction keys valid for predicted client work.
+- AttributeSet values replicate with clear `OnRep` handlers.
+- GameplayCues handle presentation; authoritative state stays in abilities/effects.
+- Test listen server and dedicated server behavior when prediction matters.

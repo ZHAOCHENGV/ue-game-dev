@@ -1,4 +1,4 @@
-# Automation Test 模板
+# Automation Test Template
 
 ```cpp
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FInventoryRulesTest,
@@ -12,9 +12,9 @@ bool FInventoryRulesTest::RunTest(const FString& Parameters)
 }
 ```
 
-## Functional Test 说明
+## Functional Test Notes
 
-- 确定性 C++ 逻辑和验证 helper 使用 Automation Test。
-- 地图、Actor、Blueprint 和 PIE 行为使用 Functional Test。
-- 测试名称写清 feature 和预期行为。
-- 完成交接中记录证据路径：命令、地图、net mode 和结果。
+- Use Automation Tests for deterministic C++ logic and validation helpers.
+- Use Functional Tests for map, Actor, Blueprint, and PIE behavior.
+- Name tests by feature and expected behavior.
+- Include evidence path in completion handoff: command, map, net mode, and result.

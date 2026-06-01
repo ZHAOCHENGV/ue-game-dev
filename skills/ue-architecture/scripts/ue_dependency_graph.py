@@ -117,7 +117,7 @@ def analyze(project: Path) -> dict:
                             "type": "editor_dependency",
                             "module": entry["module"],
                             "dependency": dep,
-                            "message": f"Runtime module {entry['module']} 依赖 editor-only 模块 {dep}",
+                            "message": f"Runtime module {entry['module']} depends on editor-only {dep}",
                         }
                     )
 
@@ -154,8 +154,8 @@ def render_mermaid(result: dict) -> str:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="只读 Unreal Build.cs 依赖图工具。")
-    parser.add_argument("--project", required=True, help="UE 项目目录或 .uproject 文件路径。")
+    parser = argparse.ArgumentParser(description="Read-only Unreal Build.cs dependency graph helper.")
+    parser.add_argument("--project", required=True, help="Path to a UE project directory or .uproject file.")
     parser.add_argument("--format", choices=["json", "text", "mermaid"], default="text")
     args = parser.parse_args()
 

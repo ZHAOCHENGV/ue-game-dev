@@ -1,8 +1,8 @@
-# Subsystem 模板
+# Subsystem Template
 
 ## GameInstance Subsystem
 
-跨 world travel 存活、归属于运行中 GameInstance 的服务使用 `UGameInstanceSubsystem`。
+Use `UGameInstanceSubsystem` for services that live across world travel and belong to the running game instance.
 
 ```cpp
 UCLASS()
@@ -21,7 +21,7 @@ public:
 
 ## World Subsystem
 
-随 PIE world、地图或 server/client world 重置的服务使用 `UWorldSubsystem`。
+Use `UWorldSubsystem` for per-world services that should reset with PIE worlds, maps, or server/client worlds.
 
 ```cpp
 UCLASS()
@@ -34,9 +34,9 @@ public:
 };
 ```
 
-## 检查清单
+## Checklist
 
-- 添加全局状态前先选择 Subsystem 生命周期。
-- UObject 引用用 `UPROPERTY` 保持 GC 可见。
-- 不要把 per-player 状态直接放入全局 Subsystem，除非按 player 分键管理。
-- 只有设计师确实需要时才暴露 Blueprint-callable API。
+- Choose subsystem lifetime before adding global state.
+- Keep UObject references GC-visible with `UPROPERTY`.
+- Avoid storing per-player state in global subsystems unless keyed by player.
+- Add Blueprint-callable APIs only when designers need them.

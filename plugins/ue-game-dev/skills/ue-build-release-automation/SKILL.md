@@ -1,48 +1,56 @@
 ---
 name: ue-build-release-automation
-description: 当用户明确要求为 Unreal Engine 项目创建或运行打包、RunUAT、BuildCookRun、Project Launcher、CI 发版流水线或一键构建自动化时使用。
+description: Use only when the current user explicitly asks Codex to package an Unreal project, create or run one-click packaging, BuildCookRun, RunUAT, Project Launcher, CI release builds, archive artifacts, or automate packaged build delivery. Do not use for passive release readiness, performance review, or packaging smoke checks.
 ---
 
 # UE Build Release Automation
 
-## 显式调用边界
+## Overview
 
-Use only when the current user explicitly asks to package, build, release, run `RunUAT`/`BuildCookRun`, create Project Launcher profiles, or create CI release automation.
+Use this skill for active Unreal packaged-build automation. It turns an explicit packaging request into a verified `RunUAT BuildCookRun` command, script, CI step, or executed build with clear logs and artifact paths.
 
-这个技能会生成或指导执行打包自动化，属于主动操作边界。不要因为用户只是询问发布准备、性能检查或打包失败诊断就自动进入这里；那些情况先走 `$ue-performance-packaging` 或 `$ue-log-crash-triage`。
+## Invocation Boundary
 
-## 使用场景
+- Use only when the current user actively asks to package, build a distributable, generate a packaging script, run `RunUAT`, run `BuildCookRun`, configure Project Launcher, or create a CI release pipeline.
+- Do not use as a passive follow-up from performance checks, code edits, testing, release readiness review, or "is this ready to ship?" unless the user also asks to build/package.
+- If the request is only readiness, diagnosis, smoke testing, or package failure analysis, use `$ue-performance-packaging` or `$ue-testing-automation` instead.
+- If the user asks for a command or script, generate it without running it.
+- If the user asks Codex to package now, run the packaging command after resolving the project path, engine path, platform, configuration, and archive directory.
 
-- 生成 Win64/Android/iOS/Server 的 `RunUAT BuildCookRun` 命令。
-- 创建一键打包脚本、Project Launcher 配置或 CI release job。
-- 设计构建产物目录、版本号、日志采集、归档和失败回传。
-- 用户明确要求“打包”“自动打包”“运行打包”“发版流水线”。
+## First Pass
 
-## 工作流程
+1. Locate the `.uproject`, project name, target files, enabled plugins, and existing package output folders.
+2. Resolve the Unreal Engine path and version: `.uproject` `EngineAssociation`, known installed engine directories, or the user's explicit engine path.
+3. Confirm target platform, client/server build, configuration, archive directory, and whether this is local dev, QA, or release.
+4. Inspect packaging-critical settings: default maps, maps to cook, target platform settings, plugin runtime/editor split, and project module build dependencies.
+5. Decide the automation surface: direct `RunUAT`, a checked-in PowerShell/BAT script, Project Launcher profile guidance, or CI job.
+6. Keep expensive or destructive flags explicit: `-clean`, deleting old builds, signing, uploading, or overwriting release artifacts.
 
-1. 确认 `.uproject` 路径、UE 安装路径、平台、配置、目标、Maps、Cook 策略和输出目录。
-2. 选择构建方式：本地 PowerShell/Bat、Project Launcher、BuildGraph、GitHub Actions/Jenkins/TeamCity。
-3. 生成命令前说明风险：会写入 `Saved/`、`Intermediate/`、`Binaries/`、输出目录和日志。
-4. 如果需要运行命令，先得到用户明确授权并记录环境。
-5. 输出失败诊断入口：`Saved/Logs`、UAT log、Cook log、首个可行动错误和后续 `$ue-log-crash-triage`。
+## BuildCookRun Workflow
 
-## 命令规则
+1. Build the command from known paths, not placeholders.
+2. Prefer `RunUAT.bat BuildCookRun` for reproducible local and CI builds.
+3. Include `-utf8output` on Windows so logs preserve readable diagnostics.
+4. Use `Development` for local validation unless the user asks for `Shipping`, QA, release, or store submission.
+5. For UE5 packaged games, include the project's established `-pak` or `-iostore` convention; do not switch container mode casually.
+6. When running the build, capture the command, exit code, latest UAT log path, first blocking error, and final artifact directory.
+7. If packaging fails, stop at the first actionable blocker and route diagnosis through `$ue-performance-packaging` only if deeper cook/package failure analysis is needed.
 
-- 默认使用显式路径，不依赖当前目录猜测。
-- 区分 Development、Shipping、Client、Server、Editor target。
-- Cook/Stage/Pak/Archive 参数要和平台匹配。
-- Android/iOS 必须提示 SDK、证书、签名、NDK/Xcode 或设备配置风险。
-- CI 中要缓存 DerivedDataCache，但不要缓存易污染的 Intermediate 产物。
+## Required Output
 
-## 输出
+For every packaging automation response, include:
 
-- 打包前提：项目、引擎、平台、配置和地图。
-- 命令或流水线片段：保留 `RunUAT`、`BuildCookRun`、环境变量和路径。
-- 产物与日志：Archive 目录、日志位置、失败时下一步。
-- 安全提示：是否会写入大量构建产物，是否需要用户授权运行。
+- Project path and engine path used.
+- Platform, configuration, target type, and archive/stage directory.
+- Exact command or script body.
+- Whether the command was run or only generated.
+- Log location and artifact location when executed.
+- Next fix when the build fails.
 
-## 参考
+## References
 
-- 命令模板读取 `references/buildcookrun-commands.md`。
-- CI 模板读取 `references/ci-build-templates.md`。
-- 发版检查读取 `references/release-automation-checklist.md`。
+- Read `references/buildcookrun-commands.md` when generating `RunUAT BuildCookRun` commands or scripts.
+- Read `references/release-automation-checklist.md` before running packaging or designing CI artifacts.
+- Read `references/ci-build-templates.md` when the user asks for Jenkins, GitHub Actions, TeamCity, or other build machine automation.
+- Use `references/buildgraph-and-artifacts.md` when the user asks for BuildGraph, Horde, Jenkins, Project Launcher profiles, symbols, release artifacts, or multi-platform release automation.
+- This skill still requires explicit packaging or automation intent.

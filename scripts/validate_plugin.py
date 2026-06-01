@@ -16,6 +16,7 @@ ROUTE_SCENARIOS = ROOT / "tests" / "route_scenarios.json"
 PACKAGING_OPENAI = SKILLS / "ue-build-release-automation" / "agents" / "openai.yaml"
 PACKAGING_SKILL = SKILLS / "ue-build-release-automation" / "SKILL.md"
 ROUTER_SKILL = SKILLS / "ue-game-dev-router" / "SKILL.md"
+ROUTING_RULES = SKILLS / "ue-game-dev-router" / "references" / "routing-rules.json"
 MULTI_AGENT_SKILL = SKILLS / "ue-multi-agent-workflow" / "SKILL.md"
 CHANGELOG = ROOT / "CHANGELOG.md"
 CONTRIBUTING = ROOT / "CONTRIBUTING.md"
@@ -29,6 +30,7 @@ UE_TOOL_SCRIPTS = [
     SKILLS / "ue-project-onboarding" / "scripts" / "ue_project_scan.py",
     SKILLS / "ue-project-onboarding" / "scripts" / "ue_config_audit.py",
     SKILLS / "ue-log-crash-triage" / "scripts" / "ue_log_triage.py",
+    SKILLS / "ue-debug-validation" / "scripts" / "ue_editor_command_report.py",
     SKILLS / "ue-cpp-gameplay" / "scripts" / "ue_blueprint_api_report.py",
     SKILLS / "ue-architecture" / "scripts" / "ue_dependency_graph.py",
     SKILLS / "ue-multi-agent-workflow" / "scripts" / "ue_agent_plan.py",
@@ -37,6 +39,12 @@ WARNINGS: list[str] = []
 
 MOJIBAKE_MARKERS = [
     "\ufffd",
+    "鈥",
+    "鉁",
+    "鉂",
+    "锟",
+    "鎵",
+    "閿",
     "鍏堢啛",
     "椤圭洰",
     "闇€",
@@ -48,6 +56,7 @@ MOJIBAKE_MARKERS = [
     "乣",
     "銆",
     "鈫",
+    "涔辩爜",
 ]
 
 USER_VISIBLE_TEXT_FILES = [
@@ -107,6 +116,36 @@ def load_json(path: Path) -> dict:
         return json.loads(read_text(path))
     except json.JSONDecodeError as exc:
         fail(f"{path.relative_to(ROOT)} invalid JSON: {exc}")
+
+
+def load_route_rules(known_skills: set[str] | None = None) -> dict:
+    data = load_json(ROUTING_RULES)
+    routes = data.get("routes")
+    if not isinstance(routes, list):
+        fail("routing-rules.json must contain a routes list")
+
+    known_skills = known_skills or skill_names(sorted(path for path in SKILLS.iterdir() if path.is_dir()))
+    for entry in routes:
+        if not isinstance(entry, dict):
+            fail("routing-rules.json routes must be objects")
+        skill = entry.get("skill")
+        if skill not in known_skills:
+            fail(f"routing-rules.json references unknown skill: {skill}")
+        if not isinstance(entry.get("priority"), int | float):
+            fail(f"routing-rules.json route must include numeric priority: {skill}")
+        patterns = entry.get("patterns")
+        if not isinstance(patterns, list) or not patterns or not all(isinstance(pattern, str) for pattern in patterns):
+            fail(f"routing-rules.json route has invalid patterns: {skill}")
+
+    guardrails = data.get("guardrails", {})
+    if guardrails and not isinstance(guardrails, dict):
+        fail("routing-rules.json guardrails must be an object")
+    for skill, guardrail in guardrails.items():
+        if skill not in known_skills:
+            fail(f"routing-rules.json guardrail references unknown skill: {skill}")
+        if not isinstance(guardrail, dict):
+            fail(f"routing-rules.json guardrail must be an object: {skill}")
+    return data
 
 
 def validate_user_visible_text() -> None:
@@ -749,16 +788,24 @@ def route_prompt(prompt: str) -> str:
     failure_or_log = any(token in prompt for token in ["失败", "错误", "日志", "崩溃", "callstack", "Crash", "crash", "Cook failed", "PackagingResults"])
     if failure_or_log and any(token in prompt for token in ["RunUAT", "BuildCookRun", "UAT", "UBT", "UHT", "Saved/Logs"]):
         return "ue-log-crash-triage"
-    if any(token in prompt for token in ["RunUAT", "BuildCookRun", "一键打包", "自动打包", "生成打包命令", "打包命令"]):
+
+    if any(token in prompt for token in ["是否可以进入", "gate", "Gate", "检查一下这个功能是否可以"]):
+        return "ue-gate-check"
+
+    rules = load_route_rules()
+    packaging_guard = rules.get("guardrails", {}).get("ue-build-release-automation", {})
+    if any(token in prompt for token in packaging_guard.get("forbid_when_any", [])):
+        if any(token in prompt or token in lower for token in ["打包", "packaging", "release readiness", "go/no-go"]):
+            return "ue-performance-packaging"
+    if any(token in prompt for token in packaging_guard.get("requires_any", [])):
         return "ue-build-release-automation"
+
     if any(token in prompt for token in ["Saved/CodexWorkflow", "项目记忆", "workflow state", "Workflow State", "module-map", "known-risks", "active-task"]):
         return "ue-workflow-state"
     if any(token in prompt for token in ["Saved/Logs", "callstack", "崩溃", "日志", "UBT", "UHT", "UAT", "Cook failed", "Blueprint compile", "蓝图编译错误"]):
         return "ue-log-crash-triage"
     if any(token in prompt for token in ["grill-with-docs", "需求模糊", "需求有点模糊", "术语不清", "追问", "澄清需求"]):
         return "ue-feature-brief"
-    if any(token in prompt for token in ["是否可以进入", "gate", "Gate", "检查一下这个功能是否可以"]):
-        return "ue-gate-check"
     if any(token in prompt for token in ["是否已经准备好打包", "准备好打包", "打包发布", "打包前验证"]):
         return "ue-performance-packaging"
     if any(token in prompt for token in ["处于什么开发阶段", "开发阶段", "还缺什么", "阶段"]):
@@ -779,9 +826,15 @@ def route_prompt(prompt: str) -> str:
         return "ue-feature-done"
 
     scores: dict[str, float] = defaultdict(float)
+    for entry in rules.get("routes", []):
+        skill_name = entry["skill"]
+        priority = float(entry["priority"])
+        for pattern in entry["patterns"]:
+            if pattern in prompt or pattern.casefold() in lower:
+                scores[skill_name] += priority
     for skill_name, patterns in SKILL_PATTERNS.items():
         for pattern, weight in patterns:
-            if pattern in prompt or pattern in lower:
+            if pattern in prompt or pattern.casefold() in lower:
                 scores[skill_name] += weight
     if scores:
         return max(scores, key=scores.get)
@@ -815,6 +868,7 @@ def validate_router_coverage(skill_dirs: list[Path]) -> None:
     router_skill = read_text(ROUTER_SKILL)
     router_refs = set(re.findall(r"\$([a-z0-9-]+)", router_skill))
     known_skills = skill_names(skill_dirs)
+    route_rules = load_route_rules(known_skills)
     unknown_router_refs = sorted(ref for ref in router_refs if ref.startswith("ue-") and ref not in known_skills)
     if unknown_router_refs:
         fail(f"router references unknown skills: {', '.join(unknown_router_refs)}")
@@ -831,6 +885,10 @@ def validate_router_coverage(skill_dirs: list[Path]) -> None:
     missing = sorted(ref for ref in router_refs if ref.startswith("ue-") and ref not in coverage_exceptions and ref not in covered)
     if missing:
         fail(f"router route coverage missing scenarios for: {', '.join(missing)}")
+
+    for entry in route_rules.get("routes", []):
+        if entry["skill"] not in covered:
+            fail(f"routing-rules.json route missing scenario coverage: {entry['skill']}")
 
 
 def validate_skill_references(skill_dirs: list[Path]) -> None:
@@ -882,15 +940,20 @@ def validate_required_support_files() -> None:
         SKILLS / "ue-external-services" / "references" / "service-client-patterns.md",
         SKILLS / "ue-audio" / "references" / "audio-checklist.md",
         SKILLS / "ue-world-streaming" / "references" / "world-partition-checklist.md",
+        SKILLS / "ue-performance-packaging" / "references" / "performance-evidence-template.md",
         SKILLS / "ue-game-features" / "references" / "game-feature-checklist.md",
         SKILLS / "ue-mass-entity" / "references" / "mass-entity-checklist.md",
         SKILLS / "ue-procedural-generation" / "references" / "procedural-generation-checklist.md",
         SKILLS / "ue-state-trees" / "references" / "state-tree-checklist.md",
         SKILLS / "ue-sequencer-cinematics" / "references" / "sequencer-cinematics-checklist.md",
         SKILLS / "ue-character-movement" / "references" / "character-movement-checklist.md",
+        SKILLS / "ue-character-movement" / "references" / "movement-prediction-matrix.md",
+        SKILLS / "ue-project-onboarding" / "references" / "project-context-template.md",
+        SKILLS / "ue-build-release-automation" / "references" / "buildgraph-and-artifacts.md",
         SKILLS / "ue-physics-destruction" / "references" / "chaos-physics-checklist.md",
         SKILLS / "ue-data-management" / "references" / "data-asset-patterns.md",
         SKILLS / "ue-plugin-module-dev" / "references" / "third-party-library-wrapper.md",
+        ROUTING_RULES,
         ROUTE_SCENARIOS,
         ROOT / "tests" / "test_ue_tools.py",
         *UE_TOOL_SCRIPTS,
@@ -905,6 +968,7 @@ def validate_tool_mentions() -> None:
         "ue_project_scan.py": SKILLS / "ue-project-onboarding" / "SKILL.md",
         "ue_config_audit.py": SKILLS / "ue-project-onboarding" / "SKILL.md",
         "ue_log_triage.py": SKILLS / "ue-log-crash-triage" / "SKILL.md",
+        "ue_editor_command_report.py": SKILLS / "ue-debug-validation" / "SKILL.md",
         "ue_blueprint_api_report.py": SKILLS / "ue-cpp-gameplay" / "SKILL.md",
         "ue_dependency_graph.py": SKILLS / "ue-architecture" / "SKILL.md",
         "ue_agent_plan.py": SKILLS / "ue-multi-agent-workflow" / "SKILL.md",

@@ -1,6 +1,6 @@
-# Async Blueprint Node 模板
+# Async Blueprint Node Template
 
-Blueprint 需要异步节点，并且完成后必须回到 GameThread 广播时，使用 `UBlueprintAsyncActionBase`。
+Use `UBlueprintAsyncActionBase` for Blueprint-facing async work that must return to the game thread before broadcasting.
 
 ```cpp
 UCLASS()
@@ -28,9 +28,9 @@ private:
 };
 ```
 
-## 规则
+## Rules
 
-- 生命周期重要的 context 用 `UPROPERTY` 保存。
-- worker thread 不直接访问 UObject。
-- 在 GameThread 广播结果。
-- 长请求要提供取消或 owner lifetime 检查。
+- Store context as `UPROPERTY` when lifetime matters.
+- Do not touch UObjects from worker threads.
+- Broadcast on the game thread.
+- Provide cancellation or owner lifetime checks for long requests.

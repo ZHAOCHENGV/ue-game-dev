@@ -1,30 +1,30 @@
-# Async Loading 检查清单
+# Async Loading Checklist
 
-## 引用策略
+## Reference Strategy
 
-- 必须随 owner 常驻加载的资产使用 hard reference。
-- 可选、大型、装饰性或模式专属资产使用 soft reference 或 Primary Asset ID。
-- 一个功能作为整体加载时，把相关 soft references 归入 Asset Manager bundle。
-- 只被 soft path 发现的资产必须检查 Primary Asset Rules、chunk ID 和 cook rules。
+- Use hard references for assets that must always load with the owner.
+- Use soft references or Primary Asset IDs for optional, large, cosmetic, or mode-specific assets.
+- Group related soft references into Asset Manager bundles when a feature loads as a unit.
+- Check Primary Asset Rules, chunk IDs, and cook rules for assets discovered only by soft path.
 
-## 加载流程
+## Load Flow
 
-1. 验证请求的 ID、row handle、soft object path 或 Primary Asset ID。
-2. 通过 Asset Manager 或 `FStreamableManager` 开始异步加载。
-3. 根据 owner lifetime 保存或取消 handle。
-4. completion callback 中检查 UObject 有效性和失败路径。
-5. 在 GameThread 应用结果，并广播窄 success/failure 事件。
+1. Validate the requested ID, row handle, soft object path, or Primary Asset ID.
+2. Start async load through Asset Manager or `FStreamableManager`.
+3. Store/cancel handles according to owner lifetime.
+4. In completion callbacks, check UObject validity and failure paths.
+5. Apply results on the game thread and broadcast a narrow success/failure event.
 
-## 失败模式
+## Failure Modes
 
-- 资产没有 Cook 进包。
-- 资产 class 不匹配。
-- owner 在 callback 前销毁。
-- 重复并发请求竞争同一个 cache。
-- save data 指向已重命名 row 或 asset。
+- Missing cooked asset.
+- Asset class mismatch.
+- Owner destroyed before callback.
+- Duplicate concurrent requests racing to populate one cache.
+- Save data points at a renamed row or asset.
 
-## 验证
+## Verification
 
-- 对 soft-reference discovery 测试 Editor PIE、standalone 和 packaged build。
-- 包含缺失 asset/row 场景。
-- 对首次加载 hitch 做 profiling，必要时在模式边界 preload。
+- Test editor PIE, standalone, and packaged build for soft-reference discovery.
+- Include a missing asset/row case.
+- Profile hitch risk for first-time loads and consider preloading at mode boundaries.

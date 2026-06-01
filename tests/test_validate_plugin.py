@@ -39,6 +39,12 @@ class ValidatePluginTests(unittest.TestCase):
                     with self.assertRaises(SystemExit):
                         validate_plugin.validate_user_visible_text()
 
+    def test_mojibake_markers_include_common_chinese_garble(self) -> None:
+        markers = set(validate_plugin.MOJIBAKE_MARKERS)
+        self.assertIn("锟", markers)
+        self.assertIn("鎵", markers)
+        self.assertIn("閿", markers)
+
     def test_route_prompt_keeps_packaging_and_multi_agent_hard_rules(self) -> None:
         cases = {
             "用多 Agent 排查打包失败，查看 Saved/Logs 和 Build.cs": "ue-multi-agent-workflow",

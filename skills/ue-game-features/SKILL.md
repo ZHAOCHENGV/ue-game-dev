@@ -1,44 +1,44 @@
 ---
 name: ue-game-features
-description: 当 Unreal Engine 请求涉及 Game Feature Plugin、ModularGameplay、UGameFeatureAction、GameFrameworkComponentManager、Lyra Experience、运行时功能激活、能力/Input/UI 授予或模块化玩法架构时使用。
+description: Unreal Engine Game Features workflow for Game Feature Plugins, ModularGameplay, GameFeatureAction, GameFrameworkComponentManager, Lyra-style Experiences, runtime activation, plugin state transitions, ability/input/UI grants, and modular gameplay architecture. Use when requests involve Game Feature plugins, ModularGameplay, Lyra Experience patterns, or feature plugins that grant components, abilities, actions, or data at runtime.
 ---
 
 # UE Game Features
 
-这个技能处理 UE5 Game Feature Plugins 与模块化玩法。重点是把插件激活生命周期、运行时授予、资产加载、回滚和跨系统边界说清楚。
+Use this skill for UE5 Game Feature Plugins and modular gameplay features. Keep plugin activation, runtime grants, assets, and rollback behavior explicit.
 
-## 工作流程
+## First Pass
 
-1. 读取 `.uproject`、相关 `.uplugin`、已启用 Game Feature 插件、`DefaultGame.ini`、模块 `.Build.cs` 和现有 Experience/Action Set 资产。
-2. 判断工作属于 Game Feature Plugin、ModularGameplay 组件注入、Lyra 风格 Experience、ability/input/UI 授予，还是 data-only 功能包。
-3. 梳理激活生命周期：registered、loaded、active、deactivating、error，以及资产、组件、输入、能力和 delegate 如何清理。
-4. 如果功能触及 GAS、Enhanced Input、UI、Data Asset、复制或存档，先由本技能拥有 Game Feature 边界，再按需交给对应技能。
-5. 定义验证：激活、反复停用/启用、缺失资产、Cook 收录、多人 authority 和回滚行为。
+1. Read the `.uproject`, relevant `.uplugin`, enabled Game Feature plugins, `DefaultGame.ini`, module `.Build.cs`, and existing experience/action assets.
+2. Identify whether the work is a Game Feature Plugin, ModularGameplay component injection, Lyra-style Experience, ability/input/UI grant, or data-only feature pack.
+3. Map activation lifecycle: registered, loaded, active, deactivating, error, and how assets or components are cleaned up.
+4. Check whether the feature touches GAS, Enhanced Input, UI, Data Assets, replication, or save state; route those details to focused skills after owning the Game Feature boundary.
+5. Define validation: activation, deactivation, missing asset behavior, packaged cook inclusion, multiplayer authority, and rollback.
 
-## 设计规则
+## Design Rules
 
-- 一个 Game Feature 插件聚焦一个玩法能力或内容包。
-- 只有功能自己拥有可复用 runtime 代码时，才把 runtime 模块放进 feature 插件；编辑器辅助逻辑放配套 editor 模块。
-- 用 `UGameFeatureAction` 资产表达激活期动作，例如组件注入、能力授予、输入映射、数据注册或 UI 条目。
-- 功能拥有的可选内容优先用稳定 Data Asset 和软引用，避免无意强加载。
-- 激活和停用必须幂等，重复切换不应复制组件、输入映射、ability spec、delegate 或 UI 层。
-- Lyra 风格 Experience 要把 Experience、Action Set、Pawn Data、Ability Set、Input Config 和 HUD layer 当作一条激活故事。
+- Keep Game Feature plugins focused on one gameplay capability or content pack.
+- Put runtime modules in the feature plugin only when the feature owns reusable runtime code; keep editor helpers in a paired editor module.
+- Use `UGameFeatureAction` assets for declarative activation work such as component injection, ability grants, input mappings, data registration, or UI entries.
+- Prefer stable data assets and soft references for feature-owned content that may load on demand.
+- Keep feature activation idempotent; repeated activation/deactivation should not duplicate components, input mappings, abilities, or delegates.
+- For Lyra-style Experience work, define the Experience asset, action set, pawn data, ability grants, input config, and UI layer changes as a single activation story.
 
-## 跨域交接
+## Integration Rules
 
-- 功能授予 ability、attribute、effect 或 gameplay cue 时，在边界明确后进入 `$ue-gas-networking`。
-- 功能新增 Input Action 或 Mapping Context 时进入 `$ue-input-enhanced`。
-- 功能新增 HUD layer、菜单或 CommonUI 条目时进入 `$ue-client-ui`。
-- `.uplugin`、模块描述、`.Build.cs` 和插件打包结构进入 `$ue-plugin-module-dev`。
-- feature-owned Primary Asset、bundle、Cook 规则和 chunking 进入 `$ue-data-management`。
+- Use `$ue-gas-networking` after the feature boundary is clear when the feature grants abilities, attributes, effects, or gameplay cues.
+- Use `$ue-input-enhanced` when the feature adds Input Actions or Mapping Contexts.
+- Use `$ue-client-ui` when the feature adds HUD layers, menus, or CommonUI entries.
+- Use `$ue-plugin-module-dev` for `.uplugin`, module descriptor, `.Build.cs`, and packaged plugin structure.
+- Use `$ue-data-management` for feature-owned Primary Assets, bundles, cook rules, and chunking.
 
-## 输出
+## Verification
 
-- Game Feature 边界：插件、模块、资产、激活入口和依赖。
-- 激活/停用流程：授予内容、清理内容、失败状态和日志证据。
-- 跨域计划：GAS/Input/UI/Data/Replication 的后续技能与所有权。
-- 验证清单：PIE、重复切换、Cook、多客户端和缺失资产行为。
+- Validate activation and deactivation in PIE, including repeated toggles when possible.
+- Check logs for Game Feature state errors and missing asset references.
+- Confirm packaged builds include feature-owned assets and do not rely on editor-only references.
+- For multiplayer features, test server authority and client-visible grants with at least two clients.
 
-## 参考
+## References
 
-- 修改或审查 Game Feature 插件、Action、Lyra Experience 前读取 `references/game-feature-checklist.md`。
+- Read `references/game-feature-checklist.md` before adding or reviewing Game Feature plugins, actions, or Lyra-style Experience flows.

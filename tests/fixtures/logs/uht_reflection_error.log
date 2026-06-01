@@ -1,0 +1,4 @@
+Running UnrealHeaderTool SampleGame.uproject
+Source/SampleGame/Public/InventoryItem.h(18): Error: Unrecognized type 'FItemDefintion' - type must be a UCLASS, USTRUCT or UENUM
+Total of 0 written
+UnrealHeaderTool failed for target 'SampleGameEditor'

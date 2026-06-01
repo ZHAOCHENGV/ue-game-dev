@@ -4,6 +4,20 @@
 
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
+## [0.15.0] - 2026-06-01
+
+### 新增
+- `ue-game-dev-router` 接入 `references/routing-rules.json`，用数据化优先级和回归场景硬化 Game Feature、CharacterMovement、BuildGraph、性能证据和打包边界路由。
+- `ue-log-crash-triage` 增强 UHT、链接、Cook、崩溃断言等真实 UE 日志阶段识别，并补充对应 fixture 测试。
+- `ue-project-onboarding` 扩展真实项目扫描，覆盖 Target 文件、Gameplay Tags、Asset Manager Primary Asset 配置和 Runtime→Editor 模块风险。
+- 新增 `ue_editor_command_report.py`，只生成 DataValidation、CompileAllBlueprints 和 MapCheck commandlet 命令，避免未经确认直接启动 Unreal Editor。
+- 新增性能证据模板、项目上下文模板、BuildGraph/产物参考和 CharacterMovement 网络预测矩阵。
+
+### 变更
+- `scripts/validate_plugin.py` 校验 routing rules、生产证据模板、新工具脚本、marketplace 镜像同步和常见中文 mojibake 标记。
+- `scripts/update_codex_app_plugin.py` 新增 `--dry-run`，用于发布前确认源版本、目标 Codex App 缓存路径和待复制文件数量。
+- `ue-performance-packaging`、`ue-build-release-automation`、`ue-workflow-state`、`ue-gas-networking` 和 `ue-character-movement` 补强真实 UE 生产验证证据链。
+
 ## [0.14.1] - 2026-06-01
 
 ### 新增
@@ -22,13 +36,11 @@
 - 新增 `ue-game-features`、`ue-mass-entity`、`ue-procedural-generation`、`ue-state-trees`、`ue-sequencer-cinematics` 和 `ue-character-movement` 6 个领域技能，覆盖 Game Feature Plugin、ModularGameplay、Lyra Experience、Mass Entity、PCG、StateTree、Sequencer、Movie Render Queue 与 CharacterMovementComponent 网络预测等 UE5 专项领域。
 - 新增 API 准确性参考：`ue-cpp-gameplay`、`ue-plugin-module-dev`、`ue-gas-networking`、`ue-render-vfx`、`ue-client-ui` 和 `ue-ai-navigation` 均补充面向 UE C++/Build.cs/GAS/UI/渲染/Niagara/StateTree/Mass 的反幻觉检查资料。
 - 新增 `NOTICE`，记录对 MIT 许可 `quodsoler/unreal-engine-skills` 的选择性改写与署名。
-- 新增 `scripts/update_codex_app_plugin.py` 和同步脚本测试，用于更新版本后缀、同步 marketplace 包、校验并重装本地 Codex App 插件。
 
 ### 变更
 - `ue-game-dev-router`、`tests/route_scenarios.json` 和 `scripts/validate_plugin.py` 新增 6 个领域的中英文路由关键词与回归场景，并保持 Game Feature + GAS 组合优先进入 `ue-game-features`。
 - `Saved/CodexWorkflow/project-context.md` 模板扩展 engine source/API baseline、target platforms、Game Feature plugins、命名约定与 API verification notes 字段。
-- `README.md`、`.codex-plugin/plugin.json` 和 marketplace 同步规则更新到 `0.14.0+codex.20260528110231`，补充新技能、关键词、中文插件描述和 attribution。
-- `scripts/sync_marketplace_package.py` 改为增量同步，降低 Codex App 观察 marketplace 目录时 Windows 文件句柄导致同步失败的风险。
+- `README.md`、`.codex-plugin/plugin.json` 和 marketplace 同步规则更新到 `0.14.0+codex.20260528000100`，补充新技能、关键词和 attribution。
 
 ## [0.13.0] - 2026-05-27
 

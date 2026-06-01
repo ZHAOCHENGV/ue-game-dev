@@ -1,0 +1,92 @@
+{
+  "guardrails": {
+    "ue-build-release-automation": {
+      "requires_any": [
+        "RunUAT",
+        "BuildCookRun",
+        "Project Launcher",
+        "BuildGraph",
+        "CI 打包",
+        "一键打包",
+        "自动打包",
+        "生成打包命令",
+        "实际打包",
+        "发布流水线"
+      ],
+      "forbid_when_any": [
+        "是否准备好打包",
+        "准备好打包",
+        "打包前检查",
+        "打包前验证",
+        "不要实际打包",
+        "readiness",
+        "go/no-go"
+      ]
+    }
+  },
+  "routes": [
+    {
+      "skill": "ue-game-features",
+      "priority": 92,
+      "patterns": [
+        "Game Feature",
+        "GameFeatureData",
+        "GameFeatureAction",
+        "ModularGameplay",
+        "Lyra Experience",
+        "Experience Definition",
+        "模块化玩法",
+        "游戏功能插件",
+        "动态启用功能"
+      ]
+    },
+    {
+      "skill": "ue-character-movement",
+      "priority": 90,
+      "patterns": [
+        "CharacterMovementComponent",
+        "Network Prediction",
+        "FSavedMove",
+        "FNetworkPredictionData_Client",
+        "Root Motion Source",
+        "custom movement mode",
+        "角色移动",
+        "网络预测",
+        "预测回滚",
+        "自定义移动模式",
+        "冲刺抖动"
+      ]
+    },
+    {
+      "skill": "ue-performance-packaging",
+      "priority": 80,
+      "patterns": [
+        "是否准备好打包",
+        "准备好打包",
+        "打包前检查",
+        "打包前验证",
+        "release readiness",
+        "go/no-go",
+        "性能回归",
+        "Unreal Insights",
+        "memreport",
+        "stat unit"
+      ]
+    },
+    {
+      "skill": "ue-build-release-automation",
+      "priority": 70,
+      "patterns": [
+        "RunUAT",
+        "BuildCookRun",
+        "Project Launcher",
+        "BuildGraph",
+        "CI 打包",
+        "一键打包",
+        "自动打包",
+        "生成打包命令",
+        "发布流水线"
+      ]
+    }
+  ]
+}

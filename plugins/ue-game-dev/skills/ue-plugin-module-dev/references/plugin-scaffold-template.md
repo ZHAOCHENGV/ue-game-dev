@@ -1,4 +1,4 @@
-# Runtime 与 Editor 插件脚手架
+# Runtime And Editor Plugin Scaffold
 
 ```text
 Plugins/SampleTools/
@@ -14,16 +14,16 @@ Plugins/SampleTools/
       Private/
 ```
 
-## 模块规则
+## Module Rules
 
-- Runtime module 只依赖 runtime-safe modules。
-- Editor module 可以依赖 `UnrealEd`、`ToolMenus`、`Slate` 和项目 runtime contracts。
-- Public headers 暴露稳定 contract；Private headers 保存实现细节。
-- API macro 必须匹配模块名，例如 `SAMPLETOOLSRUNTIME_API`。
+- Runtime module depends only on runtime-safe modules.
+- Editor module may depend on `UnrealEd`, `ToolMenus`, `Slate`, and project runtime contracts.
+- Public headers expose stable contracts; Private headers keep implementation details local.
+- API macro names must match the module name, for example `SAMPLETOOLSRUNTIME_API`.
 
-## 验证
+## Validation
 
-- 确认 `.uplugin` module `Type`。
-- 确认 Runtime 不依赖 Editor。
-- 添加 Editor module 后构建 Editor target。
-- Runtime module 内容或配置变化后测试 packaged game。
+- Confirm `.uplugin` module `Type` values.
+- Confirm Runtime does not depend on Editor.
+- Build Editor target after adding editor modules.
+- Test packaged game when runtime module content or config changes.

@@ -213,6 +213,21 @@ class UEToolTests(unittest.TestCase):
             """,
         )
         write(
+            self.project / "Config" / "DefaultGame.ini",
+            """
+            [/Script/Engine.AssetManagerSettings]
+            +PrimaryAssetTypesToScan=(PrimaryAssetType="Item",AssetBaseClass="/Script/SampleGame.ItemDataAsset",bHasBlueprintClasses=False,bIsEditorOnly=False,Directories=((Path="/Game/Data/Items")))
+            """,
+        )
+        write(
+            self.project / "Config" / "DefaultGameplayTags.ini",
+            """
+            [/Script/GameplayTags.GameplayTagsList]
+            +GameplayTagList=(Tag="Ability.Fireball",DevComment="Fireball ability")
+            +GameplayTagList=(Tag="UI.Inventory.Open",DevComment="Inventory UI")
+            """,
+        )
+        write(
             self.project / "Saved" / "Logs" / "SampleGame.log",
             """
             LogInit: Display: Running engine for game: SampleGame
@@ -242,6 +257,19 @@ class UEToolTests(unittest.TestCase):
         self.assertIn("IA_Jump.uasset", result["assets"]["InputActions"])
         self.assertIn("WBP_Inventory.uasset", result["assets"]["WidgetBlueprints"])
         self.assertIn("ue-project-onboarding", result["recommended_next_skills"])
+
+    def test_project_scan_reports_production_context(self) -> None:
+        result = run_tool(
+            ROOT / "skills" / "ue-project-onboarding" / "scripts" / "ue_project_scan.py",
+            "--project",
+            str(self.project),
+        )
+
+        self.assertIn("Source/SampleGame/SampleGame.Target.cs", result["targets"])
+        self.assertIn("Source/SampleEditor.Target.cs", result["targets"])
+        self.assertIn("Ability.Fireball", result["gameplay_tags"])
+        self.assertTrue(any(entry["type"] == "Item" for entry in result["asset_manager"]["primary_asset_types"]))
+        self.assertIn("Runtime module SampleGame depends on editor-like module SampleEditor", result["risks"])
 
     def test_config_audit_reports_project_settings(self) -> None:
         result = run_tool(
@@ -319,6 +347,39 @@ class UEToolTests(unittest.TestCase):
         self.assertIn("Assertion failed", result["actionable_failures"][0]["message"])
         self.assertIn("Blueprint Runtime Error", result["actionable_failures"][1]["message"])
         self.assertEqual(result["first_actionable_failure"], result["actionable_failures"][0]["message"])
+
+    def test_log_triage_classifies_real_ue_phases(self) -> None:
+        cases = [
+            ("uht_reflection_error.log", "UHT", "reflection"),
+            ("ubt_link_error.log", "Link", "linker"),
+            ("cook_asset_error.log", "Cook", "missing asset"),
+            ("crash_assert_callstack.log", "Crash", "assertion"),
+        ]
+        for filename, phase, root_cause_token in cases:
+            with self.subTest(filename=filename):
+                result = run_tool(
+                    ROOT / "skills" / "ue-log-crash-triage" / "scripts" / "ue_log_triage.py",
+                    "--log",
+                    str(ROOT / "tests" / "fixtures" / "logs" / filename),
+                )
+                self.assertEqual(result["failure_phase"], phase)
+                self.assertIn(root_cause_token, result["probable_root_cause"].lower())
+                self.assertTrue(result["evidence"])
+
+    def test_editor_command_report_generates_safe_commands(self) -> None:
+        result = run_tool(
+            ROOT / "skills" / "ue-debug-validation" / "scripts" / "ue_editor_command_report.py",
+            "--project",
+            str(self.project / "SampleGame.uproject"),
+            "--engine-cmd",
+            "C:/UE/UE_5.6/Engine/Binaries/Win64/UnrealEditor-Cmd.exe",
+        )
+
+        self.assertTrue(result["read_only"])
+        self.assertIn("-run=DataValidation", result["commands"]["data_validation"])
+        self.assertIn("-run=CompileAllBlueprints", result["commands"]["blueprint_compile"])
+        self.assertIn("-run=MapCheck", result["commands"]["map_check"])
+        self.assertIn("Do not run without user approval", result["safety"])
 
     def test_blueprint_api_report_finds_reflected_cpp_api(self) -> None:
         result = run_tool(

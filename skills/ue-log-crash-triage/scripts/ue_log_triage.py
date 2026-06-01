@@ -10,23 +10,26 @@ ACTIONABLE_PATTERNS = [
     re.compile(r"\bLNK\d+|UnrealHeaderTool|Blueprint Runtime Error|Cook failed|PackagingResults\b", re.I),
 ]
 
+PHASE_HINTS = [
+    ("UHT", re.compile(r"UnrealHeaderTool|\.generated\.h|Unrecognized type|UCLASS|USTRUCT|UENUM", re.I)),
+    ("Link", re.compile(r"\bLNK\d+|unresolved external|fatal error LNK", re.I)),
+    ("Cook", re.compile(r"LogCook|Cook failed|missing from cook|Unable to load package", re.I)),
+    ("Crash", re.compile(r"Assertion failed|Fatal error|Exception_Access_Violation|\[Callstack\]", re.I)),
+    ("Blueprint", re.compile(r"Blueprint Runtime Error|Blueprint compile", re.I)),
+    ("UAT", re.compile(r"RunUAT|BuildCookRun|AutomationTool|PackagingResults", re.I)),
+    ("Build", re.compile(r"\berror C\d+|\berror:", re.I)),
+]
+
 
 def classify_phase(lines: list[str]) -> str:
     text = "\n".join(lines)
-    if re.search(r"Cook failed|LogCook|Cooking", text, re.I):
-        return "Cook"
-    if re.search(r"UnrealHeaderTool|UHT|generated\.h", text, re.I):
-        return "UHT"
-    if re.search(r"\bLNK\d+|unresolved external", text, re.I):
-        return "Link"
+    for phase, pattern in PHASE_HINTS:
+        if phase == "UAT":
+            continue
+        if pattern.search(text):
+            return phase
     if re.search(r"RunUAT|BuildCookRun|PackagingResults|AutomationTool", text, re.I):
         return "UAT"
-    if re.search(r"Blueprint Runtime Error|Blueprint compile", text, re.I):
-        return "Blueprint"
-    if re.search(r"Fatal error|Assertion failed|Crash|callstack", text, re.I):
-        return "Crash"
-    if re.search(r"\berror:", text, re.I):
-        return "Build"
     return "Unknown"
 
 
@@ -92,6 +95,17 @@ def triage_log(path: Path, top_n: int = 1) -> dict:
 
 
 def infer_root_cause(first_failure: str, phase: str) -> str:
+    lowered = first_failure.lower()
+    if phase == "UHT":
+        return "Reflection error; inspect UCLASS/USTRUCT/UENUM/UFUNCTION/UPROPERTY declarations and generated header order near the first failure."
+    if phase == "Link":
+        return "Linker error; inspect missing implementations, module dependencies, export macros, and target/module visibility."
+    if phase == "Cook" and ("missing" in lowered or "unable to load package" in lowered):
+        return "Cook missing asset/package reference; inspect redirectors, maps-to-cook, Primary Asset rules, and hard references from the reported asset."
+    if phase == "Crash" or "assertion failed" in lowered:
+        return "Assertion or crash; inspect the referenced source file, preconditions, object lifetime, and the first non-engine callstack frame."
+    if phase == "Blueprint":
+        return "Blueprint runtime or compile error; inspect the named Blueprint, pin compatibility, null references, and compile status."
     if "Assertion failed" in first_failure:
         return "A runtime/editor assertion is the earliest actionable failure; inspect the referenced source file and state preconditions."
     if phase == "UHT":

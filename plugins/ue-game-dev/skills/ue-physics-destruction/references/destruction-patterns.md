@@ -2,26 +2,26 @@
 
 ## Geometry Collection Ownership
 
-- 作者化 fracture 使用 Geometry Collection；普通不破坏道具使用 StaticMesh simulation 即可。
-- Blueprint 或 C++ hook 前先定义 cluster hierarchy、damage threshold、collision particles 和 removal rules。
-- 玩法状态与破坏表现分离。权威玩法决定 destroyed，Chaos 负责呈现 fracture。
+- Use Geometry Collections for authored fracture; keep ordinary StaticMesh simulation for non-breaking props.
+- Define cluster hierarchy, damage thresholds, collision particles, and removal rules before Blueprint or C++ hooks.
+- Separate gameplay state from destruction presentation. Let authoritative gameplay decide "destroyed"; let Chaos present fracture when appropriate.
 
 ## Damage Flow
 
-1. 验证 hit/overlap 或 gameplay damage source。
-2. 通过窄 component 或 interface 施加 damage，不要散落在多个 Blueprint graph。
-3. 从一个状态切换触发 fracture、VFX、audio、camera shake 和 gameplay reward。
-4. 除非项目确实需要碎片持久化，否则只保存 gameplay state。
+1. Validate hit/overlap or gameplay damage source.
+2. Apply damage through a narrow component or interface, not scattered Blueprint graph calls.
+3. Trigger fracture, VFX, audio, camera shake, and gameplay rewards from one state transition.
+4. Persist only the gameplay state unless the project explicitly needs fracture-piece persistence.
 
-## 性能边界
+## Performance Guardrails
 
-- 限制活跃碎片和 debris lifetime。
-- 使用 clustering 避免一次产生过多 rigid bodies。
-- 在代表性平台 scalability 上 profiling。
-- 低端平台提供 fallback：预破碎 mesh、更少 shard 或非模拟破坏。
+- Limit active shards and debris lifetime.
+- Use clustering to avoid too many rigid bodies at once.
+- Profile with representative platform scalability settings.
+- Provide fallback behavior for low-end platforms: pre-broken meshes, lower shard counts, or non-simulated destruction.
 
-## 验证
+## Validation
 
-- 使用 Field 或 Cached Simulation 时测试 Editor PIE、standalone 和 packaged build。
-- 确认复制项目不会让客户端独立决定 break state。
-- 检查破坏后的 navmesh、collision blocking 和 save/load 行为。
+- Test editor PIE, standalone, and packaged build when fields/cached simulations are used.
+- Confirm replicated projects do not let clients independently decide break state.
+- Check navmesh, collision blocking, and save/load behavior after destruction.

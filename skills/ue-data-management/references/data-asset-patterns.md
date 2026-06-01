@@ -1,33 +1,33 @@
 # Data Asset Patterns
 
-## 选择存储形态
+## Choose The Storage Shape
 
-| 需求 | 优先选择 |
-|------|----------|
-| 设计师编辑的对象记录，并包含资产引用 | `UDataAsset` 或 `UPrimaryDataAsset` |
-| 大量同构行 | `UDataTable` |
-| 需要插值的数值调参 | `UCurveTable` 或 Curve asset |
-| 运行时 registry 与 lookup 集成 | DataRegistry |
-| 项目或环境设置 | Config / `UDeveloperSettings` |
+| Need | Prefer |
+|------|--------|
+| Designer-edited object record with asset references | `UDataAsset` or `UPrimaryDataAsset` |
+| Large table of uniform rows | `UDataTable` |
+| Numeric tuning over an input range | `UCurveTable` or Curve asset |
+| Runtime registry and lookup integration | DataRegistry |
+| Project/environment setting | Config / `UDeveloperSettings` |
 
-## 稳定 ID
+## Stable IDs
 
-- save 和 network reference 使用稳定 row name、Primary Asset ID 或 Gameplay Tag。
-- 不要把本地化显示名保存为 ID。
-- row、asset 或 tag 重命名时记录迁移。
-- 设计师可见文本与 runtime identity 分离。
+- Use stable row names, Primary Asset IDs, or Gameplay Tags for save and network references.
+- Do not save localized display names as IDs.
+- Document migration when renaming rows, assets, or tags.
+- Keep designer-facing display text separate from runtime identity.
 
-## 验证清单
+## Validation Checklist
 
-- 缺失 row 行为明确。
-- Runtime 前能检测重复 ID。
-- 资产引用符合期望 class。
-- Soft reference 有 cook 覆盖。
-- Packaged build 能找到与 Editor PIE 相同的数据。
+- Missing row behavior is explicit.
+- Duplicate IDs are detected before runtime.
+- Asset references match expected classes.
+- Soft references have cook coverage.
+- Packaged build can find the same data as editor PIE.
 
-## 常见陷阱
+## Common Pitfalls
 
-- 中央 singleton hard-reference 每个 item icon 或 mesh。
-- 需要复杂编辑器行为或 per-row 资产继承时仍强用 DataTable。
-- 把 mutable runtime state 写进共享 Data Asset。
-- 假设 row rename 不影响 save、UI binding 或 backend payload。
+- Hard-referencing every item icon or mesh from a central singleton.
+- Using DataTables for records that need per-row asset inheritance or complex editor behavior.
+- Storing mutable runtime state in shared data assets.
+- Assuming a row rename will not affect saves, UI bindings, or backend payloads.

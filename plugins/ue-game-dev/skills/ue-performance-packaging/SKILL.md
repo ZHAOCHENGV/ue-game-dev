@@ -1,36 +1,42 @@
 ---
 name: ue-performance-packaging
-description: 当 Unreal Engine 请求涉及 PIE 性能检查、runtime stat、profiling、资产引用验证、构建配置、打包失败诊断、平台设置、发布准备、打包烟测或 go/no-go 检查时使用。
+description: Unreal Engine performance and packaging readiness workflow for PIE performance checks, runtime stat review, profiling plans, asset reference validation, build configuration sanity, package failure diagnosis, platform settings, and release readiness. Use when requests involve optimization, packaged builds, cooking, shipping config, startup/load time, or go/no-go checklists.
 ---
 
 # UE Performance Packaging
 
-## 概览
+Use this skill when the task depends on measured runtime behavior or a packaged build.
 
-这个技能处理性能和打包准备，但不主动生成或运行打包自动化。用户明确要求自动打包时才切到 `$ue-build-release-automation`。
+## First Pass
 
-## 使用场景
+1. Confirm target platform, engine version, build configuration, renderer path, net mode, and packaging goal.
+2. Record the current symptom: frame time, hitch, memory, shader compile, load time, cook/package failure, crash, or visual quality regression.
+3. Separate editor/PIE overhead from packaged runtime behavior.
+4. Define a reproducible scenario: map, camera path, player count, scalability, device/profile, and capture duration.
 
-- 帧率、卡顿、内存、shader、Niagara、UI、动画或网络性能检查。
-- Cook/package 失败诊断、发布前检查、packaged build 差异。
-- 构建配置、平台设置、资产引用、Editor-only 依赖和烟测清单。
+## Performance Workflow
 
-## 工作流程
+- Collect frame time, game thread, render thread, GPU, RHI, memory, async loading, and Niagara/material/UI suspects as relevant.
+- Do not claim optimization wins without before/after measurements.
+- Keep quality/scalability changes explicit.
+- Prefer fixing unnecessary work before lowering visual quality.
 
-1. 确认目标平台、配置、地图、性能预算和失败阶段。
-2. 收集证据：`stat unit`、`stat game`、`stat gpu`、`stat slate`、Insights、UAT/Cook log。
-3. 区分 Editor、PIE、Standalone、packaged build 行为。
-4. 检查资产引用、Cook 设置、DefaultGame.ini、DefaultEngine.ini、插件和平台 SDK。
-5. 输出 go/no-go 结论和最小后续验证。
+## Evidence Before Claims
 
-## 输出
+Do not claim a performance issue is fixed from code inspection alone.
+Ask for or produce evidence from `stat unit`, `stat game`, `stat gpu`, `memreport -full`, Unreal Insights traces, packaged smoke tests, or platform profiler output.
+For release readiness, separate editor PIE performance from packaged runtime performance.
 
-- 性能/打包目标与当前证据。
-- 风险分类：CPU、GPU、内存、IO、Cook、配置、平台、资产。
-- 下一步：profiling、日志分诊、资产修复、配置调整或显式打包自动化。
-- 验证：PIE、Standalone、packaged build、目标平台烟测。
+## Packaging Workflow
 
-## 参考
+- Validate maps, game mode, asset references, plugin availability, config files, platform settings, and build target.
+- Keep this workflow diagnostic and readiness-focused; do not generate or run automatic packaging unless the user explicitly asks for packaging automation, in which case route to `$ue-build-release-automation`.
+- For failures, isolate the first blocking error and dependency chain.
+- Check editor-only references leaking into runtime builds.
+- Produce a go/no-go checklist with unresolved blockers.
 
-- 性能与打包清单读取 `references/performance-packaging-checklist.md`。
-- 打包问题读取 `references/packaging-troubleshooting.md`。
+## References
+
+- Read `references/performance-packaging-checklist.md` for profiling and packaging review.
+- Use `references/performance-evidence-template.md` when reporting performance regressions, release readiness, or optimization results.
+- Read `references/packaging-troubleshooting.md` for common cook/package failure diagnosis, pre-package checklist, and build configuration reference.

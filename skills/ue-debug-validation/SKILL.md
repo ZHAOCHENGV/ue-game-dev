@@ -1,59 +1,80 @@
 ---
 name: ue-debug-validation
-description: 当 Unreal Engine 任务涉及输出日志、资产检查、Blueprint 编译、C++ 失败、网络 Bug、编辑器配置、复现隔离、运行时行为排查或回归验证时使用。
+description: Unreal Engine debugging and validation workflow for output logs, asset checks, Blueprint compile issues, C++ failures, networking bugs, editor configuration, repro isolation, and regression triage. Use when requests involve troubleshooting why gameplay/UI/rendering does not work, validating expected behavior, narrowing a minimal repro, or producing concrete fix steps.
 ---
 
 # UE Debug Validation
 
-## 概览
+Use this skill when the main task is to learn what is actually failing before changing code.
 
-这个技能用于“行为不对但原因未明”的 UE 排查。先收集证据，再缩小复现，再提出最小修复或验证路径。
+## First Pass
 
-## 使用场景
+1. Reproduce the issue with the smallest clear steps.
+2. Collect recent logs, compile output, Blueprint compile status, relevant asset/class state, and net mode if applicable.
+3. Classify the fault domain: data asset, Blueprint graph, C++, networking, rendering/VFX, UI focus, editor config, plugin, or packaging.
+4. Compare expected behavior with observed behavior at each pipeline stage.
 
-- Actor Tick 执行了但效果不对、输入触发了但状态没变、组件存在但不可见。
-- Blueprint 编译或运行异常、资产引用丢失、配置不生效。
-- 网络同步、PIE 多窗口、Dedicated Server、Listen Server 行为不一致。
-- 需要完成后回归验证或调试证据。
+## Debug Workflow
 
-## 工作流程
+- Start with observable evidence: logs, warnings, missing assets, invalid references, failed casts, ensure/crash lines, broken pins, and replicated role mismatch.
+- Isolate the first bad transition, not every downstream symptom.
+- Keep fixes narrow while diagnosing.
+- If multiple hypotheses remain, rank them by probability and verification cost.
+- Add temporary instrumentation only where it answers a specific question.
 
-1. 明确期望行为、实际行为、首次出现版本和最小复现场景。
-2. 收集证据：Output Log、breakpoint、Blueprint watch、`stat`、`showdebug`、Gameplay Debugger、Visual Logger。
-3. 分离层级：输入、Actor 生命周期、组件、资产、网络、UI、动画、渲染或配置。
-4. 一次只验证一个假设，记录证据和排除项。
-5. 给出修复建议前，说明尚未验证的风险和需要的测试。
+## Evidence Order
 
-## 常用命令
+1. Repro steps and expected vs. observed result.
+2. Output Log, compile output, callstack, or Blueprint compile errors.
+3. Runtime ownership: world, actor, component, local player, controller, role, and net mode.
+4. Asset/config state: map, game mode, plugin, input mapping, data asset, redirector, or class default.
+5. Minimal hypothesis and the cheapest command/editor check that can disprove it.
 
-- `stat unit`、`stat game`、`stat slate`、`stat net`、`stat audio`、`stat anim`。
-- `showdebug enhancedinput`、`showdebug abilitysystem`、`showdebug animation`、`showdebug ai`。
-- Gameplay Debugger、Visual Logger、Blueprint breakpoints、条件断点、PIE 多客户端。
+## Console And Editor Tools
 
-## 规则
+- Use `stat unit`, `stat game`, `stat fps`, `stat net`, `stat anim`, `stat audio`, or `stat niagara` when timing or subsystem cost matters.
+- Use `showdebug abilitysystem`, `showdebug enhancedinput`, `showdebug animation`, or domain-specific `showdebug` pages when available.
+- Use Gameplay Debugger for AI, perception, behavior tree, EQS, and gameplay category overlays.
+- Use `Show Navigation`, collision view modes, bounds visualization, and actor/component details for spatial bugs.
 
-- 不要从症状直接跳到修复；先确认触发链是否到达目标层。
-- Blueprint 和 C++ 混合问题要同时验证节点、反射声明、默认值和实例覆盖。
-- 多人问题必须说明 server/client、ownership、authority、replication 和 RPC 方向。
-- 资产问题要确认路径、重定向、Cook、加载时机和编辑器缓存。
+## Editor Commandlet Reports
 
-## 输出
+- Use `scripts/ue_editor_command_report.py` to generate DataValidation, CompileAllBlueprints, and MapCheck command lines.
+- The helper is read-only because it only prints commands.
+- Launching Unreal Editor commandlets requires explicit user approval and should be treated as an external-state-changing validation step.
 
-- 复现：步骤、地图、角色、输入、期望/实际。
-- 证据：日志、断点、调试命令、截图或观察结果。
-- 假设：已验证、已排除、仍需验证。
-- 下一步：最小修复、回归场景或应切换的领域技能。
+## Breakpoints And PIE
 
-## 常见问题
+- Prefer conditional breakpoints or targeted log categories over broad breakpoint sweeps.
+- For Blueprint debugging, set the debug object instance before stepping graph execution.
+- For PIE multiplayer, name the net mode, client count, dedicated/listen server mode, and which window reproduced the issue.
+- Capture role/owner/instigator when debugging RPC, RepNotify, possession, input, or GAS symptoms.
 
-| 症状 | 可能原因 | 首个检查点 |
-|------|----------|------------|
-| Tick 执行但状态没变 | 实例不对、authority guard 或数据被覆盖 | 记录对象名、role、owner 和 Tick 前后数值 |
-| Blueprint 节点连了但无效果 | PIE debug object 不对或 latent context 不对 | 设置正确调试对象并重新编译资产 |
-| PIE 正常但 packaged build 失败 | Editor-only 引用、资产未 Cook 或配置差异 | 检查 `WITH_EDITOR`、模块依赖和 packaged log |
-| 多人客户端与服务器不一致 | Ownership、RPC 方向或 RepNotify 顺序问题 | 记录 role、owner、instigator 和复制时间点 |
+## Validation Workflow
 
-## 参考
+- For C++, run a targeted build or syntax/UHT check.
+- For Blueprint, compile the asset and check missing variables, broken pins, duplicate events, latent context, and parent API availability.
+- For networking, test server plus at least one client and log role/owner/instigator/prediction key where relevant.
+- For assets, verify existence, path, class type, redirectors, and required plugin availability.
+- For UI, check focus owner, input mode, viewport size, DPI scale, and widget lifetime.
+- For rendering/VFX, validate bounds, scalability level, material parameter values, and platform renderer path.
 
-- 调试清单读取 `references/debug-checklist.md`。
-- 报告模板读取 `references/debug-templates.md`。
+## Fix Discipline
+
+- Change one hypothesis at a time and rerun the smallest repro.
+- Remove temporary logs, debug widgets, console variables, or editor-only helpers before handoff unless they are intentionally kept.
+- When the issue touches a more specific domain, route to that skill after evidence identifies the failing owner.
+
+## Common Issues
+
+| Symptom | Likely Cause | First Check |
+|---------|--------------|-------------|
+| Tick runs but state does not change | Wrong instance, authority guard, or overwritten data | Log object name, role, owner, and the exact value before/after Tick |
+| Blueprint node looks wired but does nothing | Debug object mismatch or latent context issue | Set the correct PIE debug object and compile the asset |
+| Works in PIE but not packaged | Editor-only reference, missing cook asset, or config difference | Check `WITH_EDITOR`, module dependencies, and packaged logs |
+| Multiplayer client disagrees with server | Ownership, RPC direction, or RepNotify order | Log role, remote role, owner, instigator, and replication timestamp |
+
+## References
+
+- Read `references/debug-checklist.md` for fault-domain triage and validation.
+- Read `references/debug-templates.md` for log category setup, network debug logging, pointer validation, and console command reference.

@@ -1,0 +1,4 @@
+LogWindows: Error: Assertion failed: AbilitySystemComponent [File:D:/Project/Source/SampleGame/CombatPawn.cpp] [Line: 77]
+LogWindows: Error: [Callstack] 0x00007ff CombatPawn::BeginPlay()
+LogWindows: Error: [Callstack] 0x00007ff AActor::DispatchBeginPlay()
+Fatal error!

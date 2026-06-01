@@ -19,6 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PLUGIN_NAME = "ue-game-dev"
 MARKETPLACE_NAME = "zhaochengv-ue"
 ROOT_MANIFEST = ROOT / ".codex-plugin" / "plugin.json"
+PACKAGE_ROOT = ROOT / "plugins" / PLUGIN_NAME
 
 
 def parse_args() -> argparse.Namespace:
@@ -59,12 +60,29 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="If zhaochengv-ue points at another local root, remove and re-add it.",
     )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Print version, target Codex home, and package file count without changing files or reinstalling.",
+    )
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
     codex_home = resolve_codex_home(args.codex_home)
+
+    if args.dry_run:
+        manifest = load_json(ROOT_MANIFEST)
+        destination = codex_home / "plugins" / "cache" / MARKETPLACE_NAME / PLUGIN_NAME
+        package_files = [path for path in PACKAGE_ROOT.rglob("*") if path.is_file()] if PACKAGE_ROOT.exists() else []
+        print(f"Dry run for {PLUGIN_NAME}@{MARKETPLACE_NAME}", flush=True)
+        print(f"- Source version: {manifest.get('version', 'Unknown')}", flush=True)
+        print(f"- Source package: {PACKAGE_ROOT}", flush=True)
+        print(f"- Destination root: {destination}", flush=True)
+        print(f"- Files that would be copied: {len(package_files)}", flush=True)
+        print("- No files changed.", flush=True)
+        return
 
     if not args.skip_cachebuster:
         update_cachebuster(ROOT_MANIFEST, args.cachebuster or default_cachebuster())

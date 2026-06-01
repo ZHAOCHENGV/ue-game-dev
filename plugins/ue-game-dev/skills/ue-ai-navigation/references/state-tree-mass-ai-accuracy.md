@@ -1,23 +1,23 @@
-# StateTree 与 Mass AI 准确性备注
+# StateTree And Mass AI Accuracy Notes
 
-当 AI/navigation 请求提到 StateTree、Mass Entity、群体 AI，或混合 Behavior Tree 与 UE 新 AI 框架时使用本参考。
+Use this reference when an AI/navigation request mentions StateTree, Mass Entity, crowd AI, or a mix of Behavior Trees and newer UE AI frameworks.
 
-## 路由边界
+## Routing Boundary
 
-- Behavior Tree、Blackboard、EQS、NavMesh、AI Controller、AI Perception 和传统自主 agent 使用本 AI/navigation 技能。
-- 任务主要是 StateTree task、evaluator、condition、transition、schema 或层级状态设计时，路由到 `$ue-state-trees`。
-- 任务主要是 Mass processor、fragment、tag、observer、Mass spawner、Mass Crowd 或数据导向大量 agent 时，路由到 `$ue-mass-entity`。
+- Use this AI/navigation skill for Behavior Tree, Blackboard, EQS, NavMesh, AI Controller, AI Perception, and traditional autonomous agents.
+- Route to `$ue-state-trees` when the task is primarily StateTree tasks, evaluators, conditions, transitions, schemas, or hierarchical state design.
+- Route to `$ue-mass-entity` when the task is primarily Mass processors, fragments, tags, observers, Mass spawners, Mass Crowd, or data-oriented high-volume agents.
 
-## StateTree 集成
+## StateTree Integration
 
-- StateTree 可以驱动 AI 或 gameplay state，不一定需要 Behavior Tree selector。
-- Condition 和 transition 要显式，不要把转换决策藏在 task 内。
-- Evaluator 用于外部数据收集，task 用于具备 enter/tick/exit 的动作。
-- 用 StateTree debug 工具或定向日志验证 active state、transition path 和 task completion。
+- StateTree can drive AI or gameplay state without Behavior Tree selectors.
+- Keep conditions and transitions explicit. Avoid hiding transition decisions inside tasks.
+- Use evaluators for external data collection and tasks for actions with clear enter/tick/exit behavior.
+- Validate active state, transition path, and task completion with StateTree debug tools or targeted logs.
 
-## Mass AI 集成
+## Mass AI Integration
 
-- Mass Entity 使用 fragment/tag/processor，而不是每个 agent 一个 UObject-heavy 状态。
-- Actor representation 是桥接层，不一定是真实数据源。
-- ZoneGraph、Smart Objects、StateTree 和 representation LOD 都可能参与 crowd 行为。
-- 验证 entity count、processor phase、representation transition 和目标规模性能。
+- Mass Entity uses fragments/tags/processors instead of per-agent UObject-heavy state.
+- Actor representation is a bridge, not necessarily the source of truth.
+- ZoneGraph, Smart Objects, StateTree, and representation LOD may all participate in crowd behavior.
+- Validate entity counts, processor phases, representation transitions, and performance at intended scale.

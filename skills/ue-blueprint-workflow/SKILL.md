@@ -1,44 +1,60 @@
 ---
 name: ue-blueprint-workflow
-description: 当 Unreal Engine 请求涉及 Blueprint 图实现、输入事件、函数链、Event Graph、Widget Blueprint、节点/Pin 连线、Blueprint/C++ 集成或蓝图编译验证时使用。
+description: Unreal Engine Blueprint graph workflow for feature implementation, input events, function chains, event graph edits, Widget Blueprint logic, node and pin wiring, Blueprint/C++ integration, and graph validation. Use when requests involve adding or changing Blueprint logic, designer-authored behavior, keyboard/input graph behavior, pin-level connection guidance, or Blueprint compile/debug work.
 ---
 
 # UE Blueprint Workflow
 
-## 概览
+Use this skill for Blueprint-first development. Treat Blueprints as a first-class Unreal workflow, not as a fallback for missing C++.
 
-这个技能用于蓝图图表级工作。输出应说明节点、Pin、事件流、默认值、资产引用和编译验证，而不是只给 C++ 方案。
+## First Pass
 
-## 使用场景
+1. Identify the target Blueprint asset, parent class, graph name, and whether the change belongs in Event Graph, function graph, macro, animation graph, construction script, or Widget Blueprint.
+2. Confirm the requested behavior as an event -> conditions -> actions -> output chain.
+3. Discover related Input Actions, Mapping Contexts, widgets, components, variables, and C++ parent APIs before naming or wiring nodes.
+4. Decide whether the request can remain Blueprint-only or should escalate to C++ for reusable runtime logic, custom nodes, replication-heavy behavior, performance, or engine APIs.
 
-- 连接 Event Graph、Function Graph、Macro、Widget Blueprint、Input Action 或交互事件。
-- 排查 Blueprint 不触发、Pin 类型不兼容、Cast 链过深、重复绑定事件或编译错误。
-- 设计 Blueprint 与 C++ 的分工边界、可调参数和设计师扩展点。
+## Graph Workflow
 
-## 工作流程
+- Reuse existing events and functions when present; avoid duplicate key/input events.
+- For keyboard features, create or reuse the dedicated input/key event path before guessing generic node classes.
+- Build the smallest clear graph: event node, validation guards, branch/sequence as needed, function calls, data assignments, and output feedback.
+- Connect execution pins and data pins explicitly. If pin names may vary by node variant, inspect pins before wiring.
+- When using a C++ API exposed to Blueprint, name the exact C++ function/event/delegate/property, the node display name to search for, the target object pin source, each input pin source, and the output/return handling.
+- Keep pure functions side-effect free and put state mutation behind explicit exec flow.
+- For `.uasset` Blueprint work, do not modify binary assets directly. Generate or request read-only compile reports, DataValidation reports, MapCheck output, or exact graph instructions.
+- Validate compile status, missing variables, broken pins, latent action context, and runtime ownership assumptions.
 
-1. 确认蓝图类型：Actor、ActorComponent、Widget、AnimBP、GameMode、Controller、Subsystem 派生类或 DataAsset。
-2. 找到触发入口：BeginPlay、Input Action、Overlap、Delegate、Timer、UI 回调、Anim Notify 或 Gameplay Event。
-3. 写出图流：节点顺序、关键 Pin、分支条件、失败路径和需要的变量。
-4. 说明 C++ 交接：`BlueprintCallable`、`BlueprintPure`、`BlueprintImplementableEvent`、`BlueprintAssignable`、`UPROPERTY`。
-5. 验证编译、事件唯一性、资产引用、PIE 行为和日志输出。
+## Widget Blueprint Flow
 
-## 规则
+- Treat Widget Blueprints as presentation surfaces unless the project already centralizes UI authority there.
+- Prefer event/delegate-driven refresh over property bindings that execute every frame.
+- Route gameplay commands through PlayerController, Pawn, subsystem, component, or view model owners.
+- Bind delegates once on construct/activation and unbind on destruct/deactivation when lifetimes differ.
+- Validate focus, input mode, cursor visibility, CommonUI back handling, and gamepad navigation when UI receives input.
 
-- 不要把长业务流程堆在一个 Event Graph；拆成函数、组件或 C++ API。
-- 避免每帧 Cast、循环查找、Widget Tick 绑定和深层宏嵌套。
-- UI 刷新优先事件驱动或显式刷新，不依赖昂贵 Binding。
-- 输入事件不要在多个蓝图重复绑定，先确认拥有输入的 Pawn/Controller/UI。
-- Blueprint 负责组合和调参，复杂状态、性能敏感逻辑和稳定 API 放 C++。
+## Performance And Maintainability
 
-## 输出
+- Avoid per-frame casts, `Get All Actors Of Class`, large loops, or deep macro nesting in frequently executed graphs.
+- Convert repeated graph islands into functions, macros, components, or C++ APIs depending on ownership and reuse.
+- Keep macros for graph reuse without latent surprises; use functions for typed reusable logic and return values.
+- Keep Construction Script work editor-safe and avoid expensive runtime assumptions there.
 
-- 图表位置：具体 Blueprint、Graph、事件或函数。
-- 节点流：按顺序列出节点、Pin、变量和失败分支。
-- 资产/默认值：需要创建或设置的 Blueprint、Widget、DataAsset、Input Action。
-- 验证：Compile、PIE、日志、断点和回归场景。
+## Blueprint Debugging
 
-## 参考
+- Set the correct debug object instance before stepping.
+- Watch pin values at the first branch where observed behavior diverges from expected behavior.
+- Check latent action context, object validity, replicated role, and widget lifetime before changing graph structure.
+- Compile after each meaningful graph change and fix the first broken pin or missing variable before continuing.
 
-- 图表质量清单读取 `references/graph-checklist.md`。
-- Blueprint/C++ 边界读取 `references/blueprint-cpp-boundary.md`。
+## Boundary Hand-Off
+
+- Keep this skill focused on graph behavior and validation.
+- Use `references/blueprint-cpp-boundary.md` only when the requested graph change may need a C++ API, custom node, reusable component, or authority-sensitive implementation.
+- Use `$ue-cpp-gameplay` after the decision is made to implement the C++ side.
+- If `$ue-cpp-gameplay` added a Blueprint-facing function, event, interface, property, or delegate, continue with node-level implementation steps instead of stopping at the C++ signature.
+
+## References
+
+- Read `references/graph-checklist.md` for node/pin, input, and compile validation.
+- Read `references/blueprint-cpp-boundary.md` when deciding whether work belongs in Blueprint, C++, or both.

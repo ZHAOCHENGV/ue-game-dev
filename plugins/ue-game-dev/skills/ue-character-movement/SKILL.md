@@ -1,35 +1,41 @@
 ---
 name: ue-character-movement
-description: 当 Unreal Engine 请求涉及 CharacterMovementComponent、角色移动、Custom Movement Mode、移动复制、网络预测、client prediction、server correction、root motion、locomotion 或移动 Bug 调试时使用。
+description: Unreal Engine CharacterMovementComponent workflow for movement modes, custom movement, root motion, network prediction, movement replication, smoothing, floor checks, acceleration, braking, crouch/jump/falling/swimming/flying, ability-driven movement, and locomotion debugging. Use when requests involve CharacterMovementComponent, character locomotion, custom movement modes, movement prediction, replicated movement, or movement tuning.
 ---
 
 # UE Character Movement
 
-这个技能处理 `CharacterMovementComponent`、角色移动调参、自定义移动模式和网络预测。重点是把输入、模拟、动画、复制和修正证据放在同一条链上。
+Use this skill for CharacterMovementComponent, locomotion tuning, custom movement modes, and replicated character movement. Keep prediction, animation, and authority boundaries explicit.
 
-## 工作流程
+## First Pass
 
-1. 读取 Character/Pawn、MovementComponent、Controller 输入绑定、Animation Blueprint、Ability hook 和移动配置。
-2. 判断移动来源：玩家输入、CharacterMovement 模拟、root motion、launch/impulse、ability task、physics，还是手写 transform。
-3. 梳理移动状态：movement mode、custom mode、速度/加速度、base actor、floor check、collision 和 capsule 设置。
-4. 多人项目必须记录 local role、autonomous proxy、simulated proxy、server correction 和 smoothing 行为。
-5. 定义验证：本地手感、两客户端修正、动画/root motion 同步、碰撞边界和 packaged runtime。
+1. Read the character class, movement component subclass, controller input path, animation blueprint, ability hooks, and project movement settings.
+2. Identify the movement concern: tuning, jump/fall/crouch/swim/fly, custom mode, root motion, network prediction, smoothing, collision, or animation mismatch.
+3. Map authority: local input, client prediction, server correction, simulated proxy smoothing, replicated movement, and ability-driven movement.
+4. Check collision capsule, floor checks, step height, slope limits, braking, acceleration, gravity scale, and movement mode transitions before changing code.
+5. Define validation: local PIE feel, two-client correction behavior, animation sync, root motion, and edge surfaces.
 
-## 设计规则
+## Movement Rules
 
-- 不要混用手动 `SetActorLocation` 和 CharacterMovement 模拟，除非明确同步和预测方案。
-- 自定义移动模式要定义进入/退出条件、physics update、网络序列化和动画状态交接。
-- 移动参数调优前先确认 capsule、floor、slope、step height、braking、gravity 和 collision profile。
-- root motion、GAS ability task 和 CharacterMovement 的 authority 要明确，避免多个系统争夺最终位移。
-- 网络可见移动必须用两客户端验证 correction、jitter、teleport、base actor 和 movement mode 切换。
+- Prefer CharacterMovementComponent settings for standard locomotion before adding custom movement code.
+- Use custom movement modes only when built-in walking/falling/swimming/flying/customizable settings cannot express the behavior.
+- Keep movement input, movement simulation, and animation state separated.
+- Treat root motion and network prediction carefully; define which source owns displacement.
+- For ability-driven movement, state whether GAS starts movement, locks input, applies root motion, or only tags movement state.
 
-## 跨域交接
+## Networking Rules
 
-- Animation Blueprint、Blend Space、Montage、root motion 姿态进入 `$ue-animation`。
-- GAS ability 引发的移动、prediction key 或 ability task 进入 `$ue-gas-networking`。
-- 输入绑定和重绑进入 `$ue-input-enhanced`。
-- 行为异常复现和证据收集可进入 `$ue-debug-validation`。
+- Server remains authoritative for movement; clients predict local movement and reconcile corrections.
+- Log movement mode, role, velocity, acceleration, base, prediction/correction state, and root motion state when debugging.
+- Validate listen server and dedicated server behavior separately when movement affects combat or traversal.
+- Avoid multicast movement hacks when CharacterMovement replication or GAS root motion sources are the correct model.
 
-## 参考
+## Integration Rules
 
-- 调整 `CharacterMovementComponent`、自定义移动模式或网络预测前读取 `references/character-movement-checklist.md`。
+- Use `$ue-animation` when locomotion state machine, blend space, montage, root motion authoring, or IK is the main issue.
+- Use `$ue-gas-networking` when movement is ability-driven, tag-gated, predicted by GAS, or tied to GameplayEffects.
+- Use `$ue-physics-destruction` when the issue is collision profile, physical material, ragdoll, or physics simulation.
+
+## References
+
+- Read `references/character-movement-checklist.md` before tuning CharacterMovementComponent, adding custom movement, or debugging replicated locomotion.

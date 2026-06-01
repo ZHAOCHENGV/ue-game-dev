@@ -1,44 +1,56 @@
 ---
 name: ue-testing-automation
-description: 当 Unreal Engine 任务涉及插件或玩法功能测试、AutomationSpec、FAutomationTestBase、Functional Tests、编辑器烟测、PIE/多人场景、资产验证、打包烟测或回归计划时使用。
+description: Unreal Engine testing automation workflow for plugin and gameplay features, AutomationSpec, FAutomationTestBase, Functional Tests, editor smoke tests, PIE and multiplayer scenarios, asset validation, packaging smoke checks, and regression planning. Use when adding, reviewing, or deciding test coverage for UE C++, Blueprint, editor tooling, GAS, networking, UI, rendering, AI, animation, or plugin/module changes.
 ---
 
 # UE Testing Automation
 
-## 概览
+Use this skill when Unreal work needs a repeatable validation path. Prefer the smallest automated or scripted check that proves the behavior, then add manual editor/PIE checks only where the engine surface cannot be automated reasonably.
 
-这个技能负责 UE 测试与验证设计。根据风险选择 Automation、Functional Test、PIE、Editor smoke、资产验证、多人场景或打包烟测。
+## First Pass
 
-## 使用场景
+1. Read the `.uproject`, plugin descriptors, module `.Build.cs` files, existing test modules, `Source/*/Tests`, `Config`, and any CI/build scripts.
+2. Identify the changed surface: pure C++, UObject/Blueprint API, editor tool, asset pipeline, gameplay runtime, networked flow, UI, rendering/VFX, AI, animation, packaging, or migration.
+3. Choose the test layer that catches the failure closest to its source.
+4. Confirm required dependencies are in the correct module only. Keep editor test dependencies out of runtime modules.
+5. Define how the test runs: commandlet, automation filter, editor automation, PIE, functional map, multi-client PIE, dedicated server, cook/package smoke, or manual verification.
 
-- 给 C++/Blueprint/插件/编辑器工具/UI/GAS/网络功能写测试方案。
-- 创建 `AutomationSpec`、`FAutomationTestBase`、Functional Test 或命令行测试。
-- 设计回归矩阵、PIE 多客户端、资产验证、packaged build smoke。
+## Test Selection
 
-## 工作流程
+- Use `AutomationSpec` for readable C++ behavior tests, async latent steps, and scenario-style coverage.
+- Use `FAutomationTestBase` or simple automation tests for narrow engine/API checks.
+- Use Functional Tests for map-based gameplay validation, actor interaction, level setup, and designer-visible scenarios.
+- Use editor automation or smoke tests for ToolMenus, tabs, factories, details customizations, asset actions, import/reimport, and editor subsystems.
+- Use PIE or multiplayer PIE scenarios for possession, authority, prediction, replication, RPC, GAS activation, UI tied to local players, and save/restore flows.
+- Use asset validation checks for naming, required tags, folder policy, Blueprint compile status, redirectors, DataAssets, materials, Niagara systems, and animation asset setup.
+- Use packaging smoke checks for module descriptor mistakes, editor dependency leaks, cook failures, missing assets, shader/cook errors, and platform-specific runtime assumptions.
 
-1. 明确风险：编译、反射、Blueprint、资产、UI、网络、性能、打包。
-2. 选择测试层：unit、automation、functional、editor smoke、PIE、manual checklist。
-3. 定义 fixture：地图、Actor、资产、输入、预期状态和清理。
-4. 写出运行命令、结果位置、失败诊断和 CI 可行性。
-5. 如果测试代价过高，给出最小烟测和剩余风险。
+## Implementation Rules
 
-## 规则
+- Put test code in a dedicated test module or clearly scoped test folder that matches the project pattern.
+- Name tests by behavior and feature, not implementation detail.
+- Keep tests deterministic: avoid real time sleeps, random asset discovery order, editor selection state, and global state pollution.
+- Avoid loading the whole project or all assets unless the test is explicitly an asset audit.
+- Clean up transient objects, packages, spawned actors, delegates, console variables, and subsystem state after each test.
+- For Blueprint-exposed APIs, cover the C++ contract and include a Blueprint compile or smoke validation path when graphs are involved.
+- For plugin work, validate Runtime and Editor modules separately.
+- For multiplayer work, state the server/client count, authority expectation, replicated property or RPC path, and expected client-observed result.
+- For editor tools, verify registration/unregistration symmetry and run at least one startup/shutdown or reopen smoke path.
+- For rendering, Niagara, and animation, combine automated asset/config checks with a visual or performance sanity path when pixels or motion matter.
 
-- 不为简单文档改动强行设计重测试；按风险扩展覆盖。
-- Blueprint 和资产改动至少要有 compile/PIE/引用检查路径。
-- 网络功能要说明 server/client 数量、authority 和同步观察点。
-- 编辑器工具要验证注册、注销、Undo/Redo 和禁用插件。
-- 打包相关要区分 readiness、diagnosis 和 explicit automation。
+## Output Shape
 
-## 输出
+- State the risk being tested.
+- List the selected test layer and why it fits.
+- Identify files/modules that should own the test.
+- Provide concrete test cases with setup, action, expected result, and cleanup.
+- Provide the run command or editor path when known.
+- State any manual validation that remains.
 
-- 测试矩阵：层级、场景、预期、命令。
-- 自动化候选：AutomationSpec、Functional Test、Editor smoke 或 CI。
-- 手工验证：PIE、多人、UI、资产、打包烟测。
-- 证据记录：可用 `templates/ue-test-evidence.md`。
+## References
 
-## 参考
-
-- 测试清单读取 `references/testing-checklist.md`。
-- 需要 Automation Test 或 Functional Test 代码骨架时读取 `references/automation-test-template.md`。
+- Read `references/testing-checklist.md` for test type selection, plugin-specific checks, assertions, and run notes.
+- Read `references/automation-test-template.md` when the output needs a concrete Automation Test or Functional Test skeleton.
+- Use `$ue-debug-validation` when first reproducing an unknown failure.
+- Use `$ue-performance-packaging` when validation includes cook, packaging, profiling, or release readiness.
+- Use `$ue-plugin-module-dev` when test dependencies require module or descriptor changes.
