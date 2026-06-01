@@ -9,6 +9,42 @@ import scripts.validate_plugin as validate_plugin
 
 
 class ValidatePluginTests(unittest.TestCase):
+    def test_user_visible_text_rejects_mojibake(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "root"
+            manifest = root / ".codex-plugin" / "plugin.json"
+            scenarios = root / "tests" / "route_scenarios.json"
+            skill = root / "skills" / "ue-game-dev-router" / "SKILL.md"
+            manifest.parent.mkdir(parents=True)
+            scenarios.parent.mkdir(parents=True)
+            skill.parent.mkdir(parents=True)
+            (root / "README.md").write_text("鍏堢啛鎮夎繖涓棫 UE 项目\n", encoding="utf-8")
+            manifest.write_text(
+                '{"interface":{"defaultPrompt":["@ue-game-dev 为项目建立 Saved/CodexWorkflow 项目记忆"]}}',
+                encoding="utf-8",
+            )
+            scenarios.write_text("[]", encoding="utf-8")
+            skill.write_text("---\nname: ue-game-dev-router\ndescription: test\n---\n", encoding="utf-8")
+
+            with mock.patch.object(validate_plugin, "ROOT", root), mock.patch.object(
+                validate_plugin, "README", root / "README.md"
+            ), mock.patch.object(
+                validate_plugin, "PLUGIN_JSON", manifest
+            ), mock.patch.object(
+                validate_plugin, "ROUTE_SCENARIOS", scenarios
+            ), mock.patch.object(
+                validate_plugin, "ROUTER_SKILL", skill
+            ):
+                with redirect_stdout(StringIO()):
+                    with self.assertRaises(SystemExit):
+                        validate_plugin.validate_user_visible_text()
+
+    def test_mojibake_markers_include_common_chinese_garble(self) -> None:
+        markers = set(validate_plugin.MOJIBAKE_MARKERS)
+        self.assertIn("锟", markers)
+        self.assertIn("鎵", markers)
+        self.assertIn("閿", markers)
+
     def test_route_prompt_keeps_packaging_and_multi_agent_hard_rules(self) -> None:
         cases = {
             "用多 Agent 排查打包失败，查看 Saved/Logs 和 Build.cs": "ue-multi-agent-workflow",
@@ -46,6 +82,27 @@ class ValidatePluginTests(unittest.TestCase):
     def test_route_prompt_supports_new_skill_domains(self) -> None:
         self.assertEqual(validate_plugin.route_prompt("帮我做一个布娃娃物理效果"), "ue-physics-destruction")
         self.assertEqual(validate_plugin.route_prompt("帮我用 DataTable 管理物品数据"), "ue-data-management")
+        self.assertEqual(validate_plugin.route_prompt("做一个 Lyra 风格 Game Feature，激活后注册 GAS Ability"), "ue-game-features")
+        self.assertEqual(validate_plugin.route_prompt("CharacterMovementComponent 网络预测回滚抖动"), "ue-character-movement")
+
+    def test_route_prompt_supports_mattpocock_flow_handoffs(self) -> None:
+        cases = {
+            "诊断这个 UE 运行时 bug，先建立稳定复现再排查": "ue-debug-validation",
+            "分析这个 Saved/Logs 崩溃日志，然后进入 diagnose 闭环继续定位": "ue-log-crash-triage",
+            "用 TDD 给这个 UE 背包功能补测试和实现计划": "ue-testing-automation",
+            "这个老 UE 项目模块太乱，帮我做 improve-codebase-architecture 架构复盘": "ue-architecture",
+            "需求有点模糊，先按 grill-with-docs 的方式追问并整理 UE 功能简报": "ue-feature-brief",
+        }
+
+        for prompt, expected in cases.items():
+            with self.subTest(prompt=prompt):
+                self.assertEqual(validate_plugin.route_prompt(prompt), expected)
+
+    def test_router_documents_mattpocock_flow_handoffs(self) -> None:
+        router = validate_plugin.read_text(validate_plugin.ROUTER_SKILL)
+        for token in ["diagnose", "tdd", "grill-with-docs", "improve-codebase-architecture"]:
+            with self.subTest(token=token):
+                self.assertIn(token, router)
 
     def test_marketplace_hash_mismatch_detected(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -65,6 +122,22 @@ class ValidatePluginTests(unittest.TestCase):
                 with redirect_stdout(StringIO()):
                     with self.assertRaises(SystemExit):
                         validate_plugin.validate_marketplace_content_sync()
+
+    def test_changelog_version_accepts_codex_cachebuster(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "root"
+            manifest = root / ".codex-plugin" / "plugin.json"
+            manifest.parent.mkdir(parents=True)
+            manifest.write_text(
+                '{"name":"ue-game-dev","version":"0.13.0+codex.20260527074225"}',
+                encoding="utf-8",
+            )
+            (root / "CHANGELOG.md").write_text("## [0.13.0]\n\n- Test\n", encoding="utf-8")
+
+            with mock.patch.object(validate_plugin, "ROOT", root), mock.patch.object(
+                validate_plugin, "PLUGIN_JSON", manifest
+            ):
+                validate_plugin.validate_changelog_version()
 
 
 if __name__ == "__main__":

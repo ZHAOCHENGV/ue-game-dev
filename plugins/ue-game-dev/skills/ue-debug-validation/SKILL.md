@@ -37,6 +37,12 @@ Use this skill when the main task is to learn what is actually failing before ch
 - Use Gameplay Debugger for AI, perception, behavior tree, EQS, and gameplay category overlays.
 - Use `Show Navigation`, collision view modes, bounds visualization, and actor/component details for spatial bugs.
 
+## Editor Commandlet Reports
+
+- Use `scripts/ue_editor_command_report.py` to generate DataValidation, CompileAllBlueprints, and MapCheck command lines.
+- The helper is read-only because it only prints commands.
+- Launching Unreal Editor commandlets requires explicit user approval and should be treated as an external-state-changing validation step.
+
 ## Breakpoints And PIE
 
 - Prefer conditional breakpoints or targeted log categories over broad breakpoint sweeps.

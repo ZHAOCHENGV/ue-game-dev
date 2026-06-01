@@ -22,6 +22,7 @@ Use this skill for Blueprint-first development. Treat Blueprints as a first-clas
 - Connect execution pins and data pins explicitly. If pin names may vary by node variant, inspect pins before wiring.
 - When using a C++ API exposed to Blueprint, name the exact C++ function/event/delegate/property, the node display name to search for, the target object pin source, each input pin source, and the output/return handling.
 - Keep pure functions side-effect free and put state mutation behind explicit exec flow.
+- For `.uasset` Blueprint work, do not modify binary assets directly. Generate or request read-only compile reports, DataValidation reports, MapCheck output, or exact graph instructions.
 - Validate compile status, missing variables, broken pins, latent action context, and runtime ownership assumptions.
 
 ## Widget Blueprint Flow

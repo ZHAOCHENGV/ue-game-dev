@@ -23,3 +23,19 @@
 ## Debug Logs
 
 Log role, net mode, owner, instigator, actor name, connection, prediction key, and relevant gameplay tags near failing paths.
+
+## Multiplayer Validation Matrix
+
+| Check | Listen Server | Dedicated Server | High Ping | Packet Loss |
+|---|---|---|---|---|
+| Ability activation | required | required | required | optional for early prototype |
+| GameplayEffect replication | required | required | required | required before release |
+| GameplayCue presentation | required | required | required | required before release |
+| Attribute prediction | required when predicted | required when predicted | required | required |
+| Character movement ability | required | required | required | required when movement is predicted |
+
+## Prediction Evidence
+
+- Capture prediction key, ability spec handle, activation mode, and rollback/cancel path.
+- Validate listen server and dedicated server separately; listen-server success does not prove dedicated-server correctness.
+- Use packet lag or network emulation before claiming client prediction is stable.

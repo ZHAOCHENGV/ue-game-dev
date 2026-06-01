@@ -338,5 +338,61 @@
     "name": "zh_asset_manager_loading",
     "prompt": "Primary Asset Manager 和软引用异步加载怎么设计",
     "expected_skill": "ue-data-management"
+  },
+  {
+    "name": "mattpocock_diagnose_runtime_bug",
+    "prompt": "诊断这个 UE 运行时 bug，先建立稳定复现再排查",
+    "expected_skill": "ue-debug-validation"
+  },
+  {
+    "name": "mattpocock_log_then_diagnose",
+    "prompt": "分析这个 Saved/Logs 崩溃日志，然后进入 diagnose 闭环继续定位",
+    "expected_skill": "ue-log-crash-triage"
+  },
+  {
+    "name": "mattpocock_tdd_feature_tests",
+    "prompt": "用 TDD 给这个 UE 背包功能补测试和实现计划",
+    "expected_skill": "ue-testing-automation"
+  },
+  {
+    "name": "mattpocock_architecture_review",
+    "prompt": "这个老 UE 项目模块太乱，帮我做 improve-codebase-architecture 架构复盘",
+    "expected_skill": "ue-architecture"
+  },
+  {
+    "name": "mattpocock_grill_with_docs_brief",
+    "prompt": "需求有点模糊，先按 grill-with-docs 的方式追问并整理 UE 功能简报",
+    "expected_skill": "ue-feature-brief"
+  },
+  {
+    "name": "explicit_packaging_only_buildcookrun",
+    "prompt": "帮我生成 Windows Shipping 的 RunUAT BuildCookRun 打包命令，并说明归档目录",
+    "expected_skill": "ue-build-release-automation"
+  },
+  {
+    "name": "passive_packaging_readiness_not_automation",
+    "prompt": "检查这个 UE 项目是否已经准备好打包发布，不要实际打包",
+    "expected_skill": "ue-performance-packaging",
+    "forbidden_skill": "ue-build-release-automation"
+  },
+  {
+    "name": "lyra_game_feature_gas_cross_domain",
+    "prompt": "做一个 Lyra 风格 Game Feature，激活后注册 GAS Ability 和输入映射",
+    "expected_skill": "ue-game-features"
+  },
+  {
+    "name": "network_prediction_character_movement",
+    "prompt": "CharacterMovementComponent 自定义冲刺在 listen server 下预测回滚抖动",
+    "expected_skill": "ue-character-movement"
+  },
+  {
+    "name": "unreal_insights_performance_regression",
+    "prompt": "这个 UE5 项目打包后帧率回退，帮我按 Unreal Insights、stat unit、memreport 做证据链",
+    "expected_skill": "ue-performance-packaging"
+  },
+  {
+    "name": "explicit_buildgraph_release_pipeline",
+    "prompt": "帮我设计 UE BuildGraph 发布流水线，包含符号、归档产物和 Jenkins 参数",
+    "expected_skill": "ue-build-release-automation"
   }
 ]

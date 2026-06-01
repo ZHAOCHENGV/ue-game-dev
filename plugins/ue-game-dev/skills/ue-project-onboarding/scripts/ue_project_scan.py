@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import json
+import re
 from pathlib import Path
 
 
@@ -62,6 +63,56 @@ def module_matches(path: Path, root: Path, module_filter: str | None) -> bool:
     return len(normalized) >= 2 and normalized[0] == "Source" and normalized[1] == module_filter
 
 
+def scan_targets(source_root: Path, root: Path, module_filter: str | None = None) -> list[str]:
+    if not source_root.exists():
+        return []
+    targets = []
+    for path in sorted(source_root.rglob("*.Target.cs")):
+        if module_filter and not module_matches(path, root, module_filter):
+            continue
+        targets.append(str(path.relative_to(root)).replace("\\", "/"))
+    return targets
+
+
+def scan_gameplay_tags(config_root: Path) -> list[str]:
+    tags: list[str] = []
+    for path in sorted(config_root.glob("DefaultGameplayTags*.ini")):
+        text = path.read_text(encoding="utf-8", errors="replace")
+        tags.extend(re.findall(r'Tag="([^"]+)"', text))
+    return sorted(dict.fromkeys(tags))
+
+
+def scan_asset_manager(config_root: Path) -> dict:
+    primary_types: list[dict] = []
+    for path in [config_root / "DefaultGame.ini", config_root / "DefaultEngine.ini"]:
+        if not path.exists():
+            continue
+        text = path.read_text(encoding="utf-8", errors="replace")
+        for match in re.finditer(
+            r'PrimaryAssetType="([^"]+)".*?Directories=\(\(Path="([^"]+)"\)\)',
+            text,
+        ):
+            primary_types.append({"type": match.group(1), "path": match.group(2)})
+    return {"primary_asset_types": primary_types}
+
+
+def detect_risks(modules: list[str], build_files: list[str], root: Path) -> list[str]:
+    risks: list[str] = []
+    module_set = set(modules)
+    for build_file in build_files:
+        path = root / build_file
+        if not path.exists() or not path.name.endswith(".Build.cs"):
+            continue
+        module = path.name.removesuffix(".Build.cs")
+        if module.endswith("Editor"):
+            continue
+        text = path.read_text(encoding="utf-8", errors="replace")
+        for candidate in module_set:
+            if candidate.endswith("Editor") and candidate in text:
+                risks.append(f"Runtime module {module} depends on editor-like module {candidate}")
+    return sorted(dict.fromkeys(risks))
+
+
 def scan_project(project: Path, module_filter: str | None = None) -> dict:
     uproject = find_uproject(project)
     root = uproject.parent
@@ -107,8 +158,12 @@ def scan_project(project: Path, module_filter: str | None = None) -> dict:
         "enabled_plugins": enabled_plugins,
         "source_files": source_files,
         "build_files": build_files,
+        "targets": scan_targets(source_root, root, module_filter),
         "plugin_descriptors": plugins,
         "assets": classify_assets(root / "Content"),
+        "gameplay_tags": scan_gameplay_tags(root / "Config"),
+        "asset_manager": scan_asset_manager(root / "Config"),
+        "risks": detect_risks(modules, build_files, root),
         "recommended_next_skills": ["ue-project-onboarding", "ue-workflow-state"],
     }
 
@@ -121,6 +176,8 @@ def render_text(result: dict) -> str:
         f"- Enabled plugins: {', '.join(result['enabled_plugins']) or 'None found'}",
         f"- Source files: {len(result['source_files'])}",
         f"- Build files: {len(result['build_files'])}",
+        f"- Targets: {len(result['targets'])}",
+        f"- Gameplay tags: {len(result['gameplay_tags'])}",
     ]
     for category, names in result["assets"].items():
         if names:
@@ -140,6 +197,8 @@ def render_markdown(result: dict) -> str:
         f"- Enabled plugins: {', '.join(result['enabled_plugins']) or 'None found'}",
         f"- Source files: {len(result['source_files'])}",
         f"- Build files: {len(result['build_files'])}",
+        f"- Targets: {len(result['targets'])}",
+        f"- Gameplay tags: {len(result['gameplay_tags'])}",
     ]
     if result["source_files"]:
         lines.extend(["", "## Source Files", ""])

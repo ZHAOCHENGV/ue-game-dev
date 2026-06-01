@@ -22,14 +22,21 @@ Default to `Saved/CodexWorkflow/` inside the UE project unless the user requests
 | `known-risks.md` | Build, asset, module, Blueprint, networking, packaging, and validation risks. |
 | `active-task.md` | Current task scope, touched files, validation path, and handoff notes when useful. |
 
+## State Modes
+
+- Local mode: `Saved/CodexWorkflow/` is for machine-local AI memory, active task notes, generated scans, and temporary evidence. Do not commit it unless the project team explicitly wants shared AI state.
+- Team mode: `docs/codex-workflow/` or project-approved documentation is for stable context, decisions, module maps, and onboarding notes that should survive across machines.
+- Import mode: existing `CONTEXT.md`, `CONTEXT-MAP.md`, `docs/adr/`, and `.agents/ue-project-context.md` are read-only sources unless the user asks to update them.
+
 ## Workflow
 
 1. Find the `.uproject`, then read nearby `Source/`, `Plugins/`, `Config/`, `.Build.cs`, `.Target.cs`, and `.uplugin` files.
 2. Read existing `Saved/CodexWorkflow/*.md` before creating or refreshing state.
-3. Preserve user-approved facts. Mark uncertain items as `Unknown` or `Needs editor inspection`; do not invent Blueprint asset internals.
-4. Update only the minimum state files needed for the request.
-5. Link each important fact to evidence: file path, class name, asset filename, config section, or log excerpt.
-6. After implementation, refresh `active-task.md`, `decisions.md`, and `known-risks.md` when the change affects future work.
+3. If present, read `CONTEXT.md`, `CONTEXT-MAP.md`, `docs/adr/`, or `.agents/ue-project-context.md` as reference-only context. Summarize relevant domain terms, ADR constraints, and API verification notes in `project-context.md`; do not overwrite those external files.
+4. Preserve user-approved facts. Mark uncertain items as `Unknown` or `Needs editor inspection`; do not invent Blueprint asset internals.
+5. Update only the minimum state files needed for the request.
+6. Link each important fact to evidence: file path, class name, asset filename, config section, or log excerpt.
+7. After implementation, refresh `active-task.md`, `decisions.md`, and `known-risks.md` when the change affects future work.
 
 ## Use With Other Skills
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE Game Features"
+  short_description: "Plan Unreal Game Feature plugins, ModularGameplay, and Lyra-style Experiences."
+  default_prompt: "Use $ue-game-features to design a Game Feature plugin, ModularGameplay activation, or Lyra-style Experience flow."

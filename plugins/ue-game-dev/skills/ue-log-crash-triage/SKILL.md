@@ -17,6 +17,11 @@ Use this skill to diagnose Unreal logs and crashes from evidence before changing
 4. For packaging failures, separate Build, Cook, Stage, Pak/IoStore, Archive, and Deploy phases.
 5. For Blueprint failures, identify the asset path, parent class, missing variable/function, broken pin, duplicate event, or invalid latent context.
 
+## Phase-Aware Triage
+
+Classify the earliest actionable failure before summarizing the final UAT or Cook failure.
+Do not treat `AutomationTool exiting`, `UnknownCookFailure`, or `BUILD FAILED` as the root cause when an earlier UHT, linker, Blueprint, asset, or assertion line exists.
+
 ## Classification
 
 | Signal | Likely route |

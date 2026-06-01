@@ -1,0 +1,4 @@
+LogCook: Display: Cooking /Game/Maps/L_Main
+LogLinker: Warning: Unable to load package '/Game/UI/WBP_MissingInventory'
+LogCook: Error: Content is missing from cook. Referenced by /Game/Maps/L_Main
+AutomationTool exiting with ExitCode=25 (Error_UnknownCookFailure)

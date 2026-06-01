@@ -138,7 +138,7 @@ Use UE Game Dev to add tests for this UE feature.
 
 ## 功能概览
 
-本插件包含 **1 个路由技能 + 33 个领域技能**，覆盖 UE 开发全链路：
+本插件包含 **1 个路由技能 + 35 个领域技能**，覆盖 UE 开发全链路：
 
 | 技能 | 领域 |
 |------|------|
@@ -155,6 +155,7 @@ Use UE Game Dev to add tests for this UE feature.
 | `ue-cpp-gameplay` | C++ 游戏逻辑（Actor、Component、Subsystem） |
 | `ue-blueprint-workflow` | 蓝图工作流（事件图、函数图、Widget） |
 | `ue-plugin-module-dev` | 插件与模块开发（.uplugin、Build.cs、命名规范） |
+| `ue-game-features` | Game Feature、ModularGameplay、Lyra Experience 风格功能激活 |
 | `ue-editor-tooling-slate` | 编辑器工具与 Slate UI |
 | `ue-architecture` | 架构设计与模块边界 |
 | `ue-async-systems` | 异步系统、线程切换、Blueprint Async Action、取消与生命周期 |
@@ -165,6 +166,7 @@ Use UE Game Dev to add tests for this UE feature.
 | `ue-data-management` | DataTable、Data Asset、Asset Manager、软引用和异步资产加载 |
 | `ue-input-enhanced` | Enhanced Input（Input Action、Mapping Context、重绑定、UI 焦点） |
 | `ue-gas-networking` | GAS 技能系统与网络同步 |
+| `ue-character-movement` | CharacterMovementComponent、网络预测、自定义移动模式和纠正 |
 | `ue-save-load-sync` | 存档/加载与状态同步 |
 | `ue-world-interaction` | 世界交互（拾取、生成器、碰撞） |
 | `ue-render-vfx` | 渲染、材质与 Niagara 特效 |
@@ -195,6 +197,8 @@ Use UE Game Dev to add tests for this UE feature.
 异步系统和外部服务通信被拆成两个独立技能：`ue-async-systems` 负责 `AsyncTask`、`Async()`、`UE::Tasks`、`FRunnable`、`ParallelFor`、`UBlueprintAsyncActionBase`、GameThread 回切、取消和生命周期；`ue-external-services` 负责 HTTP/REST、JSON、WebSocket、TCP、心跳、重连、请求队列、认证头和服务结果分发。它们不会替代 `ue-gas-networking`，后者仍专注 GAS、RPC、复制、预测和 UE 多人玩法状态。
 
 音频和开放世界流送现在也有独立技能：`ue-audio` 覆盖 MetaSound、Sound Cue、AudioComponent、Sound Class/Mix、Concurrency、Quartz、空间化、衰减和音频性能；`ue-world-streaming` 覆盖 World Partition、Data Layers、HLOD、Level Streaming、Runtime Grid、Streaming Source 和流送验证。
+
+工程流程层保持为外部技能衔接，而不是复制进本插件：UE bug、性能回归和日志后续定位仍先由 `ue-log-crash-triage` 或 `ue-debug-validation` 接住，再按需建议进入 `diagnose` 的复现、假设、插桩、修复和回归闭环；明确要求 TDD 或测试先行时，由 `ue-testing-automation` 和 `ue-implementation-plan` 承接 UE 侧测试/实施计划，再按需建议 `tdd`；需求模糊或术语不清时，`ue-feature-brief` 可采用 `grill-with-docs` 式追问；旧项目模块混乱、Runtime/Editor 依赖泄漏或 test seam 很差时，`ue-architecture` 可建议 `improve-codebase-architecture` 做进一步架构复盘。
 
 多 Agent 能力是轻量编排层，适合“用多 Agent 熟悉旧项目”“full 模式审查插件架构”“多专家排查打包失败风险”这类复杂请求。它会先给出 Coordinator、Project Explorer、Architecture Reviewer、C++ Implementer、Blueprint Integrator、Verifier 等角色分工、文件所有权边界、并行发现结果和后续应进入的具体技能；普通单点问题仍会直接路由到对应技能。
 
@@ -244,6 +248,7 @@ Use UE Game Dev to add tests for this UE feature.
 | `ue-project-scan` | `skills/ue-project-onboarding/scripts/ue_project_scan.py` | 只读扫描 `.uproject`、模块、插件、源码文件、Build 文件和常见资产文件名 |
 | `ue-config-audit` | `skills/ue-project-onboarding/scripts/ue_config_audit.py` | 只读审计 `Config/*.ini`、默认地图、Enhanced Input、Maps to Cook 和 editor-only 配置风险 |
 | `ue-log-triage` | `skills/ue-log-crash-triage/scripts/ue_log_triage.py` | 从 UE 日志中提取首个可行动错误、失败阶段、证据和下一步技能 |
+| `ue-editor-command-report` | `skills/ue-debug-validation/scripts/ue_editor_command_report.py` | 只读生成 DataValidation、CompileAllBlueprints、MapCheck 等 Editor commandlet 命令 |
 | `ue-blueprint-api-report` | `skills/ue-cpp-gameplay/scripts/ue_blueprint_api_report.py` | 扫描 `BlueprintCallable`、`BlueprintPure`、蓝图事件和可绑定属性，生成蓝图接法提示 |
 | `ue-dependency-graph` | `skills/ue-architecture/scripts/ue_dependency_graph.py` | 解析 `.Build.cs` 模块依赖、循环依赖、Runtime→Editor 风险，并可输出 Mermaid 图 |
 | `ue-agent-plan` | `skills/ue-multi-agent-workflow/scripts/ue_agent_plan.py` | 根据用户请求生成 `solo` / `lean` / `full` 角色分工、所有权边界和后续技能 |
@@ -254,6 +259,7 @@ Use UE Game Dev to add tests for this UE feature.
 python skills\ue-project-onboarding\scripts\ue_project_scan.py --project F:\UEObject\MyGame --format json
 python skills\ue-project-onboarding\scripts\ue_config_audit.py --project F:\UEObject\MyGame --format json
 python skills\ue-log-crash-triage\scripts\ue_log_triage.py --log F:\UEObject\MyGame\Saved\Logs\MyGame.log --format json
+python skills\ue-debug-validation\scripts\ue_editor_command_report.py --project F:\UEObject\MyGame\MyGame.uproject --engine-cmd "C:\Program Files\Epic Games\UE_5.6\Engine\Binaries\Win64\UnrealEditor-Cmd.exe" --format json
 python skills\ue-cpp-gameplay\scripts\ue_blueprint_api_report.py --project F:\UEObject\MyGame --format json
 python skills\ue-architecture\scripts\ue_dependency_graph.py --project F:\UEObject\MyGame --format mermaid
 python skills\ue-multi-agent-workflow\scripts\ue_agent_plan.py --request "用多 Agent 熟悉这个旧 UE 项目，准备二开" --format json

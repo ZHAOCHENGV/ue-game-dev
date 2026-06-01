@@ -15,7 +15,27 @@ python -m unittest discover tests
 git diff --check
 ```
 
-5. When plugin content changes, apply the same structural change to `ue-game-dev-zh` and localize skill explanations, comments, and prose to Chinese while preserving code, commands, paths, UE APIs, skill names, and `$ue-*` references.
+5. To refresh the installed Codex App plugin after local edits, run:
+
+```powershell
+python scripts\update_codex_app_plugin.py
+```
+
+This updates the Codex cachebuster, syncs `plugins/ue-game-dev/`, validates the plugin, and runs `codex plugin add ue-game-dev@zhaochengv-ue` against the current user's Codex home. If the marketplace is still pointing at an older checkout, use:
+
+```powershell
+python scripts\update_codex_app_plugin.py --replace-marketplace
+```
+
+6. When plugin content changes, apply the same structural change to `ue-game-dev-zh` and localize skill explanations, comments, and prose to Chinese while preserving code, commands, paths, UE APIs, skill names, and `$ue-*` references.
+7. Push both `main` and `ue-game-dev-zh` to GitHub after validation when the change affects public plugin behavior, marketplace metadata, routing, or Codex App installation.
+8. When changing workflow-state templates, update both the root skill files and the mirrored `plugins/ue-game-dev` package, then refresh the local Codex App installation and push both `main` and `ue-game-dev-zh`.
+
+## Engineering Flow References
+
+- This repository may reference mattpocock/skills for process ideas such as `diagnose`, `tdd`, `grill-with-docs`, and `improve-codebase-architecture`.
+- Do not vendor or copy those skills into UE Game Dev. Keep UE Game Dev focused on Unreal Engine workflow routing and mention those external skills only as optional handoffs.
+- Keep the project-specific agent rules in `docs/agents/repo-workflow.md` aligned with this file when release, branch, or issue-tracking workflow changes.
 
 ## Adding A Skill
 

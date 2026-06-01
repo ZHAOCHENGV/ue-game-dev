@@ -52,3 +52,5 @@ For every packaging automation response, include:
 - Read `references/buildcookrun-commands.md` when generating `RunUAT BuildCookRun` commands or scripts.
 - Read `references/release-automation-checklist.md` before running packaging or designing CI artifacts.
 - Read `references/ci-build-templates.md` when the user asks for Jenkins, GitHub Actions, TeamCity, or other build machine automation.
+- Use `references/buildgraph-and-artifacts.md` when the user asks for BuildGraph, Horde, Jenkins, Project Launcher profiles, symbols, release artifacts, or multi-platform release automation.
+- This skill still requires explicit packaging or automation intent.

@@ -21,6 +21,12 @@ Use this skill when the task depends on measured runtime behavior or a packaged 
 - Keep quality/scalability changes explicit.
 - Prefer fixing unnecessary work before lowering visual quality.
 
+## Evidence Before Claims
+
+Do not claim a performance issue is fixed from code inspection alone.
+Ask for or produce evidence from `stat unit`, `stat game`, `stat gpu`, `memreport -full`, Unreal Insights traces, packaged smoke tests, or platform profiler output.
+For release readiness, separate editor PIE performance from packaged runtime performance.
+
 ## Packaging Workflow
 
 - Validate maps, game mode, asset references, plugin availability, config files, platform settings, and build target.
@@ -32,4 +38,5 @@ Use this skill when the task depends on measured runtime behavior or a packaged 
 ## References
 
 - Read `references/performance-packaging-checklist.md` for profiling and packaging review.
+- Use `references/performance-evidence-template.md` when reporting performance regressions, release readiness, or optimization results.
 - Read `references/packaging-troubleshooting.md` for common cook/package failure diagnosis, pre-package checklist, and build configuration reference.

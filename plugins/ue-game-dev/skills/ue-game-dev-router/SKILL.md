@@ -24,9 +24,11 @@ Use this skill first when the request spans multiple Unreal Engine areas or the 
 - Use `$ue-cpp-gameplay` for Actors, Components, UObject ownership, DataAssets, Subsystems, input-driven gameplay handlers, world interaction, save/load hooks, and general gameplay C++.
 - Use `$ue-blueprint-workflow` for Blueprint graph logic, Event Graph changes, function graphs, input events, node/pin wiring, Widget Blueprint logic, and Blueprint compile validation.
 - Use `$ue-plugin-module-dev` for UE plugin structure, `.uplugin`, module descriptors, Runtime/Editor module split, `.Build.cs`, export API macros, Public/Private folders, plugin content/config/resources, and UE asset/code naming conventions.
+- Use `$ue-game-features` for Game Feature plugins, GameFeatureData, GameFeatureActions, ModularGameplay, Lyra Experience-style activation, and feature-owned ability/input/UI/component registration.
 - Use `$ue-editor-tooling-slate` for editor plugins, Slate editor UI, ToolMenus, UICommands, toolbar/menu extensions, custom details panels, asset type actions, factories, tab spawners, and editor subsystems.
 - Use `$ue-architecture` for module layout, `.Build.cs` dependencies, Public/Private boundaries, reflection exposure strategy, plugin boundaries, and large refactors.
 - Use `$ue-gas-networking` for GAS abilities, attributes, effects, cues, prediction, replication, RPCs, authority flow, multiplayer debugging, and network relevance.
+- Use `$ue-character-movement` for CharacterMovementComponent, custom movement modes, sprint/dash mechanics, root motion movement, FSavedMove, client/server correction, movement replication, and network prediction.
 - Use `$ue-input-enhanced` for Enhanced Input, Input Actions, Input Mapping Contexts, input modifiers/triggers, pawn/controller binding, runtime mapping changes, key rebinding, local multiplayer input, UI focus/input mode conflicts, and input events that do not fire.
 - Use `$ue-async-systems` for `AsyncTask`, `Async()`, `UE::Tasks`, `FRunnable`, `ParallelFor`, `UBlueprintAsyncActionBase`, game-thread handoff, cancellation, async lifetime, and non-blocking gameplay/client operations.
 - Use `$ue-external-services` for HTTP, REST, JSON, WebSocket, TCP sockets, backend API clients, streaming responses, heartbeats, reconnects, request queues, auth headers, and external process or service integration.
@@ -52,6 +54,21 @@ If the user explicitly asks for multi-agent coordination, route to `$ue-multi-ag
 
 If the request involves another domain without a dedicated sibling skill, handle it directly within this router using general Unreal best practices and note the coverage gap.
 
+## Routing Data
+
+The validator-backed keyword and priority table lives in `references/routing-rules.json`.
+Keep this skill readable for humans and keep exact route regression behavior in that JSON file.
+When adding a route, add both a JSON route rule and at least one `tests/route_scenarios.json` case.
+
+## External Engineering Flow Handoffs
+
+Keep UE Game Dev as the Unreal domain router. Do not copy or replace general engineering skills from mattpocock/skills; mention them as follow-up process handoffs only when they sharpen the UE workflow.
+
+- For UE bugs, runtime regressions, performance regressions, or logs that need follow-up after `$ue-log-crash-triage`, keep the UE owner as `$ue-log-crash-triage` or `$ue-debug-validation`, then recommend the external `diagnose` loop for reproduce -> minimize -> hypotheses -> instrumentation -> fix -> regression test.
+- For new UE features that explicitly ask for TDD, test-first work, regression tests, or test-driven implementation, route the UE owner to `$ue-testing-automation` or `$ue-implementation-plan` as appropriate, then recommend external `tdd` for the red/green/refactor discipline.
+- For fuzzy requirements, overloaded terms, unclear domain language, or plans that need pressure-testing before implementation, route the UE owner to `$ue-feature-brief`, then recommend external `grill-with-docs` style questioning against project context and ADRs.
+- For inherited UE projects, module tangles, Runtime/Editor dependency issues, shallow module boundaries, or poor test seams, route the UE owner to `$ue-project-onboarding` or `$ue-architecture`, then recommend external `improve-codebase-architecture` for deeper architecture review.
+
 ## Chinese Routing Hints
 
 - 中文 "粒子特效 / 后处理 / 材质球 / 着色器" should route to `$ue-render-vfx`.
@@ -60,6 +77,12 @@ If the request involves another domain without a dedicated sibling skill, handle
 - 中文 "存档 / 读档 / 数据持久化" should route to `$ue-save-load-sync`.
 - 中文 "布娃娃 / 物理约束 / 破坏系统 / 碰撞通道" should route to `$ue-physics-destruction`.
 - 中文 "DataTable / 数据表 / 数据资产 / 软引用 / 异步加载 / 资产管理" should route to `$ue-data-management`.
+- 中文 "Game Feature / ModularGameplay / Lyra Experience / 模块化玩法 / 游戏功能插件" should route to `$ue-game-features`.
+- 中文 "CharacterMovementComponent / 角色移动 / 网络预测 / 预测回滚 / 自定义移动模式" should route to `$ue-character-movement`.
+- 中文 "诊断 / 稳定复现 / 插桩 / 运行时 bug" should route to `$ue-debug-validation`, with `diagnose` as a follow-up discipline when needed.
+- 中文 "TDD / 测试先行 / 回归测试 / 自动化测试" should route to `$ue-testing-automation`.
+- 中文 "需求模糊 / 术语不清 / 追问 / 澄清需求" should route to `$ue-feature-brief`, with `grill-with-docs` as a follow-up discipline when project language matters.
+- 中文 "架构复盘 / 模块太乱 / 可测试性 / test seam" should route to `$ue-architecture`, with `improve-codebase-architecture` as a follow-up discipline when module depth is the real problem.
 
 ## Production Workflow
 

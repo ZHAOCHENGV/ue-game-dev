@@ -77,3 +77,19 @@ jobs:
 - Store UAT logs as artifacts.
 - Fail the job when `RunUAT` returns non-zero.
 - Keep release publishing as a separate explicit stage after package validation.
+
+## Jenkins Parameters
+
+- `UE_PROJECT`
+- `UE_ENGINE_ROOT`
+- `PLATFORM`
+- `CONFIGURATION`
+- `ARCHIVE_DIR`
+- `BUILD_VERSION`
+- `RUN_TESTS`
+
+## Horde Notes
+
+- Keep agent pools aligned with installed engine versions and platform SDKs.
+- Use shared DDC deliberately; record cache location and invalidation policy.
+- Archive packaged builds, symbols, UAT logs, test reports, and build metadata separately.

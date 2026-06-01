@@ -4,6 +4,42 @@
 
 格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)。
 
+## [0.15.0] - 2026-06-01
+
+### 新增
+- 新增 `ue-game-features` 和 `ue-character-movement` 两个一等领域技能，覆盖 Game Feature/ModularGameplay/Lyra Experience、CharacterMovementComponent、网络预测和自定义移动模式。
+- 新增 `skills/ue-game-dev-router/references/routing-rules.json`，把高优先级路由、显式打包 guardrail 和新领域关键词纳入数据化回归。
+- 新增 UE 日志诊断 fixtures，覆盖 UHT 反射错误、Link 错误、Cook 缺失资产和 Crash/assert callstack。
+- 新增 `ue_editor_command_report.py`，只读生成 DataValidation、CompileAllBlueprints、MapCheck 等 Editor commandlet 命令。
+- 新增项目上下文模板、性能证据模板、BuildGraph/发布产物参考和 CharacterMovement 预测矩阵。
+
+### 变更
+- 强化 `ue_project_scan.py`，补充 Target 文件、Gameplay Tags、Asset Manager primary asset types 和 Runtime->Editor 风险扫描。
+- 强化 `ue_log_triage.py` 的 UBT/UHT/UAT/Cook/Crash 阶段分类和根因文案，避免把 UAT 总结行误当根因。
+- 强化 workflow state 的 local/team/import 模式和 stale detection 字段。
+- 强化 GAS/网络验证矩阵、性能证据链、BuildGraph/Jenkins/Horde 发布自动化说明。
+- `update_codex_app_plugin.py` 新增 `--dry-run`，可在不改本地 Codex App 缓存的情况下检查版本、目标路径和待复制文件数量。
+
+### 验证
+- `python scripts\validate_plugin.py`
+- `python -m unittest discover tests`
+- `git diff --check`
+
+## [0.13.1] - 2026-06-01
+
+### 新增
+- 在 `ue-game-dev-router` 中加入 mattpocock/skills 风格的外部流程衔接说明：`diagnose`、`tdd`、`grill-with-docs` 和 `improve-codebase-architecture` 只作为后续流程建议，不复制进插件。
+- 扩展 `Saved/CodexWorkflow/project-context.md` 模板，加入 target platforms、asset conventions、Gameplay Tags、Input/UI/GAS conventions、Runtime/Editor split、API verification notes，以及 `CONTEXT.md`、`CONTEXT-MAP.md`、`docs/adr/` 和 `.agents/ue-project-context.md` 的只读参考入口。
+- 新增 `docs/agents/repo-workflow.md`，记录 GitHub、领域文档、外部工程技能和发布同步规则。
+
+### 变更
+- 增加 route scenarios，覆盖 UE bug 诊断、日志后续 diagnose、TDD 测试先行、架构复盘和需求模糊追问。
+- `validate_plugin.py` 增加用户可见文本 mojibake 检测、外部工程流程 handoff 校验和 agent 工作流文档校验。
+- `CONTRIBUTING.md` 增加本地 Codex App 更新、GitHub 分支同步和 mattpocock/skills 参考边界说明。
+
+### 修复
+- 统一根目录与市场包的用户可见中文验证基线，防止 README、默认 prompt、route scenarios、router 和 workflow-state 模板继续出现乱码。
+
 ## [0.13.0] - 2026-05-27
 
 ### 新增
