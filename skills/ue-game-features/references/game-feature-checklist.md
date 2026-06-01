@@ -1,29 +1,29 @@
 # Game Feature Checklist
 
-## Ownership
+Use this checklist when a task involves Game Feature Plugins, ModularGameplay, GameFeatureAction assets, or Lyra-style Experience setup.
 
-- Plugin descriptor: confirm `.uplugin` type, enabled state, dependencies, and content root.
-- Runtime module: keep Game Feature runtime code out of editor-only modules.
-- GameFeatureData: identify every GameFeatureAction and its activation order.
-- Asset ownership: keep feature-owned assets under the feature plugin unless the project has a shared content rule.
+## Discovery
 
-## Activation
+- Locate `.uproject`, the feature `.uplugin`, feature modules, `Config/`, `Content/`, and any existing Experience or action-set assets.
+- Confirm the plugin type, loading phase, enabled state, and whether the feature is meant to be always-on, selectable, streamed, or DLC-like.
+- Identify dependencies on GameplayAbilities, EnhancedInput, CommonUI, ModularGameplay, GameFeatures, AssetManager, and project-specific framework modules.
 
-- Register abilities, attributes, input mappings, components, UI extensions, and data only during activation.
-- Remove or reverse registrations during deactivation.
-- Avoid assuming activation happens before all pawns, controllers, or UI layers exist.
-- Treat Lyra Experience loading as project-specific; verify pawn data, ability sets, input config, and UI extension points in the current project.
+## Activation Model
 
-## Cross-Domain Handoffs
+- State what should happen on register, load, activate, deactivate, and error.
+- Ensure actions are idempotent: no duplicate components, input mappings, ability specs, delegates, UI layers, or data registration.
+- Define cleanup on deactivation for every grant made on activation.
+- Keep server-authoritative gameplay grants separate from client-only presentation grants.
 
-- GAS: validate ability grants, prediction keys, GameplayCue availability, and server authority.
-- Enhanced Input: validate mapping context priority, local player ownership, and rebinding.
-- UI: validate extension point names, layer policy, focus, and gamepad navigation.
-- Data: validate Primary Asset rules, bundle names, soft references, and packaged discovery.
+## Lyra-Style Experience Review
 
-## Verification
+- Identify Experience, Experience Action Set, Pawn Data, Ability Set, Input Config, HUD layout, and default gameplay tags.
+- Check asset references and bundles so feature content cooks and loads without editor-only paths.
+- Keep cross-feature dependencies explicit; avoid hidden assumptions that another feature has already activated.
 
-- PIE: activate and deactivate the feature twice in one editor session.
-- Multiplayer: validate server and client see the same feature-owned gameplay state.
-- Packaged: confirm feature assets cook and load without editor-only references.
-- Logs: inspect GameFeatures, AssetManager, and ModularGameplay output for missing actions or unresolved assets.
+## Completion Evidence
+
+- PIE activation/deactivation result.
+- Log evidence for Game Feature state transitions.
+- Asset/cook evidence for feature-owned content.
+- Multiplayer evidence when abilities, input, pawn data, or replicated state are involved.

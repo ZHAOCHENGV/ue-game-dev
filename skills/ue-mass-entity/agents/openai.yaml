@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE Mass Entity"
+  short_description: "Plan and review Mass Entity, Mass AI, and crowd simulation."
+  default_prompt: "Use $ue-mass-entity to design or debug Mass Entity processors, fragments, spawners, or crowd simulation."

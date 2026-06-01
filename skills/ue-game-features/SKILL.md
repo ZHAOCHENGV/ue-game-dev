@@ -1,38 +1,44 @@
 ---
 name: ue-game-features
-description: Unreal Engine Game Features and Modular Gameplay workflow for GameFeature plugins, GameFeatureData, GameFeatureActions, Lyra Experience-style activation, ability/input registration, component injection, feature lifecycle, and cross-domain handoff to GAS, Enhanced Input, UI, and asset validation.
+description: Unreal Engine Game Features workflow for Game Feature Plugins, ModularGameplay, GameFeatureAction, GameFrameworkComponentManager, Lyra-style Experiences, runtime activation, plugin state transitions, ability/input/UI grants, and modular gameplay architecture. Use when requests involve Game Feature plugins, ModularGameplay, Lyra Experience patterns, or feature plugins that grant components, abilities, actions, or data at runtime.
 ---
 
 # UE Game Features
 
-Use this skill when a request involves Game Feature plugins, ModularGameplay, Lyra-style Experiences, runtime feature activation, or feature-owned registration of abilities, input, UI, components, assets, and game phases.
+Use this skill for UE5 Game Feature Plugins and modular gameplay features. Keep plugin activation, runtime grants, assets, and rollback behavior explicit.
 
 ## First Pass
 
-1. Identify whether the work is a Game Feature plugin, Lyra Experience, ModularGameplay component injection, content bundle, or ordinary plugin/module work.
-2. Locate the owning `.uplugin`, `GameFeatureData`, actions, Runtime modules, content root, and activation policy before proposing changes.
-3. Decide which systems are registered by activation: GAS abilities, Enhanced Input mapping contexts, components, UI extensions, data registries, or pawn data.
-4. Keep activation and deactivation symmetric; every added ability, mapping, component, or UI extension needs a cleanup path.
-5. Define validation in editor and packaged builds because Game Feature loading can differ from static plugin content.
+1. Read the `.uproject`, relevant `.uplugin`, enabled Game Feature plugins, `DefaultGame.ini`, module `.Build.cs`, and existing experience/action assets.
+2. Identify whether the work is a Game Feature Plugin, ModularGameplay component injection, Lyra-style Experience, ability/input/UI grant, or data-only feature pack.
+3. Map activation lifecycle: registered, loaded, active, deactivating, error, and how assets or components are cleaned up.
+4. Check whether the feature touches GAS, Enhanced Input, UI, Data Assets, replication, or save state; route those details to focused skills after owning the Game Feature boundary.
+5. Define validation: activation, deactivation, missing asset behavior, packaged cook inclusion, multiplayer authority, and rollback.
 
-## Implementation Rules
+## Design Rules
 
-- Use Game Feature plugins for feature slices that can be enabled, disabled, or composed at runtime or by experience data.
-- Keep hard dependencies small; prefer explicit registration through GameFeatureActions or project-approved extension points.
-- Treat Lyra conventions as patterns, not mandatory architecture. Match the current project's pawn data, experience, ability, input, and UI extension style.
-- Keep Game Feature content under its plugin content root and verify cook rules include required assets.
-- If the feature grants GAS abilities or input mappings, route follow-up validation through `$ue-gas-networking` and `$ue-input-enhanced`.
+- Keep Game Feature plugins focused on one gameplay capability or content pack.
+- Put runtime modules in the feature plugin only when the feature owns reusable runtime code; keep editor helpers in a paired editor module.
+- Use `UGameFeatureAction` assets for declarative activation work such as component injection, ability grants, input mappings, data registration, or UI entries.
+- Prefer stable data assets and soft references for feature-owned content that may load on demand.
+- Keep feature activation idempotent; repeated activation/deactivation should not duplicate components, input mappings, abilities, or delegates.
+- For Lyra-style Experience work, define the Experience asset, action set, pawn data, ability grants, input config, and UI layer changes as a single activation story.
+
+## Integration Rules
+
+- Use `$ue-gas-networking` after the feature boundary is clear when the feature grants abilities, attributes, effects, or gameplay cues.
+- Use `$ue-input-enhanced` when the feature adds Input Actions or Mapping Contexts.
+- Use `$ue-client-ui` when the feature adds HUD layers, menus, or CommonUI entries.
+- Use `$ue-plugin-module-dev` for `.uplugin`, module descriptor, `.Build.cs`, and packaged plugin structure.
+- Use `$ue-data-management` for feature-owned Primary Assets, bundles, cook rules, and chunking.
 
 ## Verification
 
-- Confirm the Game Feature transitions through registered, loaded, active, and deactivated states without stale registrations.
-- Validate activation order in PIE, standalone, and packaged smoke tests when possible.
-- Check that dependent assets are discoverable through Asset Manager or explicit plugin content references.
-- For multiplayer, define whether feature activation is server-authoritative, client-local, or experience-driven.
+- Validate activation and deactivation in PIE, including repeated toggles when possible.
+- Check logs for Game Feature state errors and missing asset references.
+- Confirm packaged builds include feature-owned assets and do not rely on editor-only references.
+- For multiplayer features, test server authority and client-visible grants with at least two clients.
 
 ## References
 
-- Read `references/game-feature-checklist.md` before planning Game Feature activation or Lyra-style Experience work.
-- Use `$ue-gas-networking` for ability grants, attributes, GameplayEffects, GameplayCues, and prediction.
-- Use `$ue-input-enhanced` for Input Mapping Context registration, priorities, rebinding, and UI focus conflicts.
-- Use `$ue-data-management` for Primary Asset Manager rules, content bundle discovery, and cook-aware references.
+- Read `references/game-feature-checklist.md` before adding or reviewing Game Feature plugins, actions, or Lyra-style Experience flows.

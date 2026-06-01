@@ -82,27 +82,25 @@ class ValidatePluginTests(unittest.TestCase):
     def test_route_prompt_supports_new_skill_domains(self) -> None:
         self.assertEqual(validate_plugin.route_prompt("帮我做一个布娃娃物理效果"), "ue-physics-destruction")
         self.assertEqual(validate_plugin.route_prompt("帮我用 DataTable 管理物品数据"), "ue-data-management")
-        self.assertEqual(validate_plugin.route_prompt("做一个 Lyra 风格 Game Feature，激活后注册 GAS Ability"), "ue-game-features")
-        self.assertEqual(validate_plugin.route_prompt("CharacterMovementComponent 网络预测回滚抖动"), "ue-character-movement")
-
-    def test_route_prompt_supports_mattpocock_flow_handoffs(self) -> None:
         cases = {
-            "诊断这个 UE 运行时 bug，先建立稳定复现再排查": "ue-debug-validation",
-            "分析这个 Saved/Logs 崩溃日志，然后进入 diagnose 闭环继续定位": "ue-log-crash-triage",
-            "用 TDD 给这个 UE 背包功能补测试和实现计划": "ue-testing-automation",
-            "这个老 UE 项目模块太乱，帮我做 improve-codebase-architecture 架构复盘": "ue-architecture",
-            "需求有点模糊，先按 grill-with-docs 的方式追问并整理 UE 功能简报": "ue-feature-brief",
+            "Design a Game Feature Plugin with ModularGameplay and Lyra Experience actions": "ue-game-features",
+            "帮我做一个模块化 Game Feature 插件，接入 Lyra Experience": "ue-game-features",
+            "Implement Mass Entity crowd agents with MassProcessor and MassFragment": "ue-mass-entity",
+            "帮我用 Mass Entity 做一群 NPC 群体 AI": "ue-mass-entity",
+            "Create a PCG graph and runtime procedural generation system": "ue-procedural-generation",
+            "帮我做 PCG 程序化生成地形和植被": "ue-procedural-generation",
+            "Implement StateTree tasks and transitions for NPC combat": "ue-state-trees",
+            "帮我用 StateTree 状态树做敌人战斗逻辑": "ue-state-trees",
+            "Create a Sequencer cutscene and Movie Render Queue pipeline": "ue-sequencer-cinematics",
+            "帮我做 Sequencer 过场动画和 Movie Render Queue 输出": "ue-sequencer-cinematics",
+            "Tune CharacterMovementComponent network prediction and custom movement mode": "ue-character-movement",
+            "帮我调 CharacterMovementComponent 角色移动和网络预测": "ue-character-movement",
+            "Build a Lyra-style Game Feature plugin with GAS ability grants": "ue-game-features",
         }
 
         for prompt, expected in cases.items():
             with self.subTest(prompt=prompt):
                 self.assertEqual(validate_plugin.route_prompt(prompt), expected)
-
-    def test_router_documents_mattpocock_flow_handoffs(self) -> None:
-        router = validate_plugin.read_text(validate_plugin.ROUTER_SKILL)
-        for token in ["diagnose", "tdd", "grill-with-docs", "improve-codebase-architecture"]:
-            with self.subTest(token=token):
-                self.assertIn(token, router)
 
     def test_marketplace_hash_mismatch_detected(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -123,16 +121,35 @@ class ValidatePluginTests(unittest.TestCase):
                     with self.assertRaises(SystemExit):
                         validate_plugin.validate_marketplace_content_sync()
 
+    def test_route_prompt_supports_mattpocock_flow_handoffs(self) -> None:
+        cases = {
+            "诊断这个 UE 运行时 bug，先建立稳定复现再排查": "ue-debug-validation",
+            "分析这个 Saved/Logs 崩溃日志，然后进入 diagnose 闭环继续定位": "ue-log-crash-triage",
+            "用 TDD 给这个 UE 背包功能补测试和实现计划": "ue-testing-automation",
+            "这个老 UE 项目模块太乱，帮我做 improve-codebase-architecture 架构复盘": "ue-architecture",
+            "需求有点模糊，先按 grill-with-docs 的方式追问并整理 UE 功能简报": "ue-feature-brief",
+        }
+
+        for prompt, expected in cases.items():
+            with self.subTest(prompt=prompt):
+                self.assertEqual(validate_plugin.route_prompt(prompt), expected)
+
+    def test_router_documents_mattpocock_flow_handoffs(self) -> None:
+        router = validate_plugin.read_text(validate_plugin.ROUTER_SKILL)
+        for token in ["diagnose", "tdd", "grill-with-docs", "improve-codebase-architecture"]:
+            with self.subTest(token=token):
+                self.assertIn(token, router)
+
     def test_changelog_version_accepts_codex_cachebuster(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp) / "root"
             manifest = root / ".codex-plugin" / "plugin.json"
             manifest.parent.mkdir(parents=True)
             manifest.write_text(
-                '{"name":"ue-game-dev","version":"0.13.0+codex.20260527074225"}',
+                '{"name":"ue-game-dev","version":"0.14.1+codex.20260601000000"}',
                 encoding="utf-8",
             )
-            (root / "CHANGELOG.md").write_text("## [0.13.0]\n\n- Test\n", encoding="utf-8")
+            (root / "CHANGELOG.md").write_text("## [0.14.1]\n\n- Test\n", encoding="utf-8")
 
             with mock.patch.object(validate_plugin, "ROOT", root), mock.patch.object(
                 validate_plugin, "PLUGIN_JSON", manifest

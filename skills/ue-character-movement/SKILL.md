@@ -1,38 +1,41 @@
 ---
 name: ue-character-movement
-description: Unreal Engine CharacterMovementComponent workflow for walking, falling, jumping, sprinting, dashing, custom movement modes, root motion, network prediction, FSavedMove, client/server correction, movement replication, and multiplayer movement debugging.
+description: Unreal Engine CharacterMovementComponent workflow for movement modes, custom movement, root motion, network prediction, movement replication, smoothing, floor checks, acceleration, braking, crouch/jump/falling/swimming/flying, ability-driven movement, and locomotion debugging. Use when requests involve CharacterMovementComponent, character locomotion, custom movement modes, movement prediction, replicated movement, or movement tuning.
 ---
 
 # UE Character Movement
 
-Use this skill for CharacterMovementComponent behavior, custom movement modes, movement replication, prediction, correction, root motion, sprint/dash mechanics, and locomotion bugs that are owned by character movement rather than animation presentation alone.
+Use this skill for CharacterMovementComponent, locomotion tuning, custom movement modes, and replicated character movement. Keep prediction, animation, and authority boundaries explicit.
 
 ## First Pass
 
-1. Identify the movement owner: CharacterMovementComponent, Pawn movement component, Gameplay Ability, animation root motion, or physics impulse.
-2. Decide which machine owns the state: autonomous proxy prediction, server authority, simulated proxy smoothing, or cosmetic-only local movement.
-3. Locate movement flags, saved moves, compressed flags, replicated variables, root motion sources, and ability activation hooks before proposing changes.
-4. Separate movement intent from movement result; clients may predict intent, but the server validates authoritative movement state.
-5. Define a multiplayer validation matrix before changing prediction-sensitive code.
+1. Read the character class, movement component subclass, controller input path, animation blueprint, ability hooks, and project movement settings.
+2. Identify the movement concern: tuning, jump/fall/crouch/swim/fly, custom mode, root motion, network prediction, smoothing, collision, or animation mismatch.
+3. Map authority: local input, client prediction, server correction, simulated proxy smoothing, replicated movement, and ability-driven movement.
+4. Check collision capsule, floor checks, step height, slope limits, braking, acceleration, gravity scale, and movement mode transitions before changing code.
+5. Define validation: local PIE feel, two-client correction behavior, animation sync, root motion, and edge surfaces.
 
-## Implementation Rules
+## Movement Rules
 
-- Prefer extending `UCharacterMovementComponent` for reusable movement behavior instead of scattering movement math across Character, Controller, and Ability classes.
-- For custom movement, define the prediction contract before code changes: saved move data, compressed flags, correction tolerance, montage/root-motion ownership, and minimum PIE/dedicated-server validation.
-- Keep root motion ownership explicit. If GAS drives a montage or root motion source, route prediction and cancellation details through `$ue-gas-networking`.
-- Avoid fixing server corrections by hiding visual smoothing only; investigate divergent client/server inputs, acceleration, velocity, movement mode, and timestamps.
-- Keep animation Blueprint state machines downstream of movement state unless the project intentionally uses animation to author movement.
+- Prefer CharacterMovementComponent settings for standard locomotion before adding custom movement code.
+- Use custom movement modes only when built-in walking/falling/swimming/flying/customizable settings cannot express the behavior.
+- Keep movement input, movement simulation, and animation state separated.
+- Treat root motion and network prediction carefully; define which source owns displacement.
+- For ability-driven movement, state whether GAS starts movement, locks input, applies root motion, or only tags movement state.
 
-## Verification
+## Networking Rules
 
-- Run two-client PIE for sprint, dash, jump, and custom movement transitions.
-- Test listen server and dedicated server when prediction or corrections are involved.
-- Use `p.NetShowCorrections 1`, network emulation, logs, and replicated state inspection to prove corrections are acceptable.
-- Validate packaged behavior for platform-specific input, frame rate, and movement smoothing differences.
+- Server remains authoritative for movement; clients predict local movement and reconcile corrections.
+- Log movement mode, role, velocity, acceleration, base, prediction/correction state, and root motion state when debugging.
+- Validate listen server and dedicated server behavior separately when movement affects combat or traversal.
+- Avoid multicast movement hacks when CharacterMovement replication or GAS root motion sources are the correct model.
+
+## Integration Rules
+
+- Use `$ue-animation` when locomotion state machine, blend space, montage, root motion authoring, or IK is the main issue.
+- Use `$ue-gas-networking` when movement is ability-driven, tag-gated, predicted by GAS, or tied to GameplayEffects.
+- Use `$ue-physics-destruction` when the issue is collision profile, physical material, ragdoll, or physics simulation.
 
 ## References
 
-- Use `references/movement-prediction-matrix.md` for authority, prediction, correction, and evidence planning.
-- Use `$ue-gas-networking` when movement is ability-driven or prediction-key dependent.
-- Use `$ue-animation` when the issue is montage, state machine, root motion extraction, or pose presentation.
-- Use `$ue-debug-validation` when the current evidence is unclear and a reproducible movement diagnosis loop is needed.
+- Read `references/character-movement-checklist.md` before tuning CharacterMovementComponent, adding custom movement, or debugging replicated locomotion.

@@ -182,6 +182,72 @@
     "expected_skill": "ue-world-streaming"
   },
   {
+    "name": "game_features_modular_gameplay",
+    "prompt": "Design a Game Feature Plugin with ModularGameplay and Lyra Experience actions",
+    "expected_skill": "ue-game-features"
+  },
+  {
+    "name": "zh_game_features_lyra",
+    "prompt": "帮我做一个模块化 Game Feature 插件，接入 Lyra Experience",
+    "expected_skill": "ue-game-features"
+  },
+  {
+    "name": "mass_entity_crowd",
+    "prompt": "Implement Mass Entity crowd agents with MassProcessor and MassFragment",
+    "expected_skill": "ue-mass-entity"
+  },
+  {
+    "name": "zh_mass_entity_crowd_ai",
+    "prompt": "帮我用 Mass Entity 做一群 NPC 群体 AI",
+    "expected_skill": "ue-mass-entity"
+  },
+  {
+    "name": "procedural_generation_pcg",
+    "prompt": "Create a PCG graph and runtime procedural generation system",
+    "expected_skill": "ue-procedural-generation"
+  },
+  {
+    "name": "zh_procedural_generation_pcg",
+    "prompt": "帮我做 PCG 程序化生成地形和植被",
+    "expected_skill": "ue-procedural-generation"
+  },
+  {
+    "name": "state_tree_combat",
+    "prompt": "Implement StateTree tasks and transitions for NPC combat",
+    "expected_skill": "ue-state-trees"
+  },
+  {
+    "name": "zh_state_tree_combat",
+    "prompt": "帮我用 StateTree 状态树做敌人战斗逻辑",
+    "expected_skill": "ue-state-trees"
+  },
+  {
+    "name": "sequencer_movie_render_queue",
+    "prompt": "Create a Sequencer cutscene and Movie Render Queue pipeline",
+    "expected_skill": "ue-sequencer-cinematics"
+  },
+  {
+    "name": "zh_sequencer_movie_render_queue",
+    "prompt": "帮我做 Sequencer 过场动画和 Movie Render Queue 输出",
+    "expected_skill": "ue-sequencer-cinematics"
+  },
+  {
+    "name": "character_movement_network_prediction",
+    "prompt": "Tune CharacterMovementComponent network prediction and custom movement mode",
+    "expected_skill": "ue-character-movement"
+  },
+  {
+    "name": "zh_character_movement_prediction",
+    "prompt": "帮我调 CharacterMovementComponent 角色移动和网络预测",
+    "expected_skill": "ue-character-movement"
+  },
+  {
+    "name": "game_feature_with_gas_prioritizes_feature_boundary",
+    "prompt": "Build a Lyra-style Game Feature plugin with GAS ability grants",
+    "expected_skill": "ue-game-features",
+    "forbidden_skill": "ue-gas-networking"
+  },
+  {
     "name": "zh_particle_vfx",
     "prompt": "帮我做一个粒子特效",
     "expected_skill": "ue-render-vfx"
@@ -352,7 +418,8 @@
   {
     "name": "mattpocock_tdd_feature_tests",
     "prompt": "用 TDD 给这个 UE 背包功能补测试和实现计划",
-    "expected_skill": "ue-testing-automation"
+    "expected_skill": "ue-testing-automation",
+    "forbidden_skill": "ue-build-release-automation"
   },
   {
     "name": "mattpocock_architecture_review",
@@ -365,34 +432,14 @@
     "expected_skill": "ue-feature-brief"
   },
   {
-    "name": "explicit_packaging_only_buildcookrun",
-    "prompt": "帮我生成 Windows Shipping 的 RunUAT BuildCookRun 打包命令，并说明归档目录",
-    "expected_skill": "ue-build-release-automation"
-  },
-  {
-    "name": "passive_packaging_readiness_not_automation",
-    "prompt": "检查这个 UE 项目是否已经准备好打包发布，不要实际打包",
-    "expected_skill": "ue-performance-packaging",
+    "name": "mattpocock_english_test_driven_automation",
+    "prompt": "Use test-driven development for this UE feature and add regression automation first",
+    "expected_skill": "ue-testing-automation",
     "forbidden_skill": "ue-build-release-automation"
   },
   {
-    "name": "lyra_game_feature_gas_cross_domain",
-    "prompt": "做一个 Lyra 风格 Game Feature，激活后注册 GAS Ability 和输入映射",
-    "expected_skill": "ue-game-features"
-  },
-  {
-    "name": "network_prediction_character_movement",
-    "prompt": "CharacterMovementComponent 自定义冲刺在 listen server 下预测回滚抖动",
-    "expected_skill": "ue-character-movement"
-  },
-  {
-    "name": "unreal_insights_performance_regression",
-    "prompt": "这个 UE5 项目打包后帧率回退，帮我按 Unreal Insights、stat unit、memreport 做证据链",
-    "expected_skill": "ue-performance-packaging"
-  },
-  {
-    "name": "explicit_buildgraph_release_pipeline",
-    "prompt": "帮我设计 UE BuildGraph 发布流水线，包含符号、归档产物和 Jenkins 参数",
-    "expected_skill": "ue-build-release-automation"
+    "name": "mattpocock_english_architecture_handoff",
+    "prompt": "Review this inherited UE project with improve-codebase-architecture because module boundaries and test seams are poor",
+    "expected_skill": "ue-architecture"
   }
 ]

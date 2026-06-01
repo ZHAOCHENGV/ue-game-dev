@@ -5,7 +5,8 @@
 1. Work from `main` for the primary plugin version.
 2. Keep root plugin files as the source of truth.
 3. After edits, run `python scripts\sync_marketplace_package.py` to refresh `plugins/ue-game-dev/`.
-4. Run validation before committing:
+4. When the change should be installed into the local Codex App plugin cache, run `python scripts\update_codex_app_plugin.py`. Use `--skip-reinstall` for file-only sync/validation.
+5. Run validation before committing:
 
 ```powershell
 $env:PYTHONUTF8='1'
@@ -15,27 +16,8 @@ python -m unittest discover tests
 git diff --check
 ```
 
-5. To refresh the installed Codex App plugin after local edits, run:
-
-```powershell
-python scripts\update_codex_app_plugin.py
-```
-
-This updates the Codex cachebuster, syncs `plugins/ue-game-dev/`, validates the plugin, and runs `codex plugin add ue-game-dev@zhaochengv-ue` against the current user's Codex home. If the marketplace is still pointing at an older checkout, use:
-
-```powershell
-python scripts\update_codex_app_plugin.py --replace-marketplace
-```
-
 6. When plugin content changes, apply the same structural change to `ue-game-dev-zh` and localize skill explanations, comments, and prose to Chinese while preserving code, commands, paths, UE APIs, skill names, and `$ue-*` references.
-7. Push both `main` and `ue-game-dev-zh` to GitHub after validation when the change affects public plugin behavior, marketplace metadata, routing, or Codex App installation.
-8. When changing workflow-state templates, update both the root skill files and the mirrored `plugins/ue-game-dev` package, then refresh the local Codex App installation and push both `main` and `ue-game-dev-zh`.
-
-## Engineering Flow References
-
-- This repository may reference mattpocock/skills for process ideas such as `diagnose`, `tdd`, `grill-with-docs`, and `improve-codebase-architecture`.
-- Do not vendor or copy those skills into UE Game Dev. Keep UE Game Dev focused on Unreal Engine workflow routing and mention those external skills only as optional handoffs.
-- Keep the project-specific agent rules in `docs/agents/repo-workflow.md` aligned with this file when release, branch, or issue-tracking workflow changes.
+7. Push the verified change to GitHub for both `main` and `ue-game-dev-zh` when the update is release-facing; keep feature branches available for PR review until both branches are synchronized.
 
 ## Adding A Skill
 
@@ -44,6 +26,7 @@ python scripts\update_codex_app_plugin.py --replace-marketplace
 - Route the skill from `skills/ue-game-dev-router/SKILL.md`.
 - Add route scenarios to `tests/route_scenarios.json`.
 - Update `.codex-plugin/plugin.json`, `README.md`, and `CHANGELOG.md` when the public skill surface changes.
+- If the new skill adapts third-party MIT material, update `NOTICE` and keep content rewritten for this plugin's workflow instead of importing a full upstream bundle.
 
 ## Updating Routing
 
@@ -65,6 +48,13 @@ python scripts\update_codex_app_plugin.py --replace-marketplace
 - Do not edit `plugins/ue-game-dev/` first.
 - Edit root files, then run `scripts\sync_marketplace_package.py`.
 - `validate_plugin.py` hashes `.codex-plugin/`, `assets/`, `rules/`, `skills/`, `templates/`, `CHANGELOG.md`, `LICENSE`, and `README.md` against the marketplace mirror.
+- `update_codex_app_plugin.py` wraps cachebuster updates, marketplace sync, validation, marketplace registration, and Codex App reinstall for local release checks.
+
+## Engineering Flow References
+
+- `mattpocock/skills` is a process reference for diagnosis, TDD, architecture review, and requirement questioning. Summarize the workflow handoff in UE terms; do not copy full external skill text into this plugin.
+- Keep UE domain ownership inside `UE Game Dev`: logs and runtime bugs route to `ue-log-crash-triage` or `ue-debug-validation`, test-first feature work routes to `ue-testing-automation`, fuzzy requirements route to `ue-feature-brief`, and old project/module tangles route to `ue-project-onboarding` or `ue-architecture`.
+- Document repository conventions, issue tracker expectations, ADR locations, and branch sync rules under `docs/agents/` when they affect future agents.
 
 ## Commit Messages
 

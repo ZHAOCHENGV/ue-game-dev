@@ -111,10 +111,7 @@ def update_cachebuster(manifest_path: Path, cachebuster: str) -> None:
 
     next_version = with_cachebuster(version, sanitize_cachebuster(cachebuster))
     manifest["version"] = next_version
-    manifest_path.write_text(
-        json.dumps(manifest, indent=2, ensure_ascii=False) + "\n",
-        encoding="utf-8",
-    )
+    manifest_path.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     print(f"Updated plugin version: {version} -> {next_version}", flush=True)
 
 
@@ -147,16 +144,10 @@ def find_desktop_codex_home() -> Path | None:
             continue
         try:
             config = tomllib.loads(config_path.read_text(encoding="utf-8"))
-        except OSError:
-            continue
-        except tomllib.TOMLDecodeError:
+        except (OSError, tomllib.TOMLDecodeError):
             continue
 
-        node_env = (
-            config.get("mcp_servers", {})
-            .get("node_repl", {})
-            .get("env", {})
-        )
+        node_env = config.get("mcp_servers", {}).get("node_repl", {}).get("env", {})
         if isinstance(node_env.get("CODEX_CLI_PATH"), str):
             return config_path.parent.resolve()
 
@@ -201,9 +192,7 @@ def resolve_codex_cli(explicit: str | None, codex_home: Path) -> Path:
         if candidate.is_file():
             return candidate.resolve()
 
-    raise FileNotFoundError(
-        "Could not find Codex CLI. Pass --codex-cli or set CODEX_CLI_PATH."
-    )
+    raise FileNotFoundError("Could not find Codex CLI. Pass --codex-cli or set CODEX_CLI_PATH.")
 
 
 def read_codex_cli_from_config(codex_home: Path) -> list[Path]:
@@ -212,21 +201,13 @@ def read_codex_cli_from_config(codex_home: Path) -> list[Path]:
         return []
 
     config = tomllib.loads(config_path.read_text(encoding="utf-8"))
-    node_env = (
-        config.get("mcp_servers", {})
-        .get("node_repl", {})
-        .get("env", {})
-    )
+    node_env = config.get("mcp_servers", {}).get("node_repl", {}).get("env", {})
     cli_path = node_env.get("CODEX_CLI_PATH")
     return [Path(cli_path)] if isinstance(cli_path, str) else []
 
 
 def ensure_marketplace(codex_cli: Path, env: dict[str, str], replace_marketplace: bool) -> None:
-    list_result = run(
-        [str(codex_cli), "plugin", "marketplace", "list"],
-        env=env,
-        capture=True,
-    )
+    list_result = run([str(codex_cli), "plugin", "marketplace", "list"], env=env, capture=True)
     configured_root = parse_marketplace_root(list_result.stdout)
     current_root = normalize_path(ROOT)
 
@@ -270,14 +251,7 @@ def run(
     capture: bool = False,
 ) -> subprocess.CompletedProcess[str]:
     print("> " + " ".join(command), flush=True)
-    return subprocess.run(
-        command,
-        cwd=ROOT,
-        env=env,
-        check=True,
-        text=True,
-        capture_output=capture,
-    )
+    return subprocess.run(command, cwd=ROOT, env=env, check=True, text=True, capture_output=capture)
 
 
 if __name__ == "__main__":

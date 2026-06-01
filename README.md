@@ -1,8 +1,8 @@
 # UE Game Dev - Codex Plugin
 
-面向 Unreal Engine 游戏与客户端开发的 Codex 技能插件。它不是 Unreal Editor 的 `.uplugin` 插件，不需要放进 UE 项目的 `Plugins/` 目录；它是给 Codex App 使用的 UE 开发工作流插件，用来辅助项目入口判断、阶段检测、阶段门检查、项目记忆、日志/崩溃分诊、需求简报、实施计划、多 Agent 编排、证据化完成验收、旧项目接手、二开前分析、UE C++、蓝图、异步系统、外部 HTTP/WebSocket/TCP 服务、Enhanced Input、GAS、网络同步、渲染、材质、Niagara、UI、调试、测试和显式打包自动化等开发任务。
+面向 Unreal Engine 游戏与客户端开发的 Codex 技能插件。它不是 Unreal Editor 的 `.uplugin` 插件，不需要放进 UE 项目的 `Plugins/` 目录；它是给 Codex App 使用的 UE 开发工作流插件，用来辅助项目入口判断、阶段检测、阶段门检查、项目记忆、日志/崩溃分诊、需求简报、实施计划、多 Agent 编排、证据化完成验收、旧项目接手、二开前分析、UE C++、蓝图、异步系统、外部 HTTP/WebSocket/TCP 服务、Game Feature、Mass Entity、PCG、StateTree、Sequencer、CharacterMovementComponent、Enhanced Input、GAS、网络同步、渲染、材质、Niagara、UI、调试、测试和显式打包自动化等开发任务。
 
-插件还内置一组只读 UE 辅助工具，用于快速扫描项目结构、提取日志首个可行动错误、整理 C++ 暴露给蓝图的 API，以及生成轻量多 Agent 分工计划。这些工具默认不修改 UE 项目、不编辑 `.uasset`、不执行打包。
+插件还内置一组只读 UE 辅助工具，用于快速扫描项目结构、提取日志首个可行动错误、整理 C++ 暴露给蓝图的 API，以及生成轻量多 Agent 分工计划。这些工具默认不修改 UE 项目、不编辑 `.uasset`、不执行打包。部分 UE C++ API 准确性参考借鉴自 MIT 许可的 `quodsoler/unreal-engine-skills`，并改写为本插件的 Codex 工作流结构。
 
 ## 安装方法
 
@@ -115,6 +115,9 @@ New-Item -ItemType Junction -Path "$env:USERPROFILE\plugins\ue-game-dev" -Target
 @ue-game-dev 帮我在 UE 里接一个 HTTP JSON 接口，把返回数据分发给 UI
 @ue-game-dev 帮我用 MetaSound 和 AudioComponent 做一个自适应音效系统
 @ue-game-dev 帮我配置 World Partition、Data Layers 和 HLOD
+@ue-game-dev 帮我做一个模块化 Game Feature 插件，接入 Lyra Experience
+@ue-game-dev 帮我用 PCG 程序化生成地形和植被
+@ue-game-dev 帮我调 CharacterMovementComponent 角色移动和网络预测
 @ue-game-dev 给这个项目生成 Win64 Development 的 RunUAT 打包命令
 @ue-game-dev 帮我排查 Enhanced Input 的 IA_Jump 为什么不触发
 ```
@@ -138,7 +141,7 @@ Use UE Game Dev to add tests for this UE feature.
 
 ## 功能概览
 
-本插件包含 **1 个路由技能 + 35 个领域技能**，覆盖 UE 开发全链路：
+本插件包含 **1 个路由技能 + 39 个领域技能**，覆盖 UE 开发全链路：
 
 | 技能 | 领域 |
 |------|------|
@@ -155,18 +158,22 @@ Use UE Game Dev to add tests for this UE feature.
 | `ue-cpp-gameplay` | C++ 游戏逻辑（Actor、Component、Subsystem） |
 | `ue-blueprint-workflow` | 蓝图工作流（事件图、函数图、Widget） |
 | `ue-plugin-module-dev` | 插件与模块开发（.uplugin、Build.cs、命名规范） |
-| `ue-game-features` | Game Feature、ModularGameplay、Lyra Experience 风格功能激活 |
 | `ue-editor-tooling-slate` | 编辑器工具与 Slate UI |
 | `ue-architecture` | 架构设计与模块边界 |
 | `ue-async-systems` | 异步系统、线程切换、Blueprint Async Action、取消与生命周期 |
 | `ue-external-services` | HTTP、JSON、WebSocket、TCP、外部服务客户端 |
 | `ue-audio` | MetaSound、Sound Cue、AudioComponent、Quartz、空间化和音频性能 |
 | `ue-world-streaming` | World Partition、Data Layers、HLOD、Level Streaming 和开放世界流送 |
+| `ue-game-features` | Game Feature Plugin、ModularGameplay、Lyra Experience、运行时功能激活 |
+| `ue-mass-entity` | Mass Entity、Mass AI、Mass Crowd、Processor/Fragment/Observer |
+| `ue-procedural-generation` | PCG、ProceduralMesh、ISM/HISM、样条和运行时程序化生成 |
+| `ue-state-trees` | StateTree 任务、Evaluator、Condition、Transition 和状态机设计 |
+| `ue-sequencer-cinematics` | Sequencer、Level Sequence、过场动画、Movie Render Queue |
+| `ue-character-movement` | CharacterMovementComponent、移动模式、Root Motion、移动复制和网络预测 |
 | `ue-physics-destruction` | Chaos 物理、碰撞、布娃娃、Geometry Collection 和破坏系统 |
 | `ue-data-management` | DataTable、Data Asset、Asset Manager、软引用和异步资产加载 |
 | `ue-input-enhanced` | Enhanced Input（Input Action、Mapping Context、重绑定、UI 焦点） |
 | `ue-gas-networking` | GAS 技能系统与网络同步 |
-| `ue-character-movement` | CharacterMovementComponent、网络预测、自定义移动模式和纠正 |
 | `ue-save-load-sync` | 存档/加载与状态同步 |
 | `ue-world-interaction` | 世界交互（拾取、生成器、碰撞） |
 | `ue-render-vfx` | 渲染、材质与 Niagara 特效 |
@@ -198,7 +205,9 @@ Use UE Game Dev to add tests for this UE feature.
 
 音频和开放世界流送现在也有独立技能：`ue-audio` 覆盖 MetaSound、Sound Cue、AudioComponent、Sound Class/Mix、Concurrency、Quartz、空间化、衰减和音频性能；`ue-world-streaming` 覆盖 World Partition、Data Layers、HLOD、Level Streaming、Runtime Grid、Streaming Source 和流送验证。
 
-工程流程层保持为外部技能衔接，而不是复制进本插件：UE bug、性能回归和日志后续定位仍先由 `ue-log-crash-triage` 或 `ue-debug-validation` 接住，再按需建议进入 `diagnose` 的复现、假设、插桩、修复和回归闭环；明确要求 TDD 或测试先行时，由 `ue-testing-automation` 和 `ue-implementation-plan` 承接 UE 侧测试/实施计划，再按需建议 `tdd`；需求模糊或术语不清时，`ue-feature-brief` 可采用 `grill-with-docs` 式追问；旧项目模块混乱、Runtime/Editor 依赖泄漏或 test seam 很差时，`ue-architecture` 可建议 `improve-codebase-architecture` 做进一步架构复盘。
+从 `0.14.0` 开始，插件新增一组从 UE C++ API 准确性参考中提炼出的领域技能：`ue-game-features`、`ue-mass-entity`、`ue-procedural-generation`、`ue-state-trees`、`ue-sequencer-cinematics` 和 `ue-character-movement`。这些技能保留 Codex 的项目接手、路由、验证和交接方式，同时补强 Game Feature、Mass、PCG、StateTree、Sequencer 和 CharacterMovementComponent 等 UE5 专项领域。
+
+从 `0.14.1` 开始，router 额外记录 mattpocock/skills 风格的工程流程交接：UE 日志和运行时 bug 仍先进入 `ue-log-crash-triage` 或 `ue-debug-validation`，再建议本地 `diagnose` 闭环；明确要求测试先行时进入 `ue-testing-automation`，再衔接 `tdd`；需求模糊时先走 `ue-feature-brief`，可用 `grill-with-docs` 式追问；老项目模块混乱时先走 `ue-project-onboarding` 或 `ue-architecture`，再衔接 `improve-codebase-architecture`。这些流程只是提示和交接，不把通用技能整包复制进 UE 插件。
 
 多 Agent 能力是轻量编排层，适合“用多 Agent 熟悉旧项目”“full 模式审查插件架构”“多专家排查打包失败风险”这类复杂请求。它会先给出 Coordinator、Project Explorer、Architecture Reviewer、C++ Implementer、Blueprint Integrator、Verifier 等角色分工、文件所有权边界、并行发现结果和后续应进入的具体技能；普通单点问题仍会直接路由到对应技能。
 
@@ -248,7 +257,7 @@ Use UE Game Dev to add tests for this UE feature.
 | `ue-project-scan` | `skills/ue-project-onboarding/scripts/ue_project_scan.py` | 只读扫描 `.uproject`、模块、插件、源码文件、Build 文件和常见资产文件名 |
 | `ue-config-audit` | `skills/ue-project-onboarding/scripts/ue_config_audit.py` | 只读审计 `Config/*.ini`、默认地图、Enhanced Input、Maps to Cook 和 editor-only 配置风险 |
 | `ue-log-triage` | `skills/ue-log-crash-triage/scripts/ue_log_triage.py` | 从 UE 日志中提取首个可行动错误、失败阶段、证据和下一步技能 |
-| `ue-editor-command-report` | `skills/ue-debug-validation/scripts/ue_editor_command_report.py` | 只读生成 DataValidation、CompileAllBlueprints、MapCheck 等 Editor commandlet 命令 |
+| `ue-editor-command-report` | `skills/ue-debug-validation/scripts/ue_editor_command_report.py` | 只生成 DataValidation、CompileAllBlueprints、MapCheck 等 Unreal Editor commandlet 命令，不直接启动编辑器 |
 | `ue-blueprint-api-report` | `skills/ue-cpp-gameplay/scripts/ue_blueprint_api_report.py` | 扫描 `BlueprintCallable`、`BlueprintPure`、蓝图事件和可绑定属性，生成蓝图接法提示 |
 | `ue-dependency-graph` | `skills/ue-architecture/scripts/ue_dependency_graph.py` | 解析 `.Build.cs` 模块依赖、循环依赖、Runtime→Editor 风险，并可输出 Mermaid 图 |
 | `ue-agent-plan` | `skills/ue-multi-agent-workflow/scripts/ue_agent_plan.py` | 根据用户请求生成 `solo` / `lean` / `full` 角色分工、所有权边界和后续技能 |
@@ -259,7 +268,7 @@ Use UE Game Dev to add tests for this UE feature.
 python skills\ue-project-onboarding\scripts\ue_project_scan.py --project F:\UEObject\MyGame --format json
 python skills\ue-project-onboarding\scripts\ue_config_audit.py --project F:\UEObject\MyGame --format json
 python skills\ue-log-crash-triage\scripts\ue_log_triage.py --log F:\UEObject\MyGame\Saved\Logs\MyGame.log --format json
-python skills\ue-debug-validation\scripts\ue_editor_command_report.py --project F:\UEObject\MyGame\MyGame.uproject --engine-cmd "C:\Program Files\Epic Games\UE_5.6\Engine\Binaries\Win64\UnrealEditor-Cmd.exe" --format json
+python skills\ue-debug-validation\scripts\ue_editor_command_report.py --project F:\UEObject\MyGame\MyGame.uproject --engine-cmd C:\UE\UE_5.6\Engine\Binaries\Win64\UnrealEditor-Cmd.exe --format json
 python skills\ue-cpp-gameplay\scripts\ue_blueprint_api_report.py --project F:\UEObject\MyGame --format json
 python skills\ue-architecture\scripts\ue_dependency_graph.py --project F:\UEObject\MyGame --format mermaid
 python skills\ue-multi-agent-workflow\scripts\ue_agent_plan.py --request "用多 Agent 熟悉这个旧 UE 项目，准备二开" --format json
@@ -342,6 +351,14 @@ git diff --check
 
 `sync_marketplace_package.py` 会把根目录插件同步到 `plugins/ue-game-dev/` 市场安装包。`validate_plugin.py` 会检查 `plugin.json`、技能 frontmatter、`agents/openai.yaml`、README 技能数量、共享模板/规则文件、路由场景、marketplace 清单、市场包内容哈希一致性，以及自动打包技能必须保持显式调用。
 
+如果要把当前工作区内容同步到本机 Codex App 插件缓存，可以运行：
+
+```powershell
+python scripts\update_codex_app_plugin.py
+```
+
+该脚本会刷新 `+codex.<timestamp>` 版本后缀、同步 marketplace 包、运行校验，并通过 Codex CLI 重新安装 `ue-game-dev@zhaochengv-ue`。只想更新文件、不重装 App 插件时可加 `--skip-reinstall`。
+
 ## 工作流工件
 
 - `templates/ue-task.md`：用于保存 UE 单个功能/修复任务的目标、范围、实现计划和验收条件。
@@ -355,3 +372,7 @@ git diff --check
 ## 许可证
 
 [MIT](LICENSE)
+
+## Attribution
+
+- This plugin includes rewritten and workflow-adapted Unreal Engine API accuracy guidance inspired by `quodsoler/unreal-engine-skills`, copyright (c) 2025 quodsoler, licensed under MIT.

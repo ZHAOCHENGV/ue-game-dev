@@ -7,38 +7,40 @@
 ## [0.15.0] - 2026-06-01
 
 ### 新增
-- 新增 `ue-game-features` 和 `ue-character-movement` 两个一等领域技能，覆盖 Game Feature/ModularGameplay/Lyra Experience、CharacterMovementComponent、网络预测和自定义移动模式。
-- 新增 `skills/ue-game-dev-router/references/routing-rules.json`，把高优先级路由、显式打包 guardrail 和新领域关键词纳入数据化回归。
-- 新增 UE 日志诊断 fixtures，覆盖 UHT 反射错误、Link 错误、Cook 缺失资产和 Crash/assert callstack。
-- 新增 `ue_editor_command_report.py`，只读生成 DataValidation、CompileAllBlueprints、MapCheck 等 Editor commandlet 命令。
-- 新增项目上下文模板、性能证据模板、BuildGraph/发布产物参考和 CharacterMovement 预测矩阵。
+- `ue-game-dev-router` 接入 `references/routing-rules.json`，用数据化优先级和回归场景硬化 Game Feature、CharacterMovement、BuildGraph、性能证据和打包边界路由。
+- `ue-log-crash-triage` 增强 UHT、链接、Cook、崩溃断言等真实 UE 日志阶段识别，并补充对应 fixture 测试。
+- `ue-project-onboarding` 扩展真实项目扫描，覆盖 Target 文件、Gameplay Tags、Asset Manager Primary Asset 配置和 Runtime→Editor 模块风险。
+- 新增 `ue_editor_command_report.py`，只生成 DataValidation、CompileAllBlueprints 和 MapCheck commandlet 命令，避免未经确认直接启动 Unreal Editor。
+- 新增性能证据模板、项目上下文模板、BuildGraph/产物参考和 CharacterMovement 网络预测矩阵。
 
 ### 变更
-- 强化 `ue_project_scan.py`，补充 Target 文件、Gameplay Tags、Asset Manager primary asset types 和 Runtime->Editor 风险扫描。
-- 强化 `ue_log_triage.py` 的 UBT/UHT/UAT/Cook/Crash 阶段分类和根因文案，避免把 UAT 总结行误当根因。
-- 强化 workflow state 的 local/team/import 模式和 stale detection 字段。
-- 强化 GAS/网络验证矩阵、性能证据链、BuildGraph/Jenkins/Horde 发布自动化说明。
-- `update_codex_app_plugin.py` 新增 `--dry-run`，可在不改本地 Codex App 缓存的情况下检查版本、目标路径和待复制文件数量。
+- `scripts/validate_plugin.py` 校验 routing rules、生产证据模板、新工具脚本、marketplace 镜像同步和常见中文 mojibake 标记。
+- `scripts/update_codex_app_plugin.py` 新增 `--dry-run`，用于发布前确认源版本、目标 Codex App 缓存路径和待复制文件数量。
+- `ue-performance-packaging`、`ue-build-release-automation`、`ue-workflow-state`、`ue-gas-networking` 和 `ue-character-movement` 补强真实 UE 生产验证证据链。
 
-### 验证
-- `python scripts\validate_plugin.py`
-- `python -m unittest discover tests`
-- `git diff --check`
-
-## [0.13.1] - 2026-06-01
+## [0.14.1] - 2026-06-01
 
 ### 新增
-- 在 `ue-game-dev-router` 中加入 mattpocock/skills 风格的外部流程衔接说明：`diagnose`、`tdd`、`grill-with-docs` 和 `improve-codebase-architecture` 只作为后续流程建议，不复制进插件。
-- 扩展 `Saved/CodexWorkflow/project-context.md` 模板，加入 target platforms、asset conventions、Gameplay Tags、Input/UI/GAS conventions、Runtime/Editor split、API verification notes，以及 `CONTEXT.md`、`CONTEXT-MAP.md`、`docs/adr/` 和 `.agents/ue-project-context.md` 的只读参考入口。
-- 新增 `docs/agents/repo-workflow.md`，记录 GitHub、领域文档、外部工程技能和发布同步规则。
+- `ue-game-dev-router` 新增 mattpocock/skills 风格的工程流程交接说明：UE 日志/运行时 bug 可衔接 `diagnose`，测试先行场景可衔接 `tdd`，需求澄清可衔接 `grill-with-docs`，老项目架构复盘可衔接 `improve-codebase-architecture`。
+- `Saved/CodexWorkflow/project-context.md` 模板扩展 `CONTEXT.md`、`CONTEXT-MAP.md`、`docs/adr/` 和 `.agents/ue-project-context.md` 的只读导入字段，并补充 Gameplay Tags、Input/UI/GAS conventions、Runtime/Editor split 和 API verification notes。
+- 新增 `docs/agents/repo-workflow.md`，记录 issue tracker、领域文档、ADR、分支同步和外部工程流程参考。
 
 ### 变更
-- 增加 route scenarios，覆盖 UE bug 诊断、日志后续 diagnose、TDD 测试先行、架构复盘和需求模糊追问。
-- `validate_plugin.py` 增加用户可见文本 mojibake 检测、外部工程流程 handoff 校验和 agent 工作流文档校验。
-- `CONTRIBUTING.md` 增加本地 Codex App 更新、GitHub 分支同步和 mattpocock/skills 参考边界说明。
+- `scripts/validate_plugin.py` 增加用户可见中文乱码守门、外部流程交接校验和 `+codex.<timestamp>` 版本校验回归，避免 README、metadata、route scenarios 再次出现 mojibake。
+- `.codex-plugin/plugin.json` 增加 `diagnose`、`tdd`、`grill-with-docs` 和 `improve-codebase-architecture` 关键词，保持插件名、包名、`@ue-game-dev` 和 `/ue-game-dev` 不变。
+- `CONTRIBUTING.md` 明确插件内容更新后必须同步根目录、`plugins/ue-game-dev` 市场包、本地 Codex App 安装目录、GitHub `main` 和 `ue-game-dev-zh`。
 
-### 修复
-- 统一根目录与市场包的用户可见中文验证基线，防止 README、默认 prompt、route scenarios、router 和 workflow-state 模板继续出现乱码。
+## [0.14.0] - 2026-05-28
+
+### 新增
+- 新增 `ue-game-features`、`ue-mass-entity`、`ue-procedural-generation`、`ue-state-trees`、`ue-sequencer-cinematics` 和 `ue-character-movement` 6 个领域技能，覆盖 Game Feature Plugin、ModularGameplay、Lyra Experience、Mass Entity、PCG、StateTree、Sequencer、Movie Render Queue 与 CharacterMovementComponent 网络预测等 UE5 专项领域。
+- 新增 API 准确性参考：`ue-cpp-gameplay`、`ue-plugin-module-dev`、`ue-gas-networking`、`ue-render-vfx`、`ue-client-ui` 和 `ue-ai-navigation` 均补充面向 UE C++/Build.cs/GAS/UI/渲染/Niagara/StateTree/Mass 的反幻觉检查资料。
+- 新增 `NOTICE`，记录对 MIT 许可 `quodsoler/unreal-engine-skills` 的选择性改写与署名。
+
+### 变更
+- `ue-game-dev-router`、`tests/route_scenarios.json` 和 `scripts/validate_plugin.py` 新增 6 个领域的中英文路由关键词与回归场景，并保持 Game Feature + GAS 组合优先进入 `ue-game-features`。
+- `Saved/CodexWorkflow/project-context.md` 模板扩展 engine source/API baseline、target platforms、Game Feature plugins、命名约定与 API verification notes 字段。
+- `README.md`、`.codex-plugin/plugin.json` 和 marketplace 同步规则更新到 `0.14.0+codex.20260528000100`，补充新技能、关键词和 attribution。
 
 ## [0.13.0] - 2026-05-27
 

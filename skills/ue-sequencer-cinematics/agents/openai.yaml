@@ -1,0 +1,4 @@
+interface:
+  display_name: "UE Sequencer Cinematics"
+  short_description: "Plan and review Sequencer cutscenes and Movie Render Queue output."
+  default_prompt: "Use $ue-sequencer-cinematics to design or debug Level Sequence playback, bindings, events, or Movie Render Queue renders."

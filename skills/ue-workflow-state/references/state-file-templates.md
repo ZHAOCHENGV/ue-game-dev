@@ -10,51 +10,32 @@ Create only the files that match the user's request. Keep every section short, f
 - Project:
 - Path:
 - UE version or EngineAssociation:
+- Engine source/API baseline:
+- Target platforms:
 - Primary modules:
 - Enabled plugins:
-- Target platforms:
-- Asset conventions:
+- Game Feature plugins:
 - Main maps:
 - Startup flow:
 - Input flow:
+- Input/UI/GAS conventions:
 - UI flow:
 - Gameplay Tags:
-- Input/UI/GAS conventions:
-- Runtime/Editor split:
 - Networking/GAS/AI/rendering notes:
+- Asset conventions:
+- C++ conventions:
+- Blueprint conventions:
+- Runtime/Editor split:
 - API verification notes:
-- External context references:
-  - `CONTEXT.md`:
-  - `CONTEXT-MAP.md`:
-  - `docs/adr/`:
-  - `.agents/ue-project-context.md`:
+- Imported context:
+  - `CONTEXT.md` present:
+  - `CONTEXT-MAP.md` present:
+  - `docs/adr/` present:
+  - `.agents/ue-project-context.md` present:
+  - Read-only import summary:
 - Last refreshed:
 - Evidence:
 ```
-
-When these external context files exist, read them as reference material only. Do not overwrite them from `Saved/CodexWorkflow/`; summarize the relevant terms, ADRs, and API verification notes here with source links.
-
-For a fuller production template, use `ue-project-onboarding/references/project-context-template.md`. It keeps the same `Saved/CodexWorkflow/project-context.md` target but expands engine version, modules, plugins, target platforms, asset conventions, Gameplay Tags, input/UI/GAS conventions, Runtime/Editor split, and API verification notes.
-
-## Project Context Template
-
-Use `ue-project-onboarding/references/project-context-template.md` when onboarding or workflow-state refresh needs a stable project context record.
-Existing `CONTEXT.md`, `CONTEXT-MAP.md`, `docs/adr/`, and `.agents/ue-project-context.md` are read-only inputs by default; import terminology, decisions, and constraints into `Saved/CodexWorkflow/project-context.md` with source links instead of overwriting the user's documents.
-
-## Freshness
-
-- Last scan time:
-- Engine version at scan:
-- Git branch at scan:
-- Git commit at scan:
-- Uproject hash:
-- Source module hash summary:
-- Config hash summary:
-- Stale when:
-  - EngineAssociation changes.
-  - `.uproject` modules/plugins change.
-  - `Source/**.Build.cs` changes.
-  - `Config/Default*.ini` changes.
 
 ## module-map.md
 

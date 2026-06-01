@@ -1,35 +1,49 @@
 # UE Game Dev Agent Workflow
 
-## Issue Tracker
+This repository ships the `UE Game Dev` Codex plugin and its marketplace mirror.
 
-Track public work on GitHub for `zhaocw/ue-game-dev`. Local planning notes may live under `docs/superpowers/plans/`, but public plugin changes should be synchronized to GitHub branches.
+## Tracker And Branches
 
-## Domain Docs
+- Repository: `https://github.com/zhaocw/ue-game-dev`
+- Primary branch: `main`
+- Chinese branch: `ue-game-dev-zh`
+- Feature branches should use the `codex/` prefix.
+- Release-facing plugin updates must be synced to GitHub on both `main` and `ue-game-dev-zh`.
 
-This repository has a single plugin context. Use `README.md`, `docs/architecture.md`, `CONTRIBUTING.md`, and skill-local `references/*.md` as source-of-truth documentation. UE project memory generated for a user's game belongs in that project's `Saved/CodexWorkflow/`, not in this plugin repository.
+## Source Of Truth
 
-## External Engineering Skills
+- Edit root plugin files first: `.codex-plugin/`, `skills/`, `rules/`, `templates/`, `README.md`, `CHANGELOG.md`, `NOTICE`, and tests.
+- Regenerate `plugins/ue-game-dev/` with `python scripts\sync_marketplace_package.py`.
+- Install or refresh the local Codex App copy with `python scripts\update_codex_app_plugin.py` when validating plugin-list display or `@ue-game-dev` behavior.
 
-`UE Game Dev` keeps Unreal routing and domain guidance in this plugin. When useful, it may hand off process discipline to local mattpocock/skills-style skills:
+## Domain Documents
 
-- `diagnose` for reproduce, minimize, hypotheses, instrumentation, fix, and regression-test loops after UE log or runtime triage.
-- `tdd` for test-first implementation after UE automation or implementation planning identifies the behavior to lock down.
-- `grill-with-docs` for fuzzy feature requests, overloaded domain terms, or plans that need pressure-testing against project language and ADRs.
-- `improve-codebase-architecture` for old UE projects, shallow modules, weak test seams, Runtime/Editor dependency leaks, or architecture reviews.
+- `README.md` describes the public skill surface.
+- `CHANGELOG.md` records release-facing behavior changes.
+- `CONTRIBUTING.md` records validation and sync rules.
+- `docs/architecture.md` records the repository architecture.
+- `docs/agents/` records agent-facing workflow notes.
+- UE project state created by the plugin belongs in `Saved/CodexWorkflow/`.
 
-Do not copy those skills into this plugin. Reference their names as optional handoffs only.
+## External Flow Skills
 
-## Release Sync
+`mattpocock/skills` is used as a process reference only. Keep the UE owner skill first, then suggest the external workflow when it helps:
 
-After any public plugin change, run the validation sequence from `CONTRIBUTING.md`, sync `plugins/ue-game-dev/`, refresh the local Codex App install with `scripts/update_codex_app_plugin.py` when needed, then synchronize both `main` and `ue-game-dev-zh` to GitHub.
+- `diagnose`: after UE log triage or runtime debug routing when the work needs reproduce -> minimize -> hypotheses -> instrumentation -> fix -> regression test.
+- `tdd`: after UE implementation planning or automation-test routing when the user asks for test-first delivery.
+- `grill-with-docs`: after `ue-feature-brief` when requirements, terms, or project language need pressure-testing against context and ADRs.
+- `improve-codebase-architecture`: after onboarding or `ue-architecture` when module boundaries, dependency direction, or test seams are the main problem.
 
-## Release Sync Checklist
+Do not copy full external skill text into this plugin. Summarize handoffs in UE-specific routing, tests, and documentation.
 
-1. Run validation on the implementation branch.
-2. Merge or fast-forward `main`.
-3. Run `python scripts\sync_marketplace_package.py`.
-4. Run `python scripts\update_codex_app_plugin.py`.
-5. Push `main`.
-6. Fast-forward or merge `ue-game-dev-zh`.
-7. Push `ue-game-dev-zh`.
-8. Confirm Codex App plugin list shows `UE Game Dev` and readable Chinese prompts.
+## Validation
+
+Run this sequence before commit:
+
+```powershell
+$env:PYTHONUTF8='1'
+python scripts\sync_marketplace_package.py
+python scripts\validate_plugin.py
+python -m unittest discover tests
+git diff --check
+```
