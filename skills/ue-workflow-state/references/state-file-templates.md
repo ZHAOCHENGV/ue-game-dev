@@ -16,13 +16,19 @@
 - Main maps:
 - Startup flow:
 - Input flow:
+- Input/UI/GAS conventions:
 - UI flow:
+- Gameplay Tags:
 - Networking/GAS/AI/rendering notes:
 - Asset conventions:
 - C++ conventions:
 - Blueprint conventions:
+- Runtime/Editor split:
 - API verification notes:
 - Imported context:
+  - `CONTEXT.md` present:
+  - `CONTEXT-MAP.md` present:
+  - `docs/adr/` present:
   - `.agents/ue-project-context.md` present:
   - Read-only import summary:
 - Last refreshed:

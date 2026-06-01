@@ -56,6 +56,15 @@ description: 当 Unreal Engine 游戏或客户端开发请求需要路由到最�
 
 若请求涉及其他尚无专属技能的领域，基于通用 UE 最佳实践处理，并明确告知当前插件暂无该领域专属技能。
 
+## 外部工程流程交接
+
+UE Game Dev 仍然是 Unreal 领域路由器。不要把 mattpocock/skills 的通用工程技能复制或替换进本插件；只在它们能增强 UE 工作流时作为后续流程交接提示。
+
+- UE bug、运行时回归、性能回归，或 `$ue-log-crash-triage` 之后还需要继续定位的日志问题，UE 归属仍是 `$ue-log-crash-triage` 或 `$ue-debug-validation`，然后建议外部 `diagnose` 的“复现 -> 最小化 -> 假设 -> 插桩 -> 修复 -> 回归测试”闭环。
+- 新 UE 功能明确要求 TDD、测试先行、回归测试或 test-driven implementation 时，UE 归属先进入 `$ue-testing-automation` 或 `$ue-implementation-plan`，然后建议外部 `tdd` 维持 red/green/refactor 纪律。
+- 需求模糊、术语负载过重、项目语言不清或计划需要实现前追问时，UE 归属先进入 `$ue-feature-brief`，然后建议 `grill-with-docs` 式地对照项目上下文和 ADR 追问。
+- 旧 UE 项目、模块纠缠、Runtime/Editor 依赖问题、模块边界过浅或 test seam 很差时，UE 归属先进入 `$ue-project-onboarding` 或 `$ue-architecture`，然后建议 `improve-codebase-architecture` 做更深的架构复盘。
+
 ## 中文路由提示
 
 - “粒子特效 / 后处理 / 材质球 / 着色器”路由到 `$ue-render-vfx`。
@@ -70,6 +79,10 @@ description: 当 Unreal Engine 游戏或客户端开发请求需要路由到最�
 - “存档 / 读档 / 数据持久化”路由到 `$ue-save-load-sync`。
 - “布娃娃 / 物理约束 / 破坏系统 / 碰撞通道”路由到 `$ue-physics-destruction`。
 - “DataTable / 数据表 / 数据资产 / 软引用 / 异步加载 / 资产管理”路由到 `$ue-data-management`。
+- “诊断 / 稳定复现 / 插桩 / 运行时 bug”路由到 `$ue-debug-validation`，需要时再衔接 `diagnose`。
+- “TDD / 测试先行 / 回归测试 / 自动化测试”路由到 `$ue-testing-automation`，用户明确要求测试先行时再衔接 `tdd`。
+- “需求模糊 / 术语不清 / 追问 / 澄清需求”路由到 `$ue-feature-brief`，项目语言很关键时再衔接 `grill-with-docs`。
+- “架构复盘 / 模块太乱 / 可测试性 / test seam”路由到 `$ue-architecture`，模块深度问题明显时再衔接 `improve-codebase-architecture`。
 
 ## 模糊请求处理
 

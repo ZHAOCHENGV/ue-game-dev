@@ -17,6 +17,9 @@ PACKAGING_OPENAI = SKILLS / "ue-build-release-automation" / "agents" / "openai.y
 PACKAGING_SKILL = SKILLS / "ue-build-release-automation" / "SKILL.md"
 ROUTER_SKILL = SKILLS / "ue-game-dev-router" / "SKILL.md"
 MULTI_AGENT_SKILL = SKILLS / "ue-multi-agent-workflow" / "SKILL.md"
+CHANGELOG = ROOT / "CHANGELOG.md"
+CONTRIBUTING = ROOT / "CONTRIBUTING.md"
+AGENT_WORKFLOW_DOC = ROOT / "docs" / "agents" / "repo-workflow.md"
 MULTI_AGENT_REFERENCES = [
     SKILLS / "ue-multi-agent-workflow" / "references" / "ue-agent-roles.md",
     SKILLS / "ue-multi-agent-workflow" / "references" / "ue-agent-output-template.md",
@@ -31,6 +34,39 @@ UE_TOOL_SCRIPTS = [
     SKILLS / "ue-multi-agent-workflow" / "scripts" / "ue_agent_plan.py",
 ]
 WARNINGS: list[str] = []
+
+MOJIBAKE_MARKERS = [
+    "\ufffd",
+    "鍏堢啛",
+    "椤圭洰",
+    "闇€",
+    "鎵",
+    "璇",
+    "鍙",
+    "鍒",
+    "涔",
+    "乣",
+    "銆",
+    "鈫",
+]
+
+USER_VISIBLE_TEXT_FILES = [
+    README,
+    PLUGIN_JSON,
+    CHANGELOG,
+    CONTRIBUTING,
+    ROUTE_SCENARIOS,
+    ROUTER_SKILL,
+    SKILLS / "ue-workflow-state" / "SKILL.md",
+    SKILLS / "ue-workflow-state" / "references" / "state-file-templates.md",
+]
+
+EXTERNAL_FLOW_SKILLS = [
+    "diagnose",
+    "tdd",
+    "grill-with-docs",
+    "improve-codebase-architecture",
+]
 
 SYNC_DIRS = [".codex-plugin", "assets", "rules", "skills", "templates"]
 SYNC_FILES = ["CHANGELOG.md", "LICENSE", "NOTICE", "README.md"]
@@ -71,6 +107,29 @@ def load_json(path: Path) -> dict:
         return json.loads(read_text(path))
     except json.JSONDecodeError as exc:
         fail(f"{path.relative_to(ROOT)} invalid JSON: {exc}")
+
+
+def validate_user_visible_text() -> None:
+    for path in USER_VISIBLE_TEXT_FILES:
+        if not path.exists():
+            continue
+        text = read_text(path)
+        for marker in MOJIBAKE_MARKERS:
+            if marker in text:
+                fail(f"{path.relative_to(ROOT)} contains likely mojibake marker: {marker}")
+
+    plugin = load_json(PLUGIN_JSON)
+    prompts = plugin.get("interface", {}).get("defaultPrompt", [])
+    if not all(isinstance(prompt, str) for prompt in prompts):
+        fail("plugin default prompts must be strings")
+    if not any("旧 UE 项目" in prompt for prompt in prompts):
+        fail("plugin default prompts should include readable Chinese onboarding example")
+
+    scenarios = json.loads(read_text(ROUTE_SCENARIOS))
+    if not any("诊断" in scenario.get("prompt", "") for scenario in scenarios):
+        fail("route scenarios should include readable Chinese diagnosis wording")
+    if not AGENT_WORKFLOW_DOC.exists():
+        fail(f"missing agent workflow documentation: {AGENT_WORKFLOW_DOC.relative_to(ROOT)}")
 
 
 def skill_names(skill_dirs: list[Path]) -> set[str]:
@@ -173,6 +232,10 @@ def validate_plugin_json() -> None:
         "movie-render-queue",
         "character-movement",
         "network-prediction",
+        "diagnose",
+        "tdd",
+        "grill-with-docs",
+        "improve-codebase-architecture",
     ]:
         if keyword not in keywords:
             fail(f"plugin keywords should include {keyword}")
@@ -222,6 +285,39 @@ def validate_multi_agent_support() -> None:
         for token in ["Coordinator", "BLOCKED", "simple", "packaging"]:
             if token not in text:
                 fail(f"{path.relative_to(ROOT)} should mention {token}")
+
+
+def validate_external_flow_handoffs() -> None:
+    router_skill = read_text(ROUTER_SKILL)
+    workflow_state = read_text(SKILLS / "ue-workflow-state" / "SKILL.md")
+    workflow_template = read_text(SKILLS / "ue-workflow-state" / "references" / "state-file-templates.md")
+    contributing = read_text(CONTRIBUTING)
+    agent_doc = read_text(AGENT_WORKFLOW_DOC)
+
+    for skill_name in EXTERNAL_FLOW_SKILLS:
+        if skill_name not in router_skill:
+            fail(f"router must document external flow handoff: {skill_name}")
+        if skill_name not in agent_doc:
+            fail(f"agent workflow doc must mention external flow skill: {skill_name}")
+
+    for token in ["CONTEXT.md", "CONTEXT-MAP.md", "docs/adr", ".agents/ue-project-context.md"]:
+        if token not in workflow_state:
+            fail(f"workflow state skill should mention read-only import source: {token}")
+        if token not in workflow_template:
+            fail(f"workflow state template should mention {token}")
+
+    for token in [
+        "Gameplay Tags",
+        "Input/UI/GAS conventions",
+        "Runtime/Editor split",
+        "API verification notes",
+    ]:
+        if token not in workflow_template:
+            fail(f"workflow state template should mention {token}")
+
+    for token in ["mattpocock/skills", "ue-game-dev-zh", "update_codex_app_plugin.py", "GitHub"]:
+        if token not in contributing:
+            fail(f"CONTRIBUTING should mention {token}")
 
 
 SKILL_PATTERNS: dict[str, list[tuple[str, float]]] = {
@@ -659,6 +755,8 @@ def route_prompt(prompt: str) -> str:
         return "ue-workflow-state"
     if any(token in prompt for token in ["Saved/Logs", "callstack", "崩溃", "日志", "UBT", "UHT", "UAT", "Cook failed", "Blueprint compile", "蓝图编译错误"]):
         return "ue-log-crash-triage"
+    if any(token in prompt for token in ["grill-with-docs", "需求模糊", "需求有点模糊", "术语不清", "追问", "澄清需求"]):
+        return "ue-feature-brief"
     if any(token in prompt for token in ["是否可以进入", "gate", "Gate", "检查一下这个功能是否可以"]):
         return "ue-gate-check"
     if any(token in prompt for token in ["是否已经准备好打包", "准备好打包", "打包发布", "打包前验证"]):
@@ -669,6 +767,12 @@ def route_prompt(prompt: str) -> str:
         return "ue-project-onboarding"
     if any(token in prompt for token in ["需求简报", "整理需求", "先帮我想清楚"]):
         return "ue-feature-brief"
+    if any(token in prompt for token in ["TDD", "tdd", "test-driven", "测试先行", "回归测试", "自动化测试"]):
+        return "ue-testing-automation"
+    if any(token in prompt for token in ["improve-codebase-architecture", "deep module", "架构复盘", "模块太乱", "test seam", "可测试性"]):
+        return "ue-architecture"
+    if any(token in prompt for token in ["diagnose", "诊断", "稳定复现", "复现", "插桩"]):
+        return "ue-debug-validation"
     if any(token in prompt for token in ["实施计划", "实现计划", "C++/蓝图/资产/测试"]):
         return "ue-implementation-plan"
     if any(token in prompt for token in ["完成验收", "交接清单", "做完了"]):
@@ -921,11 +1025,13 @@ def validate_marketplace_package() -> None:
 
 def main() -> None:
     skill_dirs = validate_skill_dirs()
+    validate_user_visible_text()
     validate_readme_skill_count(skill_dirs)
     validate_plugin_json()
     validate_changelog_version()
     validate_packaging_boundary()
     validate_multi_agent_support()
+    validate_external_flow_handoffs()
     validate_skill_references(skill_dirs)
     validate_required_support_files()
     validate_tool_mentions()

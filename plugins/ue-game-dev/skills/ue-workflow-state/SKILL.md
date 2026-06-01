@@ -29,9 +29,10 @@ description: 当用户要求创建、刷新、读取或使用 Unreal Engine 项�
 
 1. 读取现有 `Saved/CodexWorkflow/`，避免覆盖用户已有记录。
 2. 从 `.uproject`、`Source/`、`Plugins/`、`Config/` 和文档中提取稳定事实。
-3. 将推断和事实分开标注，记录更新时间和证据来源。
-4. 更新当前任务时保留历史决策，不删除不相关风险。
-5. 输出本次写入/刷新内容和后续使用建议。
+3. 如果存在 `CONTEXT.md`、`CONTEXT-MAP.md`、`docs/adr/` 或 `.agents/ue-project-context.md`，只读导入为参考；把术语、ADR 决策、API verification notes 和模块语言摘要写入 `Saved/CodexWorkflow/`，不要覆盖这些源文档。
+4. 将推断和事实分开标注，记录更新时间和证据来源；证据可以是文件路径、类名、资源文件名、配置段、日志摘录、ADR 或上下文文档。
+5. 更新当前任务时保留历史决策，不删除不相关风险。
+6. 输出本次写入/刷新内容和后续使用建议。
 
 ## 规则
 

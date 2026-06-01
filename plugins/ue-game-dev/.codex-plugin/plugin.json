@@ -1,7 +1,7 @@
 {
   "name": "ue-game-dev",
-  "version": "0.14.0+codex.20260528110231",
-  "description": "面向 Unreal Engine 客户端与玩法开发的 Codex 插件，覆盖项目接手、阶段识别、门禁检查、Saved/CodexWorkflow 项目记忆、日志/崩溃分析、需求简报、实施计划、轻量 multi-agent 编排、UE 项目扫描、Blueprint API 报告、完成证据交付、旧项目二开、蓝图、C++、异步系统、HTTP/WebSocket/TCP 外部服务、音频与 MetaSound、World Partition、Data Layers、HLOD、关卡流送、Game Feature Plugins、ModularGameplay、Lyra Experience、Mass Entity、Mass AI、PCG、程序化生成、StateTree、Sequencer、Movie Render Queue、CharacterMovementComponent、Chaos 物理与破坏、数据管理、Asset Manager、Enhanced Input、插件/模块、编辑器工具、Slate、命名规范、GAS、网络同步、AI、动画、渲染、材质、Niagara、UMG、自动化测试、调试、性能和显式 RunUAT/BuildCookRun 打包自动化。\n\nAliases: @ue-game-dev, /ue-game-dev, UE Game Dev, Unreal Engine assistant.\n\n当用户需要启动或界定 Unreal 任务、判断项目阶段、执行 readiness gate、持久化项目记忆、分析日志或崩溃、协调 multi-agent UE 工作、接手旧项目并准备二开、运行只读 UE 项目/日志/API/agent 规划工具、制定 C++/蓝图/资源/测试计划、用证据验收完成状态，或处理 Unreal Engine C++、Blueprint、async、external services、audio、MetaSound、World Partition、Data Layers、HLOD、level streaming、Game Feature Plugins、ModularGameplay、Lyra Experience、Mass Entity、Mass AI、PCG、procedural generation、StateTree、Sequencer、Movie Render Queue、CharacterMovementComponent、Chaos physics、destruction、data management、DataTable、Asset Manager、Enhanced Input、plugin/module、editor tooling、GAS、networking、rendering、materials、Niagara、UI、AI、animation、testing、debugging、performance、RunUAT/BuildCookRun packaging automation 时使用 UE Game Dev。",
+  "version": "0.14.1+codex.20260601000000",
+  "description": "面向 Unreal Engine 客户端与玩法开发的 Codex 插件，覆盖项目接手、阶段识别、门禁检查、Saved/CodexWorkflow 项目记忆、日志/崩溃分析、需求简报、实施计划、轻量 multi-agent 编排、UE 项目扫描、Blueprint API 报告、完成证据交付、旧项目二开、蓝图、C++、异步系统、HTTP/WebSocket/TCP 外部服务、音频与 MetaSound、World Partition、Data Layers、HLOD、关卡流送、Game Feature Plugins、ModularGameplay、Lyra Experience、Mass Entity、Mass AI、PCG、程序化生成、StateTree、Sequencer、Movie Render Queue、CharacterMovementComponent、Chaos 物理与破坏、数据管理、Asset Manager、Enhanced Input、插件/模块、编辑器工具、Slate、命名规范、GAS、网络同步、AI、动画、渲染、材质、Niagara、UMG、自动化测试、调试、性能、显式 RunUAT/BuildCookRun 打包自动化，以及在需要时衔接本地 diagnose、tdd、grill-with-docs 和 improve-codebase-architecture 工程流程。\n\nAliases: @ue-game-dev, /ue-game-dev, UE Game Dev, Unreal Engine assistant.\n\n当用户需要启动或界定 Unreal 任务、判断项目阶段、执行 readiness gate、持久化项目记忆、分析日志或崩溃、协调 multi-agent UE 工作、接手旧项目并准备二开、运行只读 UE 项目/日志/API/agent 规划工具、制定 C++/蓝图/资源/测试计划、用证据验收完成状态，或处理 Unreal Engine C++、Blueprint、async、external services、audio、MetaSound、World Partition、Data Layers、HLOD、level streaming、Game Feature Plugins、ModularGameplay、Lyra Experience、Mass Entity、Mass AI、PCG、procedural generation、StateTree、Sequencer、Movie Render Queue、CharacterMovementComponent、Chaos physics、destruction、data management、DataTable、Asset Manager、Enhanced Input、plugin/module、editor tooling、GAS、networking、rendering、materials、Niagara、UI、AI、animation、testing、debugging、performance、RunUAT/BuildCookRun packaging automation，或需要 UE 范围内交接到 diagnose/TDD/架构复盘/需求追问工作流时使用 UE Game Dev。",
   "author": {
     "name": "zhaocw",
     "email": "zcw1419@qq.com",
@@ -129,13 +129,20 @@
     "mrq",
     "character-movement",
     "character-movement-component",
-    "network-prediction"
+    "charactermovementcomponent",
+    "network-prediction",
+    "custom-movement-mode",
+    "api-accuracy",
+    "diagnose",
+    "tdd",
+    "grill-with-docs",
+    "improve-codebase-architecture"
   ],
   "skills": "./skills/",
   "interface": {
     "displayName": "UE Game Dev 中文版",
-    "shortDescription": "UE 项目接手、项目记忆、日志分析、UE5 新领域、API 准确性与打包工作流",
-    "longDescription": "UE Game Dev 中文版用于 Unreal Engine 客户端与玩法开发，覆盖项目接手、阶段识别、门禁检查、Saved/CodexWorkflow 项目记忆、日志和崩溃分析、需求简报、实施计划、轻量 multi-agent 编排、只读 UE 项目扫描、日志分诊、Blueprint API 报告、agent 规划、证据化完成交付、旧项目二开、蓝图图表、C++、异步系统、HTTP/WebSocket/TCP 外部服务、音频、MetaSound、World Partition、Data Layers、HLOD、关卡流送、Game Feature Plugins、ModularGameplay、Lyra Experience、Mass Entity、Mass AI、PCG、程序化生成、StateTree、Sequencer、Movie Render Queue、CharacterMovementComponent、Chaos 物理与破坏、数据管理、DataTable、Asset Manager、Enhanced Input、插件、模块、编辑器工具、Slate、命名规范、Gameplay Ability System、多人网络同步、存档/读档、AI/navigation、animation、rendering、materials、Niagara VFX、UMG、自动化测试、调试、性能、打包验证、显式 RunUAT/BuildCookRun 发布自动化，以及基于 MIT 许可 Unreal Engine skill 资料改写的 API 准确性参考。",
+    "shortDescription": "UE 项目接手、项目记忆、日志分析、UE5 新领域、API 准确性、流程交接与打包工作流",
+    "longDescription": "UE Game Dev 中文版用于 Unreal Engine 客户端与玩法开发，覆盖项目接手、阶段识别、门禁检查、Saved/CodexWorkflow 项目记忆、日志和崩溃分析、需求简报、实施计划、轻量 multi-agent 编排、只读 UE 项目扫描、日志分诊、Blueprint API 报告、agent 规划、证据化完成交付、旧项目二开、蓝图图表、C++、异步系统、HTTP/WebSocket/TCP 外部服务、音频、MetaSound、World Partition、Data Layers、HLOD、关卡流送、Game Feature Plugins、ModularGameplay、Lyra Experience、Mass Entity、Mass AI、PCG、程序化生成、StateTree、Sequencer、Movie Render Queue、CharacterMovementComponent、Chaos 物理与破坏、数据管理、DataTable、Asset Manager、Enhanced Input、插件、模块、编辑器工具、Slate、命名规范、Gameplay Ability System、多人网络同步、存档/读档、AI/navigation、animation、rendering、materials、Niagara VFX、UMG、自动化测试、调试、性能、打包验证、显式 RunUAT/BuildCookRun 发布自动化、基于 MIT 许可 Unreal Engine skill 资料改写的 API 准确性参考，以及面向 UE 任务的 diagnose、tdd、grill-with-docs、improve-codebase-architecture 本地工程流程交接。",
     "developerName": "zhaocw",
     "category": "Coding",
     "capabilities": [

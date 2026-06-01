@@ -16,6 +16,7 @@ git diff --check
 ```
 
 5. 任何插件内容改动都要同步到 `ue-game-dev-zh`。中文分支保留代码、命令、路径、UE API、技能名和 `$ue-*` 引用英文不变，技能说明、注释、解释和文档正文使用中文。
+6. 面向发布的更新完成验证后，要同步推送到 GitHub 的 `main` 和 `ue-game-dev-zh`；PR/功能分支保留到两个分支都完成同步为止。
 
 ## 新增技能
 
@@ -45,6 +46,15 @@ git diff --check
 - 不要先编辑 `plugins/ue-game-dev/`。
 - 修改根目录后运行 `scripts\sync_marketplace_package.py`。
 - `validate_plugin.py` 会对 `.codex-plugin/`、`assets/`、`rules/`、`skills/`、`templates/`、`CHANGELOG.md`、`LICENSE` 和 `README.md` 做内容哈希比对。
+- `scripts\update_codex_app_plugin.py` 负责本地 Codex App 的 cachebuster、marketplace 注册和插件重装验证。
+
+## 提交信息
+
+## 工程流程参考
+
+- `mattpocock/skills` 仅作为诊断、TDD、架构复盘和需求追问的流程参考。只在 UE 语境里总结交接方式，不复制完整外部 skill 文本。
+- 保持 UE 领域归属在 `UE Game Dev` 内：日志和运行时 bug 先路由到 `ue-log-crash-triage` 或 `ue-debug-validation`，测试先行功能先路由到 `ue-testing-automation`，需求模糊先路由到 `ue-feature-brief`，旧项目或模块纠缠先路由到 `ue-project-onboarding` 或 `ue-architecture`。
+- 影响未来 agent 的仓库约定、issue tracker、ADR 位置和分支同步规则，记录到 `docs/agents/`。
 
 ## 提交信息
 
