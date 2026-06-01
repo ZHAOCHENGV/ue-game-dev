@@ -17,6 +17,7 @@ git diff --check
 ```
 
 6. When plugin content changes, apply the same structural change to `ue-game-dev-zh` and localize skill explanations, comments, and prose to Chinese while preserving code, commands, paths, UE APIs, skill names, and `$ue-*` references.
+7. Push the verified change to GitHub for both `main` and `ue-game-dev-zh` when the update is release-facing; keep feature branches available for PR review until both branches are synchronized.
 
 ## Adding A Skill
 
@@ -48,6 +49,12 @@ git diff --check
 - Edit root files, then run `scripts\sync_marketplace_package.py`.
 - `validate_plugin.py` hashes `.codex-plugin/`, `assets/`, `rules/`, `skills/`, `templates/`, `CHANGELOG.md`, `LICENSE`, and `README.md` against the marketplace mirror.
 - `update_codex_app_plugin.py` wraps cachebuster updates, marketplace sync, validation, marketplace registration, and Codex App reinstall for local release checks.
+
+## Engineering Flow References
+
+- `mattpocock/skills` is a process reference for diagnosis, TDD, architecture review, and requirement questioning. Summarize the workflow handoff in UE terms; do not copy full external skill text into this plugin.
+- Keep UE domain ownership inside `UE Game Dev`: logs and runtime bugs route to `ue-log-crash-triage` or `ue-debug-validation`, test-first feature work routes to `ue-testing-automation`, fuzzy requirements route to `ue-feature-brief`, and old project/module tangles route to `ue-project-onboarding` or `ue-architecture`.
+- Document repository conventions, issue tracker expectations, ADR locations, and branch sync rules under `docs/agents/` when they affect future agents.
 
 ## Commit Messages
 

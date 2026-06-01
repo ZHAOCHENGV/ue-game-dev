@@ -207,6 +207,8 @@ Use UE Game Dev to add tests for this UE feature.
 
 从 `0.14.0` 开始，插件新增一组从 UE C++ API 准确性参考中提炼出的领域技能：`ue-game-features`、`ue-mass-entity`、`ue-procedural-generation`、`ue-state-trees`、`ue-sequencer-cinematics` 和 `ue-character-movement`。这些技能保留 Codex 的项目接手、路由、验证和交接方式，同时补强 Game Feature、Mass、PCG、StateTree、Sequencer 和 CharacterMovementComponent 等 UE5 专项领域。
 
+从 `0.14.1` 开始，router 额外记录 mattpocock/skills 风格的工程流程交接：UE 日志和运行时 bug 仍先进入 `ue-log-crash-triage` 或 `ue-debug-validation`，再建议本地 `diagnose` 闭环；明确要求测试先行时进入 `ue-testing-automation`，再衔接 `tdd`；需求模糊时先走 `ue-feature-brief`，可用 `grill-with-docs` 式追问；老项目模块混乱时先走 `ue-project-onboarding` 或 `ue-architecture`，再衔接 `improve-codebase-architecture`。这些流程只是提示和交接，不把通用技能整包复制进 UE 插件。
+
 多 Agent 能力是轻量编排层，适合“用多 Agent 熟悉旧项目”“full 模式审查插件架构”“多专家排查打包失败风险”这类复杂请求。它会先给出 Coordinator、Project Explorer、Architecture Reviewer、C++ Implementer、Blueprint Integrator、Verifier 等角色分工、文件所有权边界、并行发现结果和后续应进入的具体技能；普通单点问题仍会直接路由到对应技能。
 
 > 自动打包能力只在用户明确提出“打包 / 自动打包 / 一键打包 / RunUAT / BuildCookRun / CI 打包 / 发版流水线”等请求时使用。普通性能检查、发布前检查或打包失败诊断仍由 `ue-performance-packaging` 处理，不会被动触发打包。

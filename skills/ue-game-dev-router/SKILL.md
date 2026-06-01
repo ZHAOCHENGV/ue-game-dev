@@ -58,6 +58,15 @@ If the user explicitly asks for multi-agent coordination, route to `$ue-multi-ag
 
 If the request involves another domain without a dedicated sibling skill, handle it directly within this router using general Unreal best practices and note the coverage gap.
 
+## External Engineering Flow Handoffs
+
+Keep UE Game Dev as the Unreal domain router. Do not copy or replace general engineering skills from mattpocock/skills; mention them as follow-up process handoffs only when they sharpen the UE workflow.
+
+- For UE bugs, runtime regressions, performance regressions, or logs that need follow-up after `$ue-log-crash-triage`, keep the UE owner as `$ue-log-crash-triage` or `$ue-debug-validation`, then recommend the external `diagnose` loop for reproduce -> minimize -> hypotheses -> instrumentation -> fix -> regression test.
+- For new UE features that explicitly ask for TDD, test-first work, regression tests, or test-driven implementation, route the UE owner to `$ue-testing-automation` or `$ue-implementation-plan` as appropriate, then recommend external `tdd` for the red/green/refactor discipline.
+- For fuzzy requirements, overloaded terms, unclear domain language, or plans that need pressure-testing before implementation, route the UE owner to `$ue-feature-brief`, then recommend external `grill-with-docs` style questioning against project context and ADRs.
+- For inherited UE projects, module tangles, Runtime/Editor dependency issues, shallow module boundaries, or poor test seams, route the UE owner to `$ue-project-onboarding` or `$ue-architecture`, then recommend external `improve-codebase-architecture` for deeper architecture review.
+
 ## Chinese Routing Hints
 
 - 中文 "Game Feature / 模块化玩法 / ModularGameplay / Lyra Experience / 功能插件 / 特性插件" should route to `$ue-game-features`.
@@ -72,6 +81,10 @@ If the request involves another domain without a dedicated sibling skill, handle
 - 中文 "存档 / 读档 / 数据持久化" should route to `$ue-save-load-sync`.
 - 中文 "布娃娃 / 物理约束 / 破坏系统 / 碰撞通道" should route to `$ue-physics-destruction`.
 - 中文 "DataTable / 数据表 / 数据资产 / 软引用 / 异步加载 / 资产管理" should route to `$ue-data-management`.
+- 中文 "诊断 / 稳定复现 / 插桩 / 运行时 bug" should route to `$ue-debug-validation`, with `diagnose` as a follow-up discipline when needed.
+- 中文 "TDD / 测试先行 / 回归测试 / 自动化测试" should route to `$ue-testing-automation`, with `tdd` as the test-first discipline when the user asks for it.
+- 中文 "需求模糊 / 术语不清 / 追问 / 澄清需求" should route to `$ue-feature-brief`, with `grill-with-docs` as a follow-up discipline when project language matters.
+- 中文 "架构复盘 / 模块太乱 / 可测试性 / test seam" should route to `$ue-architecture`, with `improve-codebase-architecture` as a follow-up discipline when module depth is the real problem.
 
 ## Production Workflow
 
